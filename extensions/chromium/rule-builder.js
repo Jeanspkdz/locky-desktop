@@ -1,3 +1,4 @@
+(() => {
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -67,3 +68,4 @@ function findBrowserRule(input, rules) {
 }
 
 globalThis.LockyRules = { findBrowserRule, toBrowserRules };
+})();
