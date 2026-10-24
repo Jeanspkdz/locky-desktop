@@ -2,14 +2,14 @@
 
 ![Mockup móvil](locky-mobile-hifi.png)
 
-Este es un concepto visual para la pantalla de inicio en un formato móvil. La especificación vigente del producto sigue siendo una aplicación local para Windows; esta propuesta no agrega una aplicación móvil al alcance.
+Este es un mockup de formato móvil solicitado para explorar la apariencia. Locky es una aplicación de escritorio local para Windows construida con Electron; no es una aplicación web. Este mockup tampoco cambia el alcance del producto para crear una app móvil.
 
 ## Base de implementación
 
 - Lienzo de referencia: 390 × 844 dp/pt; contenido desplazable entre encabezado y navegación inferior.
 - Márgenes horizontales: 16; separación entre bloques: 16–24; espacio interno de tarjetas: 20–24.
 - Cuadrícula de 4 puntos. Área táctil mínima: 44 × 44. Respetar las áreas seguras del sistema arriba y abajo.
-- Fuente: sans del sistema (`SF Pro` en iOS, `Roboto` en Android; `Segoe UI` en Windows si se adapta a Electron). Pesos 400, 600 y 700. Cifras en alineación tabular cuando se muestren tiempos.
+- Fuente: sans legible de interfaz; `Segoe UI` es una opción natural al trasladar el diseño a la app de Windows. Pesos 400, 600 y 700. Cifras en alineación tabular cuando se muestren tiempos.
 - Tipo: título principal 28/34, título de tarjeta 20/26, cuerpo 16/24, etiquetas y navegación 13/18; no reducir texto funcional por debajo de 13.
 - Radios: 16 para tarjetas, 12 para botones y avisos, 10 para iconos sobre superficie.
 

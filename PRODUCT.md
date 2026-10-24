@@ -4,11 +4,11 @@
 
 ## Platform
 
-web
+Windows desktop (Electron)
 
 ## Stack
 
-The planned application uses Electron with JavaScript or TypeScript and `pnpm` for dependencies and scripts. `design/` is a separate static HTML, CSS, and JavaScript prototype for reviewing the interface.
+The application is planned as a Windows desktop program built with Electron and JavaScript or TypeScript. `pnpm` manages dependencies and scripts. The files in `design/` are only review artifacts; the static HTML prototype is not the product architecture.
 
 ## Users
 
