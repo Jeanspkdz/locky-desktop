@@ -83,7 +83,7 @@ async function startChromiumExtension(rules) {
   return { nativeMessages, dynamicRules, webNavigation: context.chrome.webNavigation };
 }
 
-test('Chrome blocks configured destinations before showing content and reports the attempt', async () => {
+test('Chrome DNR rules are synced and blocked-navigation attempts are reported', async () => {
   const extension = await startChromiumExtension([
     { id: 'rule-1', type: 'domain', host: 'blocked.example', path: '/' },
   ]);
