@@ -8,6 +8,10 @@
 
 - [ ] Un dominio configurado como prohibido no carga en Chrome y activa la página de bloqueo.
 - [ ] Un dominio no prohibido sigue cargando normalmente.
-- [ ] La página de bloqueo muestra el mensaje acordado sin revelar el dominio.
+- [x] La página de bloqueo muestra el mensaje acordado sin revelar el dominio.
 - [ ] El modo incógnito de Chrome está deshabilitado mientras Chrome está protegido.
 - [ ] El recorrido funciona en Windows usando dependencias y scripts gestionados por `pnpm`.
+
+## Evidence
+
+- `src/renderer/lock.html` renders “Se activó el bloqueo” and “Cerrar navegadores”; `src/renderer/lock.js` only invokes the close action. The overlay receives no blocked URL or timer value.
