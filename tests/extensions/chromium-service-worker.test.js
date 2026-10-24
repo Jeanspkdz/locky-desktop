@@ -72,19 +72,15 @@ async function startChromiumExtension(rules) {
       webNavigation: { onBeforeNavigate: event() },
     },
   };
+  const vmContext = vm.createContext(context);
   context.importScripts = file => {
-    const source = requireSource(path.join(projectRoot, 'extensions/chromium', file));
+    const source = readFileSync(path.join(projectRoot, 'extensions/chromium', file), 'utf8');
     vm.runInContext(source, vmContext);
   };
-  const vmContext = vm.createContext(context);
   const source = await readFile(path.join(projectRoot, 'extensions/chromium/service-worker.js'), 'utf8');
   vm.runInContext(source, vmContext);
   await updated;
   return { nativeMessages, dynamicRules, webNavigation: context.chrome.webNavigation };
-}
-
-function requireSource(filePath) {
-  return readFileSync(filePath, 'utf8');
 }
 
 test('Chrome worker syncs a DNR block rule and reports blocked navigation', async () => {
