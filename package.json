@@ -1,0 +1,17 @@
+{
+  "name": "locky-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Locky Desktop blocks chosen browser destinations on Windows.",
+  "type": "module",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "test:domain": "node --test tests/domain/*.test.js",
+    "package:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-windows.ps1"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0"
+  }
+}

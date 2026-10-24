@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Locky Desktop — Prototipo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Navegación principal">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M8 14V9a8 8 0 0 1 16 0v5M6 14h20v14H6z"/></svg></span><span>locky<span class="brand-dot">.</span></span></div>
+      <div class="sidebar-label">ESCRITORIO</div>
+      <nav>
+        <button class="nav-item active" data-view="overview"><span class="nav-icon">◫</span>Resumen</button>
+        <button class="nav-item" data-view="rules"><span class="nav-icon">≡</span>Mis reglas <span class="nav-count">2</span></button>
+        <button class="nav-item" data-view="initial"><span class="nav-icon">▤</span>Lista inicial <span class="nav-alert"></span></button>
+        <button class="nav-item" data-view="browsers"><span class="nav-icon">◎</span>Navegadores</button>
+      </nav>
+      <div class="sidebar-bottom"><span class="local-indicator"></span> Protección local en este equipo<br><small>Prototipo de diseño · sin bloqueo real</small></div>
+    </aside>
+    <main id="main">
+      <header class="topbar"><span>Locky Desktop</span><div><span class="status-mini"><i></i> Sin configurar</span><span class="window-controls" aria-hidden="true">—　□　×</span></div></header>
+      <section class="view active" id="overview">
+        <div class="page-head"><p class="breadcrumb">Inicio</p><h1>Tu espacio, bajo tu control.</h1><p>Decide qué páginas quedan fuera de tu navegación y revisa cada paso antes de hacerlo permanente.</p></div>
+        <div class="hero-panel"><div><div class="hero-state"><span class="state-pip"></span> CONFIGURACIÓN PENDIENTE</div><h2>La protección comienza<br>con una decisión consciente.</h2><p>Revisa la lista inicial de dominios. Ninguno se bloqueará hasta que apruebes el conjunto.</p><button class="button button-light" data-go="initial">Revisar lista inicial <span>↗</span></button></div><div class="hero-art" aria-hidden="true"><div class="orbit orbit-1"></div><div class="orbit orbit-2"></div><div class="core-mark"><svg viewBox="0 0 120 120"><path d="M35 52V38a25 25 0 0 1 50 0v14M26 52h68v51H26z"/></svg></div></div></div>
+        <div class="section-heading"><h2>Lo esencial, de un vistazo</h2><span>Estado ilustrativo</span></div>
+        <div class="overview-grid"><button class="summary-cell" data-go="rules"><span class="cell-icon">＋</span><strong>Reglas personales</strong><p>Agrega un dominio completo o una ruta concreta.</p><span class="cell-link">Gestionar reglas ↗</span></button><button class="summary-cell" data-go="browsers"><span class="cell-icon">◎</span><strong>Navegadores</strong><p>Consulta la cobertura y el estado de cada integración.</p><span class="cell-link">Ver navegadores ↗</span></button><button class="summary-cell" id="show-lock"><span class="cell-icon">▣</span><strong>Pantalla de bloqueo</strong><p>Conoce cómo se verá la interrupción de siete minutos.</p><span class="cell-link">Ver demostración ↗</span></button></div>
+        <div class="notice"><span class="notice-symbol">i</span><p><strong>Un compromiso que se confirma.</strong> Las reglas nuevas se pueden cancelar durante 10 minutos. Después, Locky ya no ofrece cambiarlas ni quitarlas.</p></div>
+      </section>
+      <section class="view" id="rules">
+        <div class="page-head page-head-row"><div><p class="breadcrumb">Protección / Mis reglas</p><h1>Mis reglas</h1><p>Elige con precisión qué dominio o ruta quieres prohibir.</p></div><button class="button button-dark" id="add-rule">＋ Añadir regla</button></div>
+        <div class="tabs"><button class="tab active" data-filter="all">Todas <span id="all-count">2</span></button><button class="tab" data-filter="pending">En verificación <span id="pending-count">1</span></button><button class="tab" data-filter="consolidated">Consolidadas <span id="consolidated-count">1</span></button></div>
+        <div class="table-head"><span>REGLA</span><span>ALCANCE</span><span>ESTADO</span><span></span></div><div id="rule-list"></div>
+        <div class="inline-info"><strong>¿Qué se bloquea?</strong><p>Una regla de dominio incluye sus subdominios y todas sus rutas. Una regla de ruta incluye esa sección y sus rutas inferiores, sin afectar el resto del sitio.</p></div>
+      </section>
+      <section class="view" id="initial">
+        <div class="page-head"><p class="breadcrumb">Protección / Lista inicial</p><h1>Revisa antes de aprobar.</h1><p>La lista inicial de dominios para adultos y apuestas se aprobará como un solo conjunto.</p></div>
+        <div class="empty-list"><div class="empty-symbol">▤</div><h2>Aún no hay dominios para revisar</h2><p>El producto deberá mostrar aquí la lista exacta antes de pedir tu aprobación. Este prototipo no inventa dominios ni activa una protección ficticia.</p><div class="empty-footer"><span>0 dominios presentados</span><button class="button button-disabled" disabled>Aprobar lista inicial</button></div></div>
+        <div class="notice"><span class="notice-symbol">i</span><p><strong>La aprobación es definitiva dentro de Locky.</strong> Una actualización futura requerirá una revisión y aprobación nuevas.</p></div>
+      </section>
+      <section class="view" id="browsers">
+        <div class="page-head"><p class="breadcrumb">Protección / Navegadores</p><h1>Cobertura por navegador</h1><p>Locky verificará cada integración por separado durante la instalación.</p></div>
+        <div class="browser-list" id="browser-list"></div>
+        <div class="inline-info"><strong>Si una integración falla</strong><p>Solo ese navegador quedará impedido hasta repararlo. Los demás navegadores protegidos y las otras aplicaciones podrán seguir funcionando.</p></div>
+      </section>
+    </main>
+  </div>
+  <dialog id="rule-dialog"><form method="dialog" id="rule-form"><button class="dialog-close" value="cancel" aria-label="Cerrar">×</button><h2>Añadir una regla</h2><p class="dialog-intro">Comprueba bien la dirección. Tendrás 10 minutos para cancelar antes de que quede consolidada.</p><div class="segmented"><label><input type="radio" name="kind" value="domain" checked><span>Dominio completo</span></label><label><input type="radio" name="kind" value="path"><span>Ruta específica</span></label></div><label class="field-label" for="rule-value">Dirección que quieres prohibir</label><input id="rule-value" name="value" type="text" placeholder="ejemplo.com" required autocomplete="off"><p class="field-help" id="scope-help">Incluirá ejemplo.com, sus subdominios y todas sus rutas.</p><p class="field-error" id="field-error" hidden>Introduce un dominio válido, sin espacios.</p><div class="dialog-actions"><button class="button button-quiet" value="cancel">Cancelar</button><button class="button button-dark" id="save-rule" value="save">Iniciar verificación</button></div></form></dialog>
+  <div class="lock-preview" id="lock-preview" hidden><button class="preview-exit" id="exit-lock">Salir de la demostración ×</button><div class="lock-center"><div class="lock-emblem"><svg viewBox="0 0 120 120"><path d="M35 52V38a25 25 0 0 1 50 0v14M26 52h68v51H26z"/></svg></div><h1>Se activó el bloqueo</h1><button id="close-browsers">Cerrar navegadores</button></div></div>
+  <script src="script.js"></script>
+</body>
+</html>

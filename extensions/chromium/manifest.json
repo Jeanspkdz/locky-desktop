@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Locky Desktop",
+  "version": "0.1.0",
+  "description": "Aplica las reglas locales de Locky Desktop.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlD9I+SHZ3iJT45lCGqxbI8l2TWbsm22VBlmpsqX6yZkTKsyU37cIcAgSwESKF5Bo4Ns955doCVgT9G/EelvoRdpqBKTRkWCEWhTGVynQ7vmyFIlVhaYkTaf63uMvfMul4eSzWLPsnoamQwrDOezCdnm5MAibbu+jJB74O/tQ8BsIpNYtyqUgyGc3i8oI/0UEmnbH4lbaJd8Gf7Y0WA5r6YXWGfixFQD67uCDBpg+FL3aFEWLrxroIZGtcY1R2v7gNrILR6J5Jrn8qeSLGbqHZxihovCUI8BRQ512cLlYNjlUjYK210rvEZaxFbj8NbsobhULAF8MS9c+sFaB3a932wIDAQAB",
+  "permissions": ["declarativeNetRequest", "nativeMessaging", "webNavigation", "alarms"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "service-worker.js" },
+  "action": { "default_title": "Locky Desktop" }
+}

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Locky Desktop</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark">L</div>
+    <div><strong>Locky Desktop</strong><span>Control de navegación</span></div>
+    <div class="header-state"><i></i><span id="status">Protección local</span></div>
+  </header>
+  <main>
+    <section class="hero">
+      <div><p class="eyebrow">TU ESPACIO DIGITAL</p><h1>Decide qué queda fuera.</h1><p class="lede">Las reglas consolidadas no se pueden retirar desde Locky.</p></div>
+      <div class="hero-icon" aria-hidden="true">⌑</div>
+    </section>
+    <section class="panel health-panel" aria-live="polite">
+      <div class="section-heading"><div><p class="eyebrow">INTEGRACIONES</p><h2>Estado de navegadores</h2></div></div>
+      <div id="browser-health" class="health-list"><p class="empty">Todavía no se detectan navegadores abiertos.</p></div>
+    </section>
+    <section class="panel add-panel">
+      <div class="section-heading"><div><p class="eyebrow">NUEVA REGLA</p><h2>Agregar una página</h2></div></div>
+      <form id="rule-form">
+        <label for="rule-type">Tipo de bloqueo</label>
+        <select id="rule-type"><option value="domain">Dominio completo</option><option value="path">URL o perfil específico</option></select>
+        <label for="rule-value">Dominio o URL</label>
+        <div class="input-row"><input id="rule-value" autocomplete="off" placeholder="example.com o https://x.com/perfil" required><button type="submit">Agregar</button></div>
+        <p class="help">Tendrás 10 minutos para cancelar. Después la regla será permanente.</p>
+        <p class="form-error" id="form-error" role="alert"></p>
+      </form>
+    </section>
+    <section class="panel candidate-panel">
+      <div class="section-heading"><div><p class="eyebrow">LISTA INICIAL</p><h2>Sitios para adultos y apuestas</h2></div></div>
+      <p class="help">Propuesta de StevenBlack/hosts. Revisa los dominios antes de aprobarlos; una vez aprobados, no podrás retirarlos desde Locky.</p>
+      <div class="candidate-actions">
+        <button id="refresh-candidates" class="secondary-button">Cargar o actualizar propuesta</button>
+        <span id="candidate-count" class="candidate-count">Aún no cargada</span>
+      </div>
+      <div class="candidate-tools" id="candidate-tools" hidden>
+        <input id="candidate-search" type="search" placeholder="Buscar dominio" aria-label="Buscar dominio">
+        <div class="candidate-categories"><span id="adult-count">Adultos: 0</span><span id="gambling-count">Apuestas: 0</span></div>
+      </div>
+      <div class="candidate-list" id="candidate-list"></div>
+      <div class="candidate-footer" id="candidate-footer" hidden>
+        <button id="candidate-prev" class="text-button">Anterior</button><span id="candidate-page"></span><button id="candidate-next" class="text-button">Siguiente</button>
+      </div>
+      <button id="approve-candidates" class="approve-button" disabled>Aprobar dominios permanentemente</button>
+      <p class="form-error" id="candidate-error" role="alert"></p>
+    </section>
+    <section class="panel">
+      <div class="section-heading"><div><p class="eyebrow">REGLAS CONSOLIDADAS</p><h2>Páginas prohibidas</h2></div><span class="count" id="rule-count">0</span></div>
+      <div class="rule-list" id="rule-list"><p class="empty">Todavía no hay reglas consolidadas.</p></div>
+    </section>
+    <section class="panel pending-panel">
+      <div class="section-heading"><div><p class="eyebrow">VENTANA DE REVISIÓN</p><h2>Reglas por confirmar</h2></div></div>
+      <div class="rule-list" id="pending-list"><p class="empty">No hay reglas pendientes.</p></div>
+    </section>
+    <details class="dev-tools">
+      <summary>Herramientas de desarrollo</summary>
+      <p>Activa la pantalla de bloqueo para revisar el diseño. No sustituye un intento real desde un navegador.</p>
+      <button id="simulate">Simular intento bloqueado</button>
+    </details>
+  </main>
+  <script src="./renderer.js"></script>
+</body>
+</html>
