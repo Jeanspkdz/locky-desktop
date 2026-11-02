@@ -6,8 +6,9 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { StateStore } = require('../../src/main/state-store.cjs');
+const { remainingLockMs } = await import('../../src/domain/locky-state.js');
 
-test('browser rules and pending timers survive creating a new store instance', async t => {
+test('rules, pending timers, and offline lock expiry survive creating a new store instance', async t => {
   const directory = await fs.mkdtemp(path.join(process.cwd(), '.scratch', 'locky-store-'));
   t.after(() => fs.rm(directory, { recursive: true, force: true }));
   const filePath = path.join(directory, 'state.json');
@@ -19,6 +20,7 @@ test('browser rules and pending timers survive creating a new store instance', a
     pendingRules: [{ id: 'pending', type: 'path', host: 'social.example', path: '/user', consolidatesAt: 1234 }],
     desktopLock: { startedAt: 5, endsAt: 420005 },
     candidateListApproved: false,
+    candidateListApprovedAt: null,
     candidateList: [],
     candidateListCheckedAt: null,
     browserHealth: {},
@@ -26,7 +28,10 @@ test('browser rules and pending timers survive creating a new store instance', a
 
   const store = new StateStore(filePath);
   await store.write(state);
-  assert.deepEqual(await new StateStore(filePath).read(), state);
+  const restored = await new StateStore(filePath).read();
+  assert.deepEqual(restored, state);
+  assert.equal(remainingLockMs(restored.desktopLock, 180_005), 240_000);
+  assert.equal(remainingLockMs(restored.desktopLock, restored.desktopLock.endsAt), 0);
   await store.write({ ...state, rules: [...state.rules, { id: 'second', type: 'domain', host: 'another.example' }] });
   assert.equal((await new StateStore(filePath).read()).rules.length, 2);
 });

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">Locky app icon</title>
+  <desc id="description">A glowing cyan shield and keyhole with digital glitch accents on a dark rounded square.</desc>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10161c" />
+      <stop offset="0.56" stop-color="#070c12" />
+      <stop offset="1" stop-color="#03060a" />
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#19f5ff" />
+      <stop offset="1" stop-color="#00c8dd" />
+    </linearGradient>
+    <filter id="glow" x="-45%" y="-45%" width="190%" height="190%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.00  0 0 0 0 0.83  0 0 0 0 0.96  0 0 0 0.82 0" result="cyanGlow" />
+      <feMerge>
+        <feMergeNode in="cyanGlow" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="soft-glow" x="-45%" y="-45%" width="190%" height="190%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.2" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect x="18" y="18" width="476" height="476" rx="94" fill="url(#tile)" stroke="#293139" stroke-width="2" />
+
+  <g fill="none" stroke="url(#cyan)" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M256 68 365 108v38" stroke-width="15" />
+    <path d="M365 252c-16 35-57 65-109 94-52-29-93-59-109-94V108l109-40" stroke-width="15" />
+  </g>
+
+  <g fill="url(#cyan)" filter="url(#soft-glow)">
+    <path d="M256 161c-19 0-34 15-34 34 0 14 9 27 22 32l-9 43h42l-9-43c13-5 22-18 22-32 0-19-15-34-34-34Z" />
+
+    <path d="M365 111h48v7h-48zM365 124h31v6h-31z" />
+    <path d="M365 153h59v7h-59zM350 163h31v8h-31zM402 165h18v5h-18z" />
+    <path d="M354 190h52v8h-52zM337 200h28v7h-28zM406 203h36v6h-36z" />
+    <path d="M365 225h42v7h-42zM392 235h34v6h-34z" />
+    <path d="M351 257h51v7h-51zM336 268h29v6h-29z" />
+    <path d="m338 282 22 5-18 19-19-3zM313 307l31-8-14 15-30 9z" />
+  </g>
+
+  <g fill="none" stroke="url(#cyan)" stroke-linecap="square" stroke-linejoin="round" stroke-width="10" filter="url(#soft-glow)">
+    <path d="M111 390v46h48" />
+    <path d="M293 390h-42v46h42" />
+    <path d="M317 390v46m0-22 40-24m-40 24 40 22" />
+    <path d="m375 390 23 24 23-24m-23 24v22" />
+  </g>
+  <rect x="184" y="390" width="39" height="46" rx="7" fill="none" stroke="url(#cyan)" stroke-width="10" filter="url(#soft-glow)" />
+</svg>

@@ -8,7 +8,7 @@ Quiero impedir en mi equipo Windows el acceso a sitios para adultos y de apuesta
 
 ## Solution
 
-Locky Desktop será una aplicación local para Windows construida con Electron y JavaScript o TypeScript, con dependencias y scripts gestionados por `pnpm`. Cubrirá Chrome, Brave, Edge, Firefox y todas las variantes de Opera que se incluyan en la instalación. Cada navegador tendrá una integración que impida cargar páginas prohibidas y avise a la aplicación de escritorio. La lista inicial de dominios para adultos y apuestas se mostrará para revisión y aprobación conjunta. Las reglas añadidas después tendrán un período de verificación de diez minutos durante el que podrán cancelarse; al terminar, serán reglas consolidadas.
+Locky Desktop será una aplicación local para Windows construida con Electron y JavaScript o TypeScript, con dependencias y scripts gestionados por `pnpm`. Cubrirá Chrome, Brave, Edge, Firefox y todas las variantes de Opera que se incluyan en la instalación. Cada navegador tendrá una integración que impida cargar páginas prohibidas y avise a la aplicación de escritorio. El conjunto inicial preaprobado de dominios para adultos y apuestas se consolida al iniciar Locky y no se muestra como lista ni requiere aprobación manual. Las reglas añadidas después tendrán un período de verificación de diez minutos durante el que podrán cancelarse; al terminar, serán reglas consolidadas.
 
 Cuando se intente acceder a una página prohibida, se mostrará una página de bloqueo a pantalla completa en todos los monitores durante siete minutos. La pantalla dirá solo que se activó el bloqueo y ofrecerá «Cerrar navegadores». Al cerrar el último navegador, la pantalla desaparecerá, pero el tiempo continuará. Si se abre cualquiera de los navegadores cubiertos antes de que venza, la pantalla reaparecerá por el tiempo restante.
 
@@ -21,9 +21,9 @@ Cuando se intente acceder a una página prohibida, se mostrará una página de b
 5. Como persona que usa Locky Desktop, quiero utilizar Firefox con las reglas activas, para navegar por páginas permitidas.
 6. Como persona que usa Locky Desktop, quiero utilizar las variantes instaladas de Opera con las reglas activas, para navegar por páginas permitidas.
 7. Como persona que usa Locky Desktop, quiero que el modo de navegación privada esté deshabilitado en cada navegador cubierto, para que no sirva como vía de evasión.
-8. Como persona que usa Locky Desktop, quiero revisar la lista inicial de dominios para adultos y apuestas antes de aprobarla, para saber exactamente qué quedará bloqueado.
-9. Como persona que usa Locky Desktop, quiero aprobar la lista inicial como conjunto, para consolidar sus reglas solo después de revisarla.
-10. Como persona que usa Locky Desktop, quiero que una actualización de la lista inicial necesite mi aprobación, para evitar incorporaciones permanentes imprevistas.
+8. Como persona que usa Locky Desktop, quiero que el conjunto inicial preaprobado esté activo al iniciar, para no tener que repetir una aprobación ya resuelta.
+9. Como persona que usa Locky Desktop, quiero que la interfaz no muestre los dominios iniciales ni un botón de aprobación.
+10. Como persona que usa Locky Desktop, quiero que las reglas agregadas por mí mantengan diez minutos de verificación, aunque el conjunto inicial esté preaprobado.
 11. Como persona que usa Locky Desktop, quiero agregar una regla de dominio, para prohibir un sitio, sus subdominios y todas sus rutas.
 12. Como persona que usa Locky Desktop, quiero agregar una regla de ruta, para prohibir un perfil o sección concreta sin bloquear el resto del sitio.
 13. Como persona que usa Locky Desktop, quiero que una regla de ruta cubra sus rutas inferiores, para bloquear también las publicaciones de un perfil prohibido.
@@ -52,13 +52,13 @@ Cuando se intente acceder a una página prohibida, se mostrará una página de b
 - La aplicación de escritorio se construye con Electron y JavaScript o TypeScript. Todas las dependencias y scripts JS usan `pnpm` y `pnpm-lock.yaml`.
 - El producto es local para Windows, sin cuentas ni sincronización entre equipos.
 - Las integraciones de navegador aplican reglas de dominio y ruta antes de cargar la página; la aplicación de escritorio conserva reglas, estados y temporizadores. Se comunican localmente, sin enviar el historial de navegación a un servicio externo.
-- El flujo principal distingue reglas pendientes, canceladas y consolidadas. La lista inicial se consolida tras aprobación conjunta; una regla agregada individualmente se consolida tras diez minutos sin cancelación.
+- El flujo principal distingue reglas pendientes, canceladas y consolidadas. El conjunto inicial preaprobado se consolida sin acción manual; una regla agregada individualmente se consolida tras diez minutos sin cancelación.
 - La pantalla de bloqueo se activa por un intento de acceso a una página prohibida, cubre todos los monitores y no muestra dominio ni contador. Incluye la acción «Cerrar navegadores».
 - El período de siete minutos sigue corriendo cuando no hay navegadores abiertos. La pantalla solo se muestra mientras alguno de los navegadores cubiertos está abierto; tras un reinicio, reaparece al volver a abrir uno si aún queda tiempo.
 - Se usa tiempo monotónico durante la sesión de Windows y una fuente de hora por internet para reconstruir tiempos tras reiniciar. Sin conexión tras el reinicio, se conserva el estado pendiente hasta verificarlo.
 - Se configura la navegación privada como deshabilitada en cada navegador cubierto. La variante concreta de Opera se considera cubierta solo después de verificar bloqueo de URL, comunicación local y modo privado.
 - Si la integración de un navegador cubierto falla, solo ese navegador queda impedido hasta reparar la integración. Las demás aplicaciones y navegadores sanos siguen funcionando.
-- La lista de dominios para adultos y apuestas se presenta de forma exacta antes de aprobarla. Las futuras incorporaciones se presentan para una nueva aprobación, sin agregarse de forma automática a reglas consolidadas.
+- El conjunto inicial preaprobado no se presenta en la interfaz ni solicita aprobación. Las reglas que la persona agrega individualmente conservan el período de verificación.
 - La aplicación no ofrece retirar ni modificar reglas consolidadas. Esta permanencia no promete resistencia frente a una persona con permisos de administrador que modifica Windows fuera de Locky.
 - El alcance se limita a Chrome, Brave, Edge, Firefox y las variantes de Opera incluidas. Otros navegadores quedan fuera de esta especificación.
 

@@ -4,21 +4,22 @@
 
 ## Direction
 
-An operating interface for a deliberate personal commitment. Calm, local, and precise. The user sees the consequences of approval before action. The blocking screen is stripped to the exact message and action named in the spec.
+A focused Windows dashboard inspired by the supplied Locky reference. The protection screen uses a compact title bar and a two-column workspace. State and consequences remain visible while the user adds rules. The blocking screen stays stripped to the message and action named in the spec.
 
 ## Visual system
 
-- Warm off-white workspace, pale sage navigation, deep forest green for the primary surface and action.
-- Manrope for display and strong labels; DM Sans for body and controls.
-- Compact desktop navigation, generous content margins, restrained separators, and structured rows for rules and browser status.
-- Amber is reserved for pending states; green identifies consolidation. Neither color alone communicates status.
-- Rounded corners stay modest. Focus indicators are visible for keyboard use.
+- Deep navy workspace (`#08141d`), blue-gray panels (`#10232f`), and brighter cyan (`#38c8ed`) for navigation and focus.
+- Amber (`#ffc476`) identifies actions and states needing attention; the normal status surface uses cyan. Status also has text.
+- Segoe UI and system sans-serif keep the desktop controls familiar.
+- Compact sidebar navigation, structured rows for browser and rule status, restrained borders, and modest rounded corners.
+- The two-column dashboard collapses to one column on narrower windows, then the sidebar becomes horizontal navigation.
+- Focus indicators remain visible for keyboard use.
 
 ## Content rules
 
 - Interface copy is Spanish and follows `GLOSSARY.md` terminology.
 - Example rules are explicitly marked illustrative.
-- The initial domain list remains empty until exact domains exist; approval is unavailable in that state.
+- The preapproved initial domain set is applied automatically and is never listed or paired with an approval control in the interface.
 - The blocking screen shows no domain or countdown.
 
 ## Prototype boundary

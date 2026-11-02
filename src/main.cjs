@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const fsSync = require('node:fs');
 const path = require('node:path');
 const net = require('node:net');
@@ -7,8 +7,11 @@ const { spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { performance } = require('node:perf_hooks');
 const { StateStore } = require('./main/state-store.cjs');
+const { applyApprovedDomains } = require('./main/approved-domains.cjs');
 const { getCandidates } = require('./main/blocklist-provider.cjs');
 const { fetchTrustedTime } = require('./main/trusted-time.cjs');
+const { createOverlayController } = require('./main/overlay-controller.cjs');
+const { createBrowserProcessControl } = require('./main/browser-process-control.cjs');
 const {
   addPendingRule,
   cancelPendingRule,
@@ -16,40 +19,65 @@ const {
   startDesktopLock,
   remainingLockMs,
 } = require('./domain/locky-state.js');
+const { getRuntimeConfig } = require('./main/runtime-config.cjs');
 
 const execFileAsync = promisify(execFile);
+const browserProcessControl = createBrowserProcessControl({ execute: execFileAsync });
+const runtimeConfig = getRuntimeConfig();
+if (runtimeConfig.userDataPath) app.setPath('userData', runtimeConfig.userDataPath);
+const browserWindowMonitorPath = runtimeConfig.browserWindowMonitorPath
+  ?? path.join(process.env.LOCALAPPDATA ?? app.getPath('appData'), 'LockyDesktop', 'browser-window-monitor.exe');
 const installedMarker = path.join(process.resourcesPath, 'locky', 'installed.flag');
 const enforceUnhealthyBrowsers = app.isPackaged || fsSync.existsSync(installedMarker)
   || process.env.LOCKY_ENFORCE_UNHEALTHY_BROWSER === '1';
-const PIPE_NAME = '\\\\.\\pipe\\locky-desktop';
-const BROWSER_NAMES = ['chrome.exe', 'brave.exe', 'msedge.exe', 'firefox.exe', 'opera.exe', 'opera_gx.exe'];
+const PIPE_NAME = `\\\\.\\pipe\\${runtimeConfig.pipeName}`;
 let store;
 let settingsWindow;
-let overlayWindows = new Map();
 let pipeServer;
 let monitorTimer;
 let state = null;
 let domainRules;
 let sessionClock;
 let clockRetryTimer;
-let unverifiedLockStartedMono = null;
 let browserHealthRules;
-const BROWSER_PROCESS_GROUPS = Object.freeze({
-  chrome: ['chrome.exe'],
-  brave: ['brave.exe'],
-  edge: ['msedge.exe'],
-  firefox: ['firefox.exe'],
-  opera: ['opera.exe', 'opera_gx.exe'],
-});
+let browserWatcher;
+let browserWatcherFailed = false;
+let lastBrowserFamilies = [];
+let appQuitting = false;
 const browserRuntime = new Map();
+const overlayController = createOverlayController({
+  BrowserWindow,
+  attachToBrowser: (browserId, overlay) => {
+    const overlayHandle = overlay.getNativeWindowHandle().readBigUInt64LE().toString(16);
+    return execFileAsync(browserWindowMonitorPath, ['--attach', browserId, overlayHandle], { windowsHide: true, timeout: 1500 });
+  },
+  onAttachFailure: browserWindow => { void reportOverlayAttachFailure(browserWindow.family); },
+  preloadPath: path.join(__dirname, 'preload.cjs'),
+  lockPagePath: path.join(__dirname, 'renderer/lock.html'),
+});
+let timerCheckInProgress = false;
+
+async function reportOverlayAttachFailure(family) {
+  if (!browserProcessControl.hasFamily(family)) return;
+  await saveAndPublish({
+    ...state,
+    browserHealth: { ...state.browserHealth, [family]: { status: 'repair', reason: 'overlay' } },
+  });
+  if (browserHealthRules.shouldEnforceBrowserIntegration(enforceUnhealthyBrowsers, state.rules)) await closeBrowserFamily(family);
+}
 
 function createSettingsWindow() {
   settingsWindow = new BrowserWindow({
-    width: 980,
-    height: 760,
+    width: 1280,
+    height: 900,
     minWidth: 760,
     minHeight: 620,
     title: 'Locky Desktop',
+    icon: fsSync.existsSync(path.join(process.resourcesPath, 'locky/icon.png'))
+      ? path.join(process.resourcesPath, 'locky/icon.png')
+      : path.join(__dirname, '../assets/locky.png'),
+    autoHideMenuBar: true,
+    show: !runtimeConfig.hideSettingsWindow && !process.argv.includes('--background'),
     backgroundColor: '#11151d',
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
@@ -62,74 +90,29 @@ function createSettingsWindow() {
   settingsWindow.on('closed', () => { settingsWindow = null; });
 }
 
-function createOverlay(display) {
-  const key = `${display.id}`;
-  if (overlayWindows.has(key)) return overlayWindows.get(key);
-  const win = new BrowserWindow({
-    x: display.bounds.x,
-    y: display.bounds.y,
-    width: display.bounds.width,
-    height: display.bounds.height,
-    fullscreen: true,
-    frame: false,
-    alwaysOnTop: true,
-    skipTaskbar: true,
-    backgroundColor: '#10131b',
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.cjs'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-    },
+function showSettingsWindow() {
+  if (!settingsWindow || settingsWindow.isDestroyed()) createSettingsWindow();
+  if (settingsWindow.isMinimized()) settingsWindow.restore();
+  settingsWindow.show();
+  settingsWindow.focus();
+}
+
+function syncOverlayVisibility(browserWindows) {
+  const remainingMs = remainingLockMs(state?.desktopLock, Date.now());
+  overlayController.sync({
+    lockActive: remainingMs > 0,
+    remainingMs,
+    browserWindows,
+    suppressed: runtimeConfig.suppressOverlays,
   });
-  win.setAlwaysOnTop(true, 'screen-saver');
-  win.loadFile(path.join(__dirname, 'renderer/lock.html'));
-  win.on('closed', () => overlayWindows.delete(key));
-  overlayWindows.set(key, win);
-  return win;
-}
-
-function syncOverlayVisibility(browserRunning) {
-  const lockActive = state?.desktopLock?.unverified === true
-    || (sessionClock?.ready && remainingLockMs(state?.desktopLock, sessionClock.now()) > 0);
-  if (!lockActive || !browserRunning) {
-    for (const win of overlayWindows.values()) if (!win.isDestroyed()) win.hide();
-    return;
-  }
-
-  const displays = screen.getAllDisplays();
-  const activeIds = new Set(displays.map(display => `${display.id}`));
-  for (const display of displays) createOverlay(display).show();
-  for (const [id, win] of overlayWindows) {
-    if (!activeIds.has(id)) {
-      win.close();
-      overlayWindows.delete(id);
-    }
-  }
-}
-
-async function runningBrowserFamilies() {
-  try {
-    const { stdout } = await execFileAsync('tasklist.exe', ['/FO', 'CSV', '/NH'], { windowsHide: true });
-    const running = new Set([...stdout.matchAll(/"([^",]+\.exe)"/gi)].map(match => match[1].toLowerCase()));
-    return Object.entries(BROWSER_PROCESS_GROUPS)
-      .filter(([, names]) => names.some(name => running.has(name)))
-      .map(([family]) => family);
-  } catch {
-    return null;
-  }
 }
 
 async function closeBrowsers() {
-  for (const name of BROWSER_NAMES) {
-    await execFileAsync('taskkill.exe', ['/IM', name, '/T', '/F'], { windowsHide: true }).catch(() => {});
-  }
+  await browserProcessControl.closeProtectedBrowsers();
 }
 
 async function closeBrowserFamily(family) {
-  for (const name of BROWSER_PROCESS_GROUPS[family] ?? []) {
-    await execFileAsync('taskkill.exe', ['/IM', name, '/T', '/F'], { windowsHide: true }).catch(() => {});
-  }
+  await browserProcessControl.closeFamily(family);
 }
 
 async function saveAndPublish(nextState) {
@@ -144,50 +127,131 @@ async function saveAndPublish(nextState) {
 }
 
 function publicState() {
+  const visibleState = { ...state };
+  const ruleCount = visibleState.rules.length;
+  for (const key of [
+    'rules',
+    'candidateList',
+    'candidateListApproved',
+    'candidateListApprovedAt',
+    'candidateListCheckedAt',
+  ]) delete visibleState[key];
   return {
-    ...state,
+    ...visibleState,
+    ruleCount,
     clockReady: Boolean(sessionClock?.ready),
     clockNow: sessionClock?.now() ?? null,
-    enforcementEnabled: enforceUnhealthyBrowsers,
+    enforcementEnabled: browserHealthRules.shouldEnforceBrowserIntegration(enforceUnhealthyBrowsers, state.rules),
   };
 }
 
 async function checkTimers() {
-  const now = sessionClock?.now();
-  if (now !== null && now !== undefined) {
-    const nextState = consolidateExpiredRules(state, now);
-    if (nextState !== state) await saveAndPublish(nextState);
-  }
-  const detectedFamilies = await runningBrowserFamilies();
-  const runningFamilies = detectedFamilies ?? [...browserRuntime.keys()];
-  const nowMono = performance.now();
-  for (const [family] of browserRuntime) {
-    if (runningFamilies.includes(family)) continue;
-    browserRuntime.delete(family);
-    if (detectedFamilies !== null && state.browserHealth[family]?.status !== 'idle' && state.browserHealth[family]?.status !== 'repair') {
-      await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'idle' } } });
+  if (timerCheckInProgress || !state) return;
+  timerCheckInProgress = true;
+  let nextInterval = 3000;
+  try {
+    const now = sessionClock?.now();
+    if (now !== null && now !== undefined) {
+      const nextState = consolidateExpiredRules(state, now);
+      if (nextState !== state) await saveAndPublish(nextState);
     }
-  }
-  for (const family of detectedFamilies ?? []) {
-    let runtime = browserRuntime.get(family);
-    if (!runtime) {
-      runtime = { startedAt: nowMono, lastHealthyAt: null };
-      browserRuntime.set(family, runtime);
-      await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'checking' } } });
-    }
-    const failure = browserHealthRules.integrationFailureReason(runtime, nowMono);
-    if (failure) {
-      const current = state.browserHealth[family];
-      if (current?.status !== 'repair' || current.reason !== failure) {
-        await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'repair', reason: failure } } });
+    let snapshot;
+    try {
+      if (!browserWatcher) {
+        browserWatcher = require('./main/windows-browser-watcher.cjs').createWindowsBrowserWatcher();
       }
-      if (enforceUnhealthyBrowsers) await closeBrowserFamily(family);
+      snapshot = browserWatcher.snapshot();
+    } catch (error) {
+      nextInterval = 3000;
+      await handleBrowserWatcherFailure(error);
+      return;
     }
+    const { families: detectedFamilies, windows } = snapshot;
+    const browserWindows = windows.map(window => ({
+      ...window,
+      bounds: { x: window.x, y: window.y, width: window.width, height: window.height },
+    }));
+    lastBrowserFamilies = detectedFamilies;
+    nextInterval = detectedFamilies.length ? 500 : 3000;
+    if (browserWatcherFailed) {
+      browserWatcherFailed = false;
+      const browserHealth = { ...state.browserHealth };
+      for (const [family, value] of Object.entries(browserHealth)) {
+        if (value.reason !== 'watcher') continue;
+        if (!detectedFamilies.includes(family)) {
+          browserHealth[family] = { status: 'idle' };
+          continue;
+        }
+        const runtime = browserRuntime.get(family);
+        const failure = runtime && browserHealthRules.integrationFailureReason(runtime, performance.now());
+        browserHealth[family] = failure
+          ? { status: 'repair', reason: failure }
+          : runtime
+            ? { status: 'healthy' }
+            : { status: 'checking' };
+      }
+      await saveAndPublish({ ...state, browserHealth });
+    }
+    const nowMono = performance.now();
+    for (const [family] of browserRuntime) {
+      if (detectedFamilies.includes(family)) continue;
+      browserRuntime.delete(family);
+      if (state.browserHealth[family]?.status !== 'idle' && state.browserHealth[family]?.status !== 'repair') {
+        await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'idle' } } });
+      }
+    }
+    for (const family of detectedFamilies) {
+      let runtime = browserRuntime.get(family);
+      if (!runtime) {
+        runtime = { startedAt: nowMono, lastHealthyAt: null };
+        browserRuntime.set(family, runtime);
+        await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'checking' } } });
+      }
+      const failure = browserHealthRules.integrationFailureReason(runtime, nowMono);
+      if (failure) {
+        const current = state.browserHealth[family];
+        if (current?.status !== 'repair' || current.reason !== failure) {
+          await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'repair', reason: failure } } });
+        }
+        if (browserHealthRules.shouldEnforceBrowserIntegration(enforceUnhealthyBrowsers, state.rules)) await closeBrowserFamily(family);
+      }
+    }
+    syncOverlayVisibility(browserWindows);
+    if (state.desktopLock && remainingLockMs(state.desktopLock, Date.now()) === 0) {
+      await saveAndPublish({ ...state, desktopLock: null });
+      overlayController.hideAll();
+    }
+  } catch (error) {
+    console.error('No se pudo actualizar el estado de protección.', error);
+  } finally {
+    timerCheckInProgress = false;
+    scheduleMonitor(nextInterval);
   }
-  syncOverlayVisibility(runningFamilies.length > 0);
-  if (now !== null && now !== undefined && state.desktopLock && !state.desktopLock.unverified && remainingLockMs(state.desktopLock, now) === 0) {
-    await saveAndPublish({ ...state, desktopLock: null });
-    for (const win of overlayWindows.values()) if (!win.isDestroyed()) win.hide();
+}
+
+function scheduleMonitor(intervalMs) {
+  if (appQuitting) return;
+  clearTimeout(monitorTimer);
+  monitorTimer = setTimeout(() => void checkTimers(), intervalMs);
+}
+
+async function handleBrowserWatcherFailure(error) {
+  if (browserWatcherFailed) return;
+  browserWatcherFailed = true;
+  console.error('Falló el vigilante de navegadores.', error);
+  if (browserHealthRules.shouldEnforceBrowserIntegration(enforceUnhealthyBrowsers, state.rules)) {
+    const familiesToClose = new Set([...lastBrowserFamilies, ...browserProcessControl.families]);
+    await Promise.all([...familiesToClose].map(closeBrowserFamily));
+  }
+  const browserHealth = { ...state.browserHealth };
+  for (const family of browserProcessControl.families) {
+    browserHealth[family] = { status: 'repair', reason: 'watcher' };
+  }
+  await saveAndPublish({ ...state, browserHealth }).catch(persistError => {
+    console.error('No se pudo guardar el estado de reparación del vigilante.', persistError);
+  });
+  if (settingsWindow && !settingsWindow.isDestroyed()) {
+    settingsWindow.webContents.send('state:changed', publicState());
   }
 }
 
@@ -232,18 +296,13 @@ async function handleNativeMessage(message) {
   }
   if (message.type === 'blocked') {
     if (!domainRules.findMatchingRule(message.url, state.rules)) return { ok: false, error: 'La URL no coincide con una regla consolidada.' };
-    if (!sessionClock?.ready) {
-      if (!state.desktopLock) unverifiedLockStartedMono = performance.now();
-      await saveAndPublish({ ...state, desktopLock: state.desktopLock ?? { unverified: true } });
-    } else {
-      await saveAndPublish({ ...state, desktopLock: startDesktopLock(state.desktopLock, sessionClock.now()) });
-    }
+    await saveAndPublish({ ...state, desktopLock: startDesktopLock(state.desktopLock, Date.now()) });
     await checkTimers();
     return { ok: true };
   }
   if (message.type === 'health') {
     const family = message.browserFamily;
-    if (!Object.hasOwn(BROWSER_PROCESS_GROUPS, family)) return { ok: false, error: 'Navegador no reconocido por Locky.' };
+    if (!browserProcessControl.hasFamily(family)) return { ok: false, error: 'Navegador no reconocido por Locky.' };
     const runtime = browserRuntime.get(family) ?? { startedAt: performance.now(), lastHealthyAt: null };
     if (message.ok === true) {
       runtime.lastHealthyAt = performance.now();
@@ -256,7 +315,7 @@ async function handleNativeMessage(message) {
     runtime.lastHealthyAt = null;
     browserRuntime.set(family, runtime);
     await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'repair', reason: 'extension' } } });
-    if (enforceUnhealthyBrowsers) await closeBrowserFamily(family);
+    if (browserHealthRules.shouldEnforceBrowserIntegration(enforceUnhealthyBrowsers, state.rules)) await closeBrowserFamily(family);
     return { ok: true };
   }
   return { ok: false, error: 'Solicitud desconocida' };
@@ -282,35 +341,12 @@ function registerIpc() {
     await saveAndPublish(next);
     return next;
   });
-  ipcMain.handle('candidates:refresh', async () => {
-    const result = await getCandidates();
-    const currentHosts = new Set([...state.rules, ...state.pendingRules].filter(rule => rule.type === 'domain').map(rule => rule.host));
-    const candidates = result.candidates.filter(candidate => !currentHosts.has(candidate.domain));
-    const next = { ...state, candidateList: candidates, candidateListCheckedAt: result.checkedAt };
-    await saveAndPublish(next);
-    return { ...result, candidates };
-  });
-  ipcMain.handle('candidates:approve', async () => {
-    const byHost = new Map([...state.rules, ...state.pendingRules].filter(rule => rule.type === 'domain').map(rule => [rule.host, rule]));
-    const additions = state.candidateList.filter(candidate => !byHost.has(candidate.domain));
-    const rules = additions.map(candidate => ({
-      id: crypto.randomUUID(),
-      type: 'domain',
-      host: candidate.domain,
-      path: '/',
-      source: 'preset',
-      categories: candidate.categories,
-    }));
-    domainRules.assertRuleSetCapacity([...state.rules, ...state.pendingRules, ...rules]);
-    const next = { ...state, rules: [...state.rules, ...rules], candidateListApproved: true, candidateList: [] };
-    await saveAndPublish(next);
-    return next;
-  });
   ipcMain.handle('browsers:close', async () => {
     await closeBrowsers();
-    for (const win of overlayWindows.values()) if (!win.isDestroyed()) win.hide();
+    overlayController.hideAll();
     return true;
   });
+  ipcMain.handle('runtime:is-packaged', () => app.isPackaged);
   ipcMain.handle('lock:demo', async () => {
     if (!sessionClock?.ready) throw new Error('Conecta el equipo a internet para simular el período de bloqueo.');
     const rule = state.rules[0];
@@ -329,11 +365,6 @@ async function synchronizeClock() {
   }
   if (!sessionClock.ready) {
     sessionClock.anchor(trustedUtcMs);
-    if (state.desktopLock?.unverified) {
-      const elapsed = unverifiedLockStartedMono === null ? 0 : performance.now() - unverifiedLockStartedMono;
-      const remaining = Math.max(0, 7 * 60 * 1000 - elapsed);
-      await saveAndPublish({ ...state, desktopLock: remaining > 0 ? { startedAt: sessionClock.now() - elapsed, endsAt: sessionClock.now() + remaining } : null });
-    }
     if (clockRetryTimer) clearInterval(clockRetryTimer);
     clockRetryTimer = null;
     await checkTimers();
@@ -348,7 +379,7 @@ function writeNativeReply(message) {
 }
 
 function startDesktopProcess() {
-  const args = app.isPackaged ? [] : [app.getAppPath()];
+  const args = app.isPackaged ? ['--background'] : [app.getAppPath(), '--background'];
   const child = spawn(process.execPath, args, { detached: true, stdio: 'ignore', windowsHide: true });
   child.unref();
 }
@@ -425,23 +456,27 @@ if (process.argv.includes('--native-host')) {
     browserHealthRules = await import('./domain/browser-health.js');
     store = new StateStore(path.join(app.getPath('userData'), 'locky-state.json'));
     state = await store.read();
+    const blocklist = await getCandidates();
+    const approvedState = applyApprovedDomains(state, blocklist.candidates, blocklist.checkedAt);
+    domainRules.assertRuleSetCapacity([...approvedState.rules, ...approvedState.pendingRules]);
+    if (JSON.stringify(approvedState) !== JSON.stringify(state)) await saveAndPublish(approvedState);
     sessionClock = new (await import('./domain/session-clock.js')).SessionClock();
     registerIpc();
     startPipeServer();
     createSettingsWindow();
-    screen.on('display-added', () => void checkTimers());
-    screen.on('display-removed', () => void checkTimers());
-    monitorTimer = setInterval(() => void checkTimers(), 1000);
     void checkTimers();
     void synchronizeClock();
   }).catch(error => {
     dialog.showErrorBox('Locky no pudo iniciar', `${error.message}\n\nSe conserva el archivo de estado para no descartar reglas permanentes.`);
     app.quit();
   });
+  app.on('second-instance', showSettingsWindow);
+  app.on('window-all-closed', () => {});
 }
 
 app.on('before-quit', () => {
-  clearInterval(monitorTimer);
+  appQuitting = true;
+  clearTimeout(monitorTimer);
   clearInterval(clockRetryTimer);
   pipeServer?.close();
 });

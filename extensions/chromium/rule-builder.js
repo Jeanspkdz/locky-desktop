@@ -1,6 +1,6 @@
 (() => {
-function escapeRegex(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function escapeUrlFilter(value) {
+  return value.replace(/[\\*^|]/g, '\\$&');
 }
 
 const ruleIndexCache = new WeakMap();
@@ -40,12 +40,21 @@ function toBrowserRules(rules) {
   }));
   for (const rule of pathRules) {
     const host = rule.host.toLowerCase();
-    browserRules.push({
-      id: browserRules.length + 1,
-      priority: 2,
-      action: { type: 'block' },
-      condition: { regexFilter: `^https?://${escapeRegex(host)}${escapeRegex(rule.path)}(?:/|[?#]|$)`, resourceTypes: ['main_frame'] },
-    });
+    const path = escapeUrlFilter(rule.path);
+    const filters = [
+      `|http://${host}${path}^`,
+      `|https://${host}${path}^`,
+      `|http://${host}:*${path}^`,
+      `|https://${host}:*${path}^`,
+    ];
+    for (const urlFilter of filters) {
+      browserRules.push({
+        id: browserRules.length + 1,
+        priority: 2,
+        action: { type: 'block' },
+        condition: { urlFilter, isUrlFilterCaseSensitive: true, resourceTypes: ['main_frame'] },
+      });
+    }
   }
   if (browserRules.length > 5000) throw new Error('El navegador admite como máximo 5,000 reglas dinámicas.');
   return browserRules;

@@ -18,11 +18,26 @@ test('reglas del navegador bloquean una ruta anidada sin alcanzar prefijos parec
   assert.equal(findBrowserRule('https://x.com/home', rules), null);
 });
 
+test('las reglas de ruta cubren HTTP y HTTPS, con y sin puerto, solo desde el límite de la ruta', () => {
+  const rules = [{ id: 'r3', type: 'path', host: 'x.com', path: '/profileA' }];
+  const browserRules = toBrowserRules(rules);
+
+  assert.equal(findBrowserRule('https://x.com:8443/profileA/posts/1', rules).id, 'r3');
+  assert.deepEqual(browserRules.map(rule => rule.condition.urlFilter), [
+    '|http://x.com/profileA^',
+    '|https://x.com/profileA^',
+    '|http://x.com:*/profileA^',
+    '|https://x.com:*/profileA^',
+  ]);
+  assert.ok(browserRules.every(rule => rule.condition.isUrlFilterCaseSensitive));
+});
+
 test('el navegador recibe reglas DNR solo para navegaciones principales', () => {
-  const [rule] = toBrowserRules([{ type: 'path', host: 'x.com', path: '/profileA' }]);
-  assert.equal(rule.condition.resourceTypes[0], 'main_frame');
-  assert.equal(rule.action.type, 'block');
-  assert.match(rule.condition.regexFilter, /profileA/);
+  const rules = toBrowserRules([{ type: 'path', host: 'x.com', path: '/profileA' }]);
+  assert.equal(rules.length, 4);
+  assert.ok(rules.every(rule => rule.condition.resourceTypes[0] === 'main_frame'));
+  assert.ok(rules.every(rule => rule.action.type === 'block'));
+  assert.ok(rules.every(rule => rule.condition.urlFilter.includes('/profileA')));
 });
 
 test('las reglas de dominio usan condiciones por dominio y no consumen expresiones regulares', () => {
@@ -52,4 +67,9 @@ test('no se acepta una ruta que excedería el máximo compartido de expresiones 
 test('la capacidad se calcula sobre las reglas DNR agrupadas, no sobre los dominios individuales', () => {
   const domains = Array.from({ length: 50_000 }, (_, id) => ({ type: 'domain', host: `d${id}.example` }));
   assert.doesNotThrow(() => assertRuleSetCapacity(domains));
+});
+
+test('la capacidad cuenta cuatro filtros de navegador por regla de ruta', () => {
+  const rules = Array.from({ length: 1_000 }, (_, id) => ({ id, type: 'path' }));
+  assert.equal(assertRuleSetCapacity(rules), 4_000);
 });

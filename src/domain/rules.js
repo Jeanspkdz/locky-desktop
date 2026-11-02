@@ -2,6 +2,7 @@ const WEB_PROTOCOLS = new Set(['http:', 'https:']);
 export const MAX_DYNAMIC_BLOCK_RULES = 5_000;
 export const MAX_PATH_BLOCK_RULES = 1_000;
 export const DOMAIN_HOSTS_PER_DNR_RULE = 100;
+export const PATH_URL_FILTERS_PER_RULE = 4;
 
 export function assertRuleCapacity(existingRules, newRule) {
   return assertRuleSetCapacity([...existingRules, newRule]);
@@ -13,7 +14,8 @@ export function assertRuleSetCapacity(rules) {
   if (pathCount > MAX_PATH_BLOCK_RULES) {
     throw new RangeError(`El navegador admite como máximo ${MAX_PATH_BLOCK_RULES.toLocaleString('es-PE')} reglas de ruta.`);
   }
-  const dynamicRuleCount = Math.ceil(domainCount / DOMAIN_HOSTS_PER_DNR_RULE) + pathCount;
+  const dynamicRuleCount = Math.ceil(domainCount / DOMAIN_HOSTS_PER_DNR_RULE)
+    + pathCount * PATH_URL_FILTERS_PER_RULE;
   if (dynamicRuleCount > MAX_DYNAMIC_BLOCK_RULES) {
     throw new RangeError(`El navegador admite como máximo ${MAX_DYNAMIC_BLOCK_RULES.toLocaleString('es-PE')} reglas dinámicas; reduce la cantidad de dominios o rutas.`);
   }

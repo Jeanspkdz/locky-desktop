@@ -9,6 +9,7 @@ const EMPTY_STATE = Object.freeze({
   pendingRules: [],
   desktopLock: null,
   candidateListApproved: false,
+  candidateListApprovedAt: null,
   candidateList: [],
   candidateListCheckedAt: null,
   browserHealth: {},

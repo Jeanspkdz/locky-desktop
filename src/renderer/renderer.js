@@ -2,22 +2,12 @@ const ruleForm = document.querySelector('#rule-form');
 const ruleType = document.querySelector('#rule-type');
 const ruleValue = document.querySelector('#rule-value');
 const formError = document.querySelector('#form-error');
-const ruleList = document.querySelector('#rule-list');
 const pendingList = document.querySelector('#pending-list');
-const ruleCount = document.querySelector('#rule-count');
-const candidateList = document.querySelector('#candidate-list');
-const candidateCount = document.querySelector('#candidate-count');
-const candidateTools = document.querySelector('#candidate-tools');
-const candidateFooter = document.querySelector('#candidate-footer');
-const candidateError = document.querySelector('#candidate-error');
 const browserHealth = document.querySelector('#browser-health');
-const BROWSER_NAMES = { chrome: 'Chrome', brave: 'Brave', edge: 'Edge', firefox: 'Firefox', opera: 'Opera' };
-let candidateRows = [];
-let candidatePage = 0;
+const BROWSER_NAMES = { chrome: 'Chrome', edge: 'Edge', brave: 'Brave' };
 let pendingRulesCache = [];
 let stateClockNow = null;
 let stateClockAtMono = 0;
-const PAGE_SIZE = 50;
 
 function formatRule(rule) {
   return rule.type === 'domain' ? rule.host : `${rule.host}${rule.path}`;
@@ -65,26 +55,36 @@ function renderRows(target, rules, pending = false, clockNow = null) {
   }
 }
 
-function renderBrowserHealth(health, enforcementEnabled) {
+function renderBrowserHealth(health, enforcementEnabled, hasRules) {
   browserHealth.replaceChildren();
-  const entries = Object.entries(health ?? {});
-  if (!entries.some(([, value]) => value.status !== 'idle')) {
-    const empty = document.createElement('p');
-    empty.className = 'empty';
-    empty.textContent = 'Todavía no se detectan navegadores abiertos.';
-    browserHealth.append(empty);
-    return;
-  }
-  for (const [family, value] of entries.filter(([, status]) => status.status !== 'idle')) {
-    const row = document.createElement('div');
-    row.className = `health-row ${value.status === 'repair' ? 'needs-repair' : ''}`;
+  for (const family of ['chrome', 'edge', 'brave']) {
+    const value = health?.[family] ?? { status: 'idle' };
+    const row = document.createElement('article');
+    row.className = `health-row health-${value.status}`;
+    const icon = document.createElement('span');
+    icon.className = 'browser-icon';
+    icon.textContent = family[0].toUpperCase();
+    icon.setAttribute('aria-hidden', 'true');
+    const info = document.createElement('div');
     const name = document.createElement('strong');
-    name.textContent = BROWSER_NAMES[family] ?? family;
+    name.textContent = BROWSER_NAMES[family];
     const status = document.createElement('span');
     status.textContent = value.status === 'healthy'
-      ? 'Protegido'
+      ? 'Integración conectada'
       : value.status === 'checking'
         ? 'Comprobando integración…'
+        : value.status === 'idle'
+          ? 'Se comprobará al abrirlo'
+        : !hasRules
+          ? value.reason === 'stale'
+            ? 'La extensión dejó de responder. Revísala antes de activar reglas.'
+            : 'Extensión no detectada. Instálala antes de activar reglas.'
+        : value.reason === 'overlay'
+          ? 'Reparación necesaria: Locky no pudo cubrir la ventana del navegador. Repara la instalación y vuelve a abrirlo.'
+        : value.reason === 'watcher'
+          ? enforcementEnabled
+            ? 'Reparación necesaria: Locky no puede vigilar los navegadores. Se cerraron para mantener la protección.'
+            : 'Reparación necesaria: Locky no puede vigilar los navegadores. Reinicia Locky después de reparar la integración.'
         : value.reason === 'missing'
           ? enforcementEnabled
             ? 'Reparación necesaria: instala o habilita la extensión Locky. El navegador fue cerrado.'
@@ -96,7 +96,8 @@ function renderBrowserHealth(health, enforcementEnabled) {
             : enforcementEnabled
               ? 'Reparación necesaria: Locky no pudo aplicar las reglas. Revisa la extensión y vuelve a abrir el navegador.'
               : 'Reparación necesaria: Locky no pudo aplicar las reglas. En modo desarrollo el navegador no se cierra.';
-    row.append(name, status);
+    info.append(name, status);
+    row.append(icon, info);
     browserHealth.append(row);
   }
 }
@@ -106,54 +107,19 @@ async function refresh() {
 }
 
 function renderState(state) {
+  const browserStates = ['chrome', 'edge', 'brave'].map(family => state.browserHealth?.[family]?.status ?? 'idle');
+  const ruleCount = state.ruleCount ?? 0;
+  const status = document.querySelector('#status');
+  status.textContent = !ruleCount ? 'Sin reglas bloqueantes'
+    : browserStates.includes('repair') ? 'Reparación necesaria'
+      : browserStates.includes('checking') ? 'Comprobando integración…'
+        : 'Protección activa';
+  status.classList.toggle('needs-attention', browserStates.includes('repair'));
   stateClockNow = state.clockNow;
   stateClockAtMono = performance.now();
   pendingRulesCache = state.pendingRules;
-  ruleCount.textContent = String(state.rules.length);
-  renderRows(ruleList, state.rules, false, state.clockNow);
   renderRows(pendingList, state.pendingRules, true, state.clockNow);
-  renderBrowserHealth(state.browserHealth, state.enforcementEnabled);
-  candidateRows = state.candidateList ?? [];
-  renderCandidates();
-}
-
-function renderCandidates() {
-  const search = document.querySelector('#candidate-search').value.trim().toLowerCase();
-  const filtered = candidateRows.filter(candidate => candidate.domain.includes(search));
-  const adultCount = candidateRows.filter(candidate => candidate.categories.includes('adult')).length;
-  const gamblingCount = candidateRows.filter(candidate => candidate.categories.includes('gambling')).length;
-  document.querySelector('#adult-count').textContent = `Adultos: ${adultCount.toLocaleString('es-PE')}`;
-  document.querySelector('#gambling-count').textContent = `Apuestas: ${gamblingCount.toLocaleString('es-PE')}`;
-  candidateCount.textContent = candidateRows.length
-    ? `${candidateRows.length.toLocaleString('es-PE')} dominios nuevos para revisar`
-    : 'No hay propuestas cargadas';
-  candidateTools.hidden = candidateRows.length === 0;
-  candidateFooter.hidden = filtered.length <= PAGE_SIZE;
-  document.querySelector('#approve-candidates').disabled = candidateRows.length === 0;
-  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  candidatePage = Math.min(candidatePage, pageCount - 1);
-  document.querySelector('#candidate-page').textContent = `${candidatePage + 1} / ${pageCount}`;
-  document.querySelector('#candidate-prev').disabled = candidatePage === 0;
-  document.querySelector('#candidate-next').disabled = candidatePage >= pageCount - 1;
-  candidateList.replaceChildren();
-  const pageRows = filtered.slice(candidatePage * PAGE_SIZE, (candidatePage + 1) * PAGE_SIZE);
-  if (!pageRows.length) {
-    const empty = document.createElement('p');
-    empty.className = 'empty';
-    empty.textContent = 'Carga la propuesta para revisar sus dominios.';
-    candidateList.append(empty);
-    return;
-  }
-  for (const candidate of pageRows) {
-    const row = document.createElement('div');
-    row.className = 'candidate-row';
-    const domain = document.createElement('span');
-    domain.textContent = candidate.domain;
-    const category = document.createElement('small');
-    category.textContent = candidate.categories.map(value => value === 'adult' ? 'Adultos' : 'Apuestas').join(' · ');
-    row.append(domain, category);
-    candidateList.append(row);
-  }
+  renderBrowserHealth(state.browserHealth, state.enforcementEnabled, ruleCount > 0);
 }
 
 ruleForm.addEventListener('submit', async event => {
@@ -167,35 +133,20 @@ ruleForm.addEventListener('submit', async event => {
   }
 });
 
-document.querySelector('#simulate').addEventListener('click', () => window.locky.simulateBlockedAttempt());
-document.querySelector('#refresh-candidates').addEventListener('click', async event => {
+const simulateButton = document.querySelector('#simulate');
+void window.locky.isPackaged().then(isPackaged => {
+  simulateButton.closest('.dev-tools').hidden = isPackaged;
+});
+simulateButton.addEventListener('click', async event => {
   const button = event.currentTarget;
-  candidateError.textContent = '';
+  formError.textContent = '';
   button.disabled = true;
-  button.textContent = 'Cargando…';
   try {
-    const result = await window.locky.refreshCandidates();
-    candidateRows = result.candidates;
-    candidatePage = 0;
-    renderCandidates();
+    await window.locky.simulateBlockedAttempt();
   } catch (error) {
-    candidateError.textContent = `No se pudo cargar la propuesta: ${error.message}`;
+    formError.textContent = `No se pudo simular el bloqueo: ${error.message}`;
   } finally {
     button.disabled = false;
-    button.textContent = 'Cargar o actualizar propuesta';
-  }
-});
-document.querySelector('#candidate-search').addEventListener('input', () => { candidatePage = 0; renderCandidates(); });
-document.querySelector('#candidate-prev').addEventListener('click', () => { candidatePage -= 1; renderCandidates(); });
-document.querySelector('#candidate-next').addEventListener('click', () => { candidatePage += 1; renderCandidates(); });
-document.querySelector('#approve-candidates').addEventListener('click', async () => {
-  candidateError.textContent = '';
-  const confirmed = window.confirm(`Aprobar ${candidateRows.length.toLocaleString('es-PE')} dominios como reglas permanentes? Locky no permitirá retirarlos después.`);
-  if (!confirmed) return;
-  try {
-    await window.locky.approveCandidates();
-  } catch (error) {
-    candidateError.textContent = error.message;
   }
 });
 window.locky.onStateChanged(renderState);

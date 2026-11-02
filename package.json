@@ -7,11 +7,18 @@
   "main": "src/main.cjs",
   "scripts": {
     "start": "electron .",
+    "setup:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-dev.ps1",
+    "smoke:native-host": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/smoke-native-host.ps1",
+    "smoke:browser-watcher": "node scripts/browser-watcher-smoke.cjs",
+    "install:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-windows.ps1",
     "test": "node --test",
     "test:domain": "node --test tests/domain/*.test.js",
     "package:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-windows.ps1"
   },
   "devDependencies": {
     "electron": "^45.0.0"
+  },
+  "dependencies": {
+    "koffi": "^3.3.5"
   }
 }

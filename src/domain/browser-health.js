@@ -7,7 +7,11 @@ export const BROWSER_PROCESS_GROUPS = Object.freeze({
 });
 
 export const BROWSER_STARTUP_GRACE_MS = 15_000;
-export const BROWSER_HEARTBEAT_TIMEOUT_MS = 90_000;
+export const BROWSER_HEARTBEAT_TIMEOUT_MS = 60_000;
+
+export function shouldEnforceBrowserIntegration(enabled, rules) {
+  return enabled && rules.length > 0;
+}
 
 export function integrationFailureReason({ startedAt, lastHealthyAt }, now) {
   if (lastHealthyAt !== null && lastHealthyAt !== undefined && now - lastHealthyAt <= BROWSER_HEARTBEAT_TIMEOUT_MS) return null;

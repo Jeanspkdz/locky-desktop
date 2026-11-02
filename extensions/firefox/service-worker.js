@@ -167,6 +167,7 @@ function onNavigation(details) {
 }
 
 browser.webNavigation.onBeforeNavigate.addListener(onNavigation);
+browser.webNavigation.onErrorOccurred.addListener(onNavigation);
 browser.runtime.onInstalled.addListener(() => {
   browser.alarms.create('locky-refresh', { periodInMinutes: 0.5 });
   refreshState();

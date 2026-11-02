@@ -2,6 +2,7 @@ if (typeof importScripts === 'function') importScripts('./rule-builder.js');
 const { findBrowserRule, toBrowserRules } = globalThis.LockyRules;
 
 const NATIVE_HOST = 'com.locky.desktop';
+const FAIL_CLOSED_RULE_ID = 5001;
 let nativePort;
 let currentRules = [];
 let requestSequence = 0;
@@ -11,6 +12,7 @@ let expectedRulesRevision = null;
 let incomingRules = [];
 let fetchingState = false;
 let refreshAfterSync = false;
+let dnrQueue = Promise.resolve();
 const seenAttempts = new Map();
 const STATE_PAGE_SIZE = 500;
 
@@ -31,6 +33,7 @@ function connectNative() {
       nativePort = undefined;
       fetchingState = false;
       stateRequestId = null;
+      requireLockyConnection();
       setTimeout(() => { connectNative(); refreshState(); }, 3000);
     });
     nativePort.onMessage.addListener(message => {
@@ -42,11 +45,62 @@ function connectNative() {
       }
       void handleStatePage(message);
     });
+    requireLockyConnection();
     return nativePort;
   } catch {
     nativePort = undefined;
+    requireLockyConnection();
+    setTimeout(() => { connectNative(); refreshState(); }, 3000);
     return undefined;
   }
+}
+
+function enqueueDnrUpdate(update) {
+  const result = dnrQueue.then(update, update);
+  dnrQueue = result.catch(() => {});
+  return result;
+}
+
+function failClosedRule() {
+  return {
+    id: FAIL_CLOSED_RULE_ID,
+    priority: 1000,
+    action: { type: 'block' },
+    condition: { urlFilter: '|http', resourceTypes: ['main_frame'] },
+  };
+}
+
+function requireLockyConnection() {
+  void enqueueDnrUpdate(async () => {
+    const rule = failClosedRule();
+    if (typeof chrome.declarativeNetRequest.updateSessionRules === 'function') {
+      const existing = await chrome.declarativeNetRequest.getSessionRules();
+      if (!existing.some(item => item.id === rule.id)) {
+        await chrome.declarativeNetRequest.updateSessionRules({ addRules: [rule] });
+      }
+      return;
+    }
+    const existing = await chrome.declarativeNetRequest.getDynamicRules();
+    if (!existing.some(item => item.id === rule.id)) {
+      await chrome.declarativeNetRequest.updateDynamicRules({ addRules: [rule] });
+    }
+  }).catch(() => {});
+}
+
+function clearLockyConnectionGuard() {
+  return enqueueDnrUpdate(async () => {
+    if (typeof chrome.declarativeNetRequest.updateSessionRules === 'function') {
+      const existing = await chrome.declarativeNetRequest.getSessionRules();
+      if (existing.some(item => item.id === FAIL_CLOSED_RULE_ID)) {
+        await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: [FAIL_CLOSED_RULE_ID] });
+      }
+      return;
+    }
+    const existing = await chrome.declarativeNetRequest.getDynamicRules();
+    if (existing.some(item => item.id === FAIL_CLOSED_RULE_ID)) {
+      await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: [FAIL_CLOSED_RULE_ID] });
+    }
+  });
 }
 
 function send(type, detail = {}) {
@@ -56,17 +110,16 @@ function send(type, detail = {}) {
 }
 
 async function syncDynamicRules() {
-  try {
+  await enqueueDnrUpdate(async () => {
     const browserRules = toBrowserRules(currentRules);
     const existing = await chrome.declarativeNetRequest.getDynamicRules();
     await chrome.declarativeNetRequest.updateDynamicRules({
       removeRuleIds: existing.map(rule => rule.id),
       addRules: browserRules,
     });
-    send('health', { browserFamily: getBrowserFamily(), ok: true });
-  } catch (error) {
-    send('health', { browserFamily: getBrowserFamily(), ok: false, error: error.message });
-  }
+  });
+  await clearLockyConnectionGuard();
+  send('health', { browserFamily: getBrowserFamily(), ok: true });
 }
 
 function requestStatePage(offset, limit) {
@@ -112,6 +165,7 @@ async function handleStatePage(message) {
   currentRules = incomingRules;
   stateRulesRevision = message.rulesRevision;
   try { await syncDynamicRules(); }
+  catch (error) { reportHealthFailure(error.message); }
   finally { finishStateSync(); }
 }
 
@@ -125,7 +179,10 @@ async function verifyDynamicRules() {
       return actual && actual.priority === rule.priority && actual.action.type === rule.action.type
         && stableJson(actual.condition) === stableJson(rule.condition);
     });
-    if (matches) send('health', { browserFamily: getBrowserFamily(), ok: true });
+    if (matches) {
+      await clearLockyConnectionGuard();
+      send('health', { browserFamily: getBrowserFamily(), ok: true });
+    }
     else await syncDynamicRules();
   } catch (error) {
     reportHealthFailure(error.message);
@@ -133,6 +190,7 @@ async function verifyDynamicRules() {
 }
 
 function reportHealthFailure(error) {
+  requireLockyConnection();
   send('health', { browserFamily: getBrowserFamily(), ok: false, error });
 }
 
@@ -168,6 +226,7 @@ function onNavigation(details) {
 }
 
 chrome.webNavigation.onBeforeNavigate.addListener(onNavigation);
+chrome.webNavigation.onErrorOccurred.addListener(onNavigation);
 chrome.runtime.onInstalled.addListener(() => {
   chrome.alarms.create('locky-refresh', { periodInMinutes: 0.5 });
   refreshState();

@@ -16,12 +16,12 @@ _Evitar_: Bloqueo de sitio
 Regla que prohíbe una ruta concreta y las rutas bajo ella dentro de un sitio permitido.
 _Evitar_: Bloqueo de sitio
 
-**Bloqueo del escritorio**:
-Estado de siete minutos que ocupa toda la pantalla e impide usar otras aplicaciones tras intentar acceder a una página prohibida.
-_Evitar_: Período de bloqueo, modo estricto
+**Bloqueo de navegadores**:
+Estado de siete minutos que impide usar Chrome, Brave y Edge tras intentar acceder a una página prohibida. Afecta a todas sus pestañas y ventanas, incluso si se cierran y vuelven a abrir durante ese tiempo; las demás aplicaciones siguen disponibles.
+_Evitar_: Bloqueo del escritorio, período de bloqueo, modo estricto
 
 **Página de bloqueo**:
-Pantalla que indica únicamente que se activó el bloqueo del escritorio.
+Contenido que muestra Locky en una ventana situada sobre cada navegador afectado mientras dura el bloqueo de navegadores.
 _Evitar_: Política de bloqueo
 
 **Período de verificación**:
@@ -31,6 +31,10 @@ _Evitar_: Período de bloqueo
 **Regla consolidada**:
 Regla de bloqueo que la aplicación ya no permite retirar ni modificar.
 _Evitar_: Regla activa
+
+**Conjunto inicial preaprobado**:
+Dominios incluidos por Locky que se consideran aprobados y consolidados desde el inicio, sin aprobación manual en la aplicación.
+_Evitar_: Lista por aprobar
 
 **Navegador permitido**:
 Navegador autorizado para ejecutarse en el equipo y cuyo modo de navegación privada está deshabilitado.
