@@ -4,16 +4,18 @@
 
 **Blocked by:** 03: Bloqueo compartido en Brave y Edge; 04: La ventana de bloqueo sigue al navegador; 05: El tiempo sobrevive a suspensión y reinicio; 06: Recuperación ante fallos.
 
-**Status:** claimed
+**Status:** resolved
 
-- [ ] Si falta o falla una extensión con reglas consolidadas, se cierra solo el navegador afectado y Locky muestra una indicación de reparación.
-- [ ] Los otros navegadores con integración sana y las demás aplicaciones siguen disponibles cuando falla uno.
+- [x] Si falta o falla una extensión con reglas consolidadas, se cierra solo el navegador afectado y Locky muestra una indicación de reparación.
+- [x] Los otros navegadores con integración sana y las demás aplicaciones siguen disponibles cuando falla uno.
 - [x] En Chrome, Brave y Edge instalados, una página prohibida no carga y aparece una ventana de bloqueo con cuenta regresiva.
-- [ ] En los tres navegadores se comprueban cierre y reapertura, minimización y restauración, ventanas adicionales y vencimiento a los siete minutos.
+- [x] En los tres navegadores se comprueban cierre y reapertura, minimización y restauración, ventanas adicionales y vencimiento a los siete minutos.
 - [x] La validación deja evidencia de lo comprobado en navegadores reales y distingue cualquier caso no verificado de las pruebas automatizadas.
 
 ## Answer
 
-Follow-up on 2026-11-02: Process-control tests now verify Chrome, Brave, and Edge each request closure of only their own executable. Overlay-controller tests exercise minimize/restore, close/reopen, remaining time, and expiry for each family; these are controller tests, not installed-browser E2E. The full suite passes 58/58. The live Locky window reports protection active and healthy integrations for Chrome, Brave, and Edge. The installed-profile lifecycle and missing-extension repair flow remain open; the normal Chrome profile and its tabs were left untouched.
+El 1 de noviembre de 2026, `pnpm smoke:browser-lifecycle` ejecutó Chrome, Brave y Edge instalados con perfiles temporales desechables, estado Locky aislado y una pipe única. En cada navegador, la extensión bloqueó la navegación hacia una ruta de prueba local (la petición no llegó al servidor fixture) y Locky mostró un overlay visible cuyo contador avanzó. En cada uno también se verificaron minimizar/restaurar, cubrir una ventana adicional, cerrar/reabrir y conservar la misma hora de vencimiento compartida. Tras los siete minutos completos, desaparecieron los tres overlays y los tres navegadores cargaron una página permitida.
 
-El 29 de octubre de 2026 se comprobó en los perfiles reales de Brave, Chrome y Edge la navegación a `https://pornhub.com:65534/.well-known/locky-e2e-probe`. En los tres, la extensión impidió cargar la página (`ERR_BLOCKED_BY_CLIENT`) y se observó la ventana de Locky sobre el navegador con cuenta regresiva (Brave: 02:23; Chrome y Edge: 06:48). El estado persistido registró las tres integraciones como `healthy` y conservó las 50 reglas del usuario. En Brave se observó que la ventana desapareció al vencer los siete minutos; una nueva visita en Edge inició otro bloqueo. La entrada `HKCU\Software\Microsoft\Windows\CurrentVersion\Run\LockyDesktop` apunta al ejecutable empaquetado corregido y este proceso seguía en ejecución. La regresión automatizada del controlador verifica que el overlay se adjunta tras `did-finish-load` aunque `ready-to-show` nunca ocurra; `pnpm test` pasó 50/50. Quedan por comprobar de forma manual en los tres navegadores el cierre y reapertura, minimización/restauración, ventanas adicionales y la ruta de reparación cuando falte una extensión; por eso el ticket sigue abierto.
+La reparación se probó iniciando Chrome con otro perfil temporal sin extensión: Locky mostró la indicación de reparación y cerró solo el árbol del proceso Chrome de prueba incluido en el alcance PID; los procesos temporales de Brave y Edge siguieron abiertos. El harness limita watcher, overlays y cierre a los PID de prueba; no usa cierre por nombre de imagen. La instantánea Win32 inicial registró una ventana visible preexistente de Chrome. Después de la reparación, el harness confirmó que esa ventana seguía presente, que su PID nunca había entrado en el archivo de alcance y que no se le había adjuntado un overlay de prueba. No había una ventana visible de Edge en la instantánea inicial, por lo que esta ejecución no afirma haber comprobado la conservación de una ventana preexistente de Edge. No se usaron perfiles normales ni se modificó el registro.
+
+Verificación automatizada: `pnpm test` pasó 64/64 y el smoke terminó con `PASS: installed-browser lifecycle smoke completed`. Los casos de caída del proceso nativo y reinicio físico de Windows no se simularon; se mantienen fuera de esta verificación.

@@ -10,6 +10,7 @@
     "setup:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-dev.ps1",
     "smoke:native-host": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/smoke-native-host.ps1",
     "smoke:browser-watcher": "node scripts/browser-watcher-smoke.cjs",
+    "smoke:browser-lifecycle": "node scripts/browser-lifecycle-smoke.cjs",
     "install:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-windows.ps1",
     "test": "node --test",
     "test:domain": "node --test tests/domain/*.test.js",

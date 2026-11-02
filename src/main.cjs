@@ -12,6 +12,7 @@ const { getCandidates } = require('./main/blocklist-provider.cjs');
 const { fetchTrustedTime } = require('./main/trusted-time.cjs');
 const { createOverlayController } = require('./main/overlay-controller.cjs');
 const { createBrowserProcessControl } = require('./main/browser-process-control.cjs');
+const { createBrowserProcessScopeReader } = require('./main/browser-process-scope.cjs');
 const {
   addPendingRule,
   cancelPendingRule,
@@ -22,8 +23,15 @@ const {
 const { getRuntimeConfig } = require('./main/runtime-config.cjs');
 
 const execFileAsync = promisify(execFile);
-const browserProcessControl = createBrowserProcessControl({ execute: execFileAsync });
 const runtimeConfig = getRuntimeConfig();
+const readBrowserProcessScope = createBrowserProcessScopeReader({
+  testMode: runtimeConfig.testMode,
+  filePath: runtimeConfig.browserScopeFile,
+});
+const browserProcessControl = createBrowserProcessControl({
+  execute: execFileAsync,
+  ...(runtimeConfig.testMode ? { getProcessIds: family => readBrowserProcessScope()[family] ?? [] } : {}),
+});
 if (runtimeConfig.userDataPath) app.setPath('userData', runtimeConfig.userDataPath);
 const browserWindowMonitorPath = runtimeConfig.browserWindowMonitorPath
   ?? path.join(process.env.LOCALAPPDATA ?? app.getPath('appData'), 'LockyDesktop', 'browser-window-monitor.exe');
@@ -158,7 +166,9 @@ async function checkTimers() {
     let snapshot;
     try {
       if (!browserWatcher) {
-        browserWatcher = require('./main/windows-browser-watcher.cjs').createWindowsBrowserWatcher();
+        browserWatcher = require('./main/windows-browser-watcher.cjs').createWindowsBrowserWatcher(undefined, {
+          getProcessScope: runtimeConfig.testMode ? readBrowserProcessScope : undefined,
+        });
       }
       snapshot = browserWatcher.snapshot();
     } catch (error) {

@@ -9,6 +9,8 @@ function getRuntimeConfig(environment = process.env) {
       userDataPath: null,
       suppressOverlays: false,
       hideSettingsWindow: false,
+      testMode: false,
+      browserScopeFile: null,
     };
   }
 
@@ -25,6 +27,10 @@ function getRuntimeConfig(environment = process.env) {
       : null,
     suppressOverlays: environment.LOCKY_TEST_NO_OVERLAY === '1',
     hideSettingsWindow: environment.LOCKY_TEST_HIDE_SETTINGS === '1',
+    testMode: true,
+    browserScopeFile: environment.LOCKY_TEST_BROWSER_SCOPE_FILE
+      ? path.resolve(environment.LOCKY_TEST_BROWSER_SCOPE_FILE)
+      : null,
   };
 }
 

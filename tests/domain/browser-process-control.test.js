@@ -36,3 +36,32 @@ test('the shared repair action closes only Chrome, Brave, and Edge', async () =>
 
   assert.deepEqual(requests.map(([, args]) => args[1]), ['chrome.exe', 'brave.exe', 'msedge.exe']);
 });
+
+test('test-scoped repair closes only allowlisted browser PIDs', async () => {
+  const requests = [];
+  const processControl = createBrowserProcessControl({
+    execute: async (...args) => { requests.push(args); },
+    getProcessIds: family => ({ chrome: [101], brave: [201, 202], edge: [301] })[family] ?? [],
+  });
+
+  await processControl.closeProtectedBrowsers();
+
+  assert.deepEqual(requests.map(([, args]) => args), [
+    ['/PID', '101', '/T', '/F'],
+    ['/PID', '201', '/T', '/F'],
+    ['/PID', '202', '/T', '/F'],
+    ['/PID', '301', '/T', '/F'],
+  ]);
+});
+
+test('an empty test process scope never falls back to image-wide closure', async () => {
+  const requests = [];
+  const processControl = createBrowserProcessControl({
+    execute: async (...args) => { requests.push(args); },
+    getProcessIds: () => [],
+  });
+
+  await processControl.closeProtectedBrowsers();
+
+  assert.deepEqual(requests, []);
+});

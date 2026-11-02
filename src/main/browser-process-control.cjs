@@ -8,10 +8,19 @@ const BROWSER_PROCESS_GROUPS = Object.freeze({
 
 const PROTECTED_FAMILIES = Object.freeze(['chrome', 'brave', 'edge']);
 
-function createBrowserProcessControl({ execute }) {
+function createBrowserProcessControl({ execute, getProcessIds }) {
   if (typeof execute !== 'function') throw new TypeError('A process executor is required.');
 
   async function closeFamily(family) {
+    if (getProcessIds) {
+      const processIds = getProcessIds(family) ?? [];
+      for (const processId of new Set(processIds)) {
+        if (!Number.isSafeInteger(processId) || processId <= 0) continue;
+        await execute('taskkill.exe', ['/PID', String(processId), '/T', '/F'], { windowsHide: true }).catch(() => {});
+      }
+      return;
+    }
+
     for (const executable of BROWSER_PROCESS_GROUPS[family] ?? []) {
       await execute('taskkill.exe', ['/IM', executable, '/T', '/F'], { windowsHide: true }).catch(() => {});
     }

@@ -17,7 +17,7 @@ function familyFromTitle(title) {
   return null;
 }
 
-function createWindowsBrowserWatcher(koffiModule = require('koffi')) {
+function createWindowsBrowserWatcher(koffiModule = require('koffi'), { getProcessScope } = {}) {
   if (process.platform !== 'win32') throw new Error('El vigilante de ventanas solo está disponible en Windows.');
 
   const koffi = koffiModule;
@@ -61,7 +61,7 @@ function createWindowsBrowserWatcher(koffiModule = require('koffi')) {
 
   const enumWindowsCallback = (hwnd, _lParam) => {
     if (!activeWindowScan) return 1;
-    const { processes, windows, foreground } = activeWindowScan;
+    const { processes, windows, foreground, scoped } = activeWindowScan;
     try {
       if (!isWindowVisible(hwnd) && !isIconic(hwnd)) return 1;
       const classBuffer = Buffer.alloc(128 * 2);
@@ -73,7 +73,7 @@ function createWindowsBrowserWatcher(koffiModule = require('koffi')) {
       const titleBuffer = Buffer.alloc(512 * 2);
       const titleLength = getWindowText(hwnd, titleBuffer, 512);
       const title = titleLength > 0 ? koffi.decode(titleBuffer, 'char16_t', titleLength) : '';
-      const family = processes.get(pid[0]) ?? familyFromTitle(title);
+      const family = processes.get(pid[0]) ?? (scoped ? null : familyFromTitle(title));
       if (!family) return 1;
 
       const rect = {};
@@ -84,6 +84,7 @@ function createWindowsBrowserWatcher(koffiModule = require('koffi')) {
 
       windows.push({
         id: hwnd.toString(16).toUpperCase(),
+        processId: pid[0],
         family,
         x: rect.left,
         y: rect.top,
@@ -100,7 +101,7 @@ function createWindowsBrowserWatcher(koffiModule = require('koffi')) {
     return 1;
   };
 
-  function readProcesses() {
+  function readProcesses(scope) {
     const snapshot = createToolhelp32Snapshot(0x00000002, 0);
     if (snapshot === null || BigInt.asUintN(64, snapshot) === invalidHandle) {
       throw new Error('Windows no pudo crear la instantánea de procesos.');
@@ -113,7 +114,8 @@ function createWindowsBrowserWatcher(koffiModule = require('koffi')) {
       do {
         const image = entry.szExeFile.toLowerCase();
         const family = PROCESS_NAMES.get(image);
-        if (family) {
+        const scopedPids = scope === null ? null : scope?.[family];
+        if (family && (scope === null || (Array.isArray(scopedPids) && scopedPids.includes(entry.th32ProcessID)))) {
           processes.set(entry.th32ProcessID, family);
           families.add(family);
         }
@@ -125,9 +127,9 @@ function createWindowsBrowserWatcher(koffiModule = require('koffi')) {
     }
   }
 
-  function readWindows(processes) {
+  function readWindows(processes, scoped) {
     const windows = [];
-    activeWindowScan = { processes, windows, foreground: getForegroundWindow() };
+    activeWindowScan = { processes, windows, foreground: getForegroundWindow(), scoped };
     try {
       if (!enumWindows(enumWindowsCallback, 0)) throw new Error('Windows no pudo enumerar las ventanas.');
       return windows;
@@ -138,8 +140,10 @@ function createWindowsBrowserWatcher(koffiModule = require('koffi')) {
 
   return Object.freeze({
     snapshot() {
-      const { processes, families } = readProcesses();
-      const windows = readWindows(processes);
+      const scope = getProcessScope ? getProcessScope() : null;
+      const scoped = scope !== null;
+      const { processes, families } = readProcesses(scope);
+      const windows = readWindows(processes, scoped);
       for (const window of windows) families.add(window.family);
       return { families: [...families], windows };
     },
