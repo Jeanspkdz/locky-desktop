@@ -238,6 +238,34 @@ async function listAppTargets(port) {
   return fetchJson(`http://127.0.0.1:${port}/json/list`);
 }
 
+async function closeSettingsWindow(appDevTools) {
+  const targets = await listAppTargets(appDevTools.port);
+  const settingsTarget = targets.find(target => target.type === 'page' && target.title === 'Locky Desktop');
+  assert(settingsTarget, 'The isolated Locky settings window is not available to close.');
+  const result = await appDevTools.connection.send('Target.closeTarget', { targetId: settingsTarget.id });
+  assert(result.success, 'The isolated Locky settings window did not close.');
+  await waitFor('the isolated Locky settings window to close', async () => (
+    !(await listAppTargets(appDevTools.port)).some(target => target.type === 'page' && target.title === 'Locky Desktop')
+  ));
+}
+
+async function openSettingsWithSecondInstance(electronBinary, testEnv, appDevTools, secondInstance) {
+  secondInstance.child = spawn(electronBinary, [projectRoot], {
+    cwd: projectRoot,
+    env: testEnv,
+    stdio: 'ignore',
+    windowsHide: true,
+  });
+  secondInstance.child.once('error', error => { secondInstance.child.startError = error; });
+  await waitFor('the second Locky instance to reopen the settings window', async () => {
+    if (secondInstance.child.startError) throw secondInstance.child.startError;
+    const targets = await listAppTargets(appDevTools.port);
+    const settingsOpen = targets.some(target => target.type === 'page' && target.title === 'Locky Desktop');
+    const secondInstanceExited = secondInstance.child.exitCode !== null || secondInstance.child.signalCode !== null;
+    return settingsOpen && secondInstanceExited ? true : null;
+  }, 20_000);
+}
+
 async function readOverlayCountdowns(appDevTools, expectedCount) {
   const targets = await waitFor('Locky lock page targets', async () => {
     const lockTargets = (await listAppTargets(appDevTools.port))
@@ -686,6 +714,7 @@ async function run() {
 
   let appProcess;
   let appDevTools;
+  const secondInstance = { child: null };
   let appProcessTreeStopper;
   const browsers = [];
   let expiryTimer;
@@ -771,6 +800,18 @@ async function run() {
     }, 5_000, 250);
     nodeAssert.equal(countdownAfter.length, visibleWindowCount);
     log('every visible Locky page showed a countdown that advanced');
+
+    await closeSettingsWindow(appDevTools);
+    nodeAssert.equal(appProcess.exitCode, null, 'Closing the settings window exited the Locky process.');
+    nodeAssert.equal(appProcess.signalCode, null, 'Closing the settings window signaled the Locky process.');
+    nodeAssert.equal((await readState(statePath)).desktopLock.endsAt, lockEndAt, 'Closing settings cleared or reset the active lock.');
+    for (const browser of browsers) await waitForOverlay(browser, scopePath, true);
+    log('closing settings left Locky running with the shared browser lock active');
+
+    await openSettingsWithSecondInstance(electronBinary, testEnv, appDevTools, secondInstance);
+    nodeAssert.equal(appProcess.exitCode, null, 'Opening settings created a new Locky owner process.');
+    nodeAssert.equal((await readState(statePath)).desktopLock.endsAt, lockEndAt, 'Reopening settings changed the active lock expiry.');
+    log('a second launch reopened settings for the existing Locky instance without interrupting protection');
 
     for (const browser of browsers) {
       const initialBrowserWindowCount = (await waitForOverlay(browser, scopePath, true)).browserWindows.length;
@@ -876,6 +917,10 @@ async function run() {
     if (expiryTimer) clearInterval(expiryTimer);
     fs.writeFileSync(scopePath, '{}');
     await Promise.allSettled(browsers.map(browserClose));
+    if (secondInstance.child?.pid && secondInstance.child.exitCode === null && secondInstance.child.signalCode === null) {
+      try { execFileSync('taskkill.exe', ['/PID', String(secondInstance.child.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }); }
+      catch {}
+    }
     if (appDevTools) appDevTools.connection.close();
     if (appProcess?.pid && appProcess.exitCode === null && appProcess.signalCode === null) {
       try { execFileSync('taskkill.exe', ['/PID', String(appProcess.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }); }

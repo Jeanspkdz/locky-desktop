@@ -12,16 +12,28 @@ internal static class LockyNativeHost
     private const int MaxMessageBytes = 1024 * 1024;
     private const string DefaultPipeName = "locky-desktop";
     private static readonly Encoding Utf8 = new UTF8Encoding(false);
+    private static string testLaunchMarker;
 
     public static int Main(string[] args)
     {
         string appExecutable;
         string appRoot;
-        using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\LockyDesktop\NativeHost"))
+        if (Environment.GetEnvironmentVariable("LOCKY_TEST_MODE") == "1")
         {
-            if (key == null) return Fail("Locky setup is missing. Run pnpm setup:dev.");
-            appExecutable = key.GetValue("AppExecutable") as string;
-            appRoot = key.GetValue("AppRoot") as string;
+            appExecutable = Environment.GetEnvironmentVariable("LOCKY_TEST_APP_EXECUTABLE");
+            appRoot = Environment.GetEnvironmentVariable("LOCKY_TEST_APP_ROOT");
+            testLaunchMarker = Environment.GetEnvironmentVariable("LOCKY_TEST_LAUNCH_MARKER");
+            if (!String.IsNullOrEmpty(testLaunchMarker) && !IsSafeTestMarker(testLaunchMarker))
+                return Fail("Test launch marker contains unsupported characters.");
+        }
+        else
+        {
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\LockyDesktop\NativeHost"))
+            {
+                if (key == null) return Fail("Locky setup is missing. Run pnpm setup:dev.");
+                appExecutable = key.GetValue("AppExecutable") as string;
+                appRoot = key.GetValue("AppRoot") as string;
+            }
         }
 
         if (String.IsNullOrWhiteSpace(appExecutable) || !File.Exists(appExecutable)
@@ -156,7 +168,8 @@ internal static class LockyNativeHost
     {
         ProcessStartInfo start = new ProcessStartInfo();
         start.FileName = appExecutable;
-        start.Arguments = Quote(appRoot) + " --background";
+        start.Arguments = Quote(appRoot) + " --background"
+            + (String.IsNullOrEmpty(testLaunchMarker) ? "" : " --locky-test-launch=" + testLaunchMarker);
         start.WorkingDirectory = appRoot;
         start.UseShellExecute = false;
         start.CreateNoWindow = true;
@@ -197,5 +210,13 @@ internal static class LockyNativeHost
     private static string Quote(string value)
     {
         return "\"" + value.Replace("\"", "\\\"") + "\"";
+    }
+
+    private static bool IsSafeTestMarker(string value)
+    {
+        if (value.Length > 80) return false;
+        foreach (char character in value)
+            if (!Char.IsLetterOrDigit(character) && character != '-' && character != '_') return false;
+        return true;
     }
 }

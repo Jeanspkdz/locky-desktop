@@ -37,6 +37,33 @@ test('the shared repair action closes only Chrome, Brave, and Edge', async () =>
   assert.deepEqual(requests.map(([, args]) => args[1]), ['chrome.exe', 'brave.exe', 'msedge.exe']);
 });
 
+test('Firefox and Opera are not protected, detected, or closed by repair flows', async () => {
+  const requests = [];
+  const processControl = createBrowserProcessControl({
+    execute: async (...args) => { requests.push(args); },
+  });
+
+  assert.deepEqual(processControl.families, ['chrome', 'brave', 'edge']);
+  for (const family of ['firefox', 'opera']) {
+    assert.equal(processControl.hasFamily(family), false);
+    await processControl.closeFamily(family);
+  }
+  assert.deepEqual(requests, []);
+});
+
+test('a watcher failure closes and marks only protected browser families', async () => {
+  const requests = [];
+  const processControl = createBrowserProcessControl({
+    execute: async (...args) => { requests.push(args); },
+  });
+
+  const families = processControl.familiesForWatcherFailure(['chrome', 'firefox', 'opera']);
+  await Promise.all(families.map(family => processControl.closeFamily(family)));
+
+  assert.deepEqual(families, ['chrome', 'brave', 'edge']);
+  assert.deepEqual(requests.map(([, args]) => args[1]), ['chrome.exe', 'brave.exe', 'msedge.exe']);
+});
+
 test('test-scoped repair closes only allowlisted browser PIDs', async () => {
   const requests = [];
   const processControl = createBrowserProcessControl({

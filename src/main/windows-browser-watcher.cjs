@@ -1,13 +1,4 @@
-const BROWSER_PROCESS_GROUPS = Object.freeze({
-  chrome: ['chrome.exe'],
-  brave: ['brave.exe'],
-  edge: ['msedge.exe'],
-  firefox: ['firefox.exe'],
-  opera: ['opera.exe', 'opera_gx.exe'],
-});
-
-const PROCESS_NAMES = new Map(Object.entries(BROWSER_PROCESS_GROUPS)
-  .flatMap(([family, names]) => names.map(name => [name, family])));
+const { familyForProcessName } = require('../domain/protected-browser-families.cjs');
 
 function familyFromTitle(title) {
   const normalizedTitle = title.toLowerCase();
@@ -113,7 +104,7 @@ function createWindowsBrowserWatcher(koffiModule = require('koffi'), { getProces
       if (!process32First(snapshot, entry)) return { processes, families };
       do {
         const image = entry.szExeFile.toLowerCase();
-        const family = PROCESS_NAMES.get(image);
+        const family = familyForProcessName(image);
         const scopedPids = scope === null ? null : scope?.[family];
         if (family && (scope === null || (Array.isArray(scopedPids) && scopedPids.includes(entry.th32ProcessID)))) {
           processes.set(entry.th32ProcessID, family);
@@ -150,4 +141,4 @@ function createWindowsBrowserWatcher(koffiModule = require('koffi'), { getProces
   });
 }
 
-module.exports = { createWindowsBrowserWatcher, familyFromTitle };
+module.exports = { createWindowsBrowserWatcher, familyForProcessName, familyFromTitle };

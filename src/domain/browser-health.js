@@ -1,10 +1,7 @@
-export const BROWSER_PROCESS_GROUPS = Object.freeze({
-  chrome: ['chrome.exe'],
-  brave: ['brave.exe'],
-  edge: ['msedge.exe'],
-  firefox: ['firefox.exe'],
-  opera: ['opera.exe', 'opera_gx.exe'],
-});
+import protectedBrowserConfig from './protected-browser-families.cjs';
+
+export const BROWSER_PROCESS_GROUPS = protectedBrowserConfig.BROWSER_PROCESS_GROUPS;
+export const PROTECTED_BROWSER_FAMILIES = protectedBrowserConfig.PROTECTED_BROWSER_FAMILIES;
 
 export const BROWSER_STARTUP_GRACE_MS = 15_000;
 export const BROWSER_HEARTBEAT_TIMEOUT_MS = 60_000;

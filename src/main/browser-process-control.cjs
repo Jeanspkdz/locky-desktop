@@ -1,12 +1,8 @@
-const BROWSER_PROCESS_GROUPS = Object.freeze({
-  chrome: ['chrome.exe'],
-  brave: ['brave.exe'],
-  edge: ['msedge.exe'],
-  firefox: ['firefox.exe'],
-  opera: ['opera.exe', 'opera_gx.exe'],
-});
-
-const PROTECTED_FAMILIES = Object.freeze(['chrome', 'brave', 'edge']);
+const {
+  BROWSER_PROCESS_GROUPS,
+  PROTECTED_BROWSER_FAMILIES,
+  selectProtectedBrowserFamilies,
+} = require('../domain/protected-browser-families.cjs');
 
 function createBrowserProcessControl({ execute, getProcessIds }) {
   if (typeof execute !== 'function') throw new TypeError('A process executor is required.');
@@ -27,13 +23,17 @@ function createBrowserProcessControl({ execute, getProcessIds }) {
   }
 
   async function closeProtectedBrowsers() {
-    for (const family of PROTECTED_FAMILIES) await closeFamily(family);
+    for (const family of PROTECTED_BROWSER_FAMILIES) await closeFamily(family);
   }
 
   return {
     closeFamily,
     closeProtectedBrowsers,
-    families: Object.freeze(Object.keys(BROWSER_PROCESS_GROUPS)),
+    families: PROTECTED_BROWSER_FAMILIES,
+    familiesForWatcherFailure: lastDetectedFamilies => selectProtectedBrowserFamilies(
+      lastDetectedFamilies ?? [],
+      PROTECTED_BROWSER_FAMILIES,
+    ),
     hasFamily: family => Object.hasOwn(BROWSER_PROCESS_GROUPS, family),
   };
 }

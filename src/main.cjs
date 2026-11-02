@@ -13,6 +13,7 @@ const { fetchTrustedTime } = require('./main/trusted-time.cjs');
 const { createOverlayController } = require('./main/overlay-controller.cjs');
 const { createBrowserProcessControl } = require('./main/browser-process-control.cjs');
 const { createBrowserProcessScopeReader } = require('./main/browser-process-scope.cjs');
+const { selectProtectedBrowserFamilies } = require('./domain/protected-browser-families.cjs');
 const {
   addPendingRule,
   cancelPendingRule,
@@ -176,8 +177,8 @@ async function checkTimers() {
       await handleBrowserWatcherFailure(error);
       return;
     }
-    const { families: detectedFamilies, windows } = snapshot;
-    const browserWindows = windows.map(window => ({
+    const detectedFamilies = selectProtectedBrowserFamilies(snapshot.families ?? []);
+    const browserWindows = snapshot.windows.filter(window => browserProcessControl.hasFamily(window.family)).map(window => ({
       ...window,
       bounds: { x: window.x, y: window.y, width: window.width, height: window.height },
     }));
@@ -249,12 +250,12 @@ async function handleBrowserWatcherFailure(error) {
   if (browserWatcherFailed) return;
   browserWatcherFailed = true;
   console.error('Falló el vigilante de navegadores.', error);
+  const familiesToRepair = browserProcessControl.familiesForWatcherFailure(lastBrowserFamilies);
   if (browserHealthRules.shouldEnforceBrowserIntegration(enforceUnhealthyBrowsers, state.rules)) {
-    const familiesToClose = new Set([...lastBrowserFamilies, ...browserProcessControl.families]);
-    await Promise.all([...familiesToClose].map(closeBrowserFamily));
+    await Promise.all(familiesToRepair.map(closeBrowserFamily));
   }
   const browserHealth = { ...state.browserHealth };
-  for (const family of browserProcessControl.families) {
+  for (const family of familiesToRepair) {
     browserHealth[family] = { status: 'repair', reason: 'watcher' };
   }
   await saveAndPublish({ ...state, browserHealth }).catch(persistError => {
