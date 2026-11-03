@@ -4,6 +4,7 @@ const { findBrowserRule, toBrowserRules } = globalThis.LockyRules;
 const NATIVE_HOST = 'com.locky.desktop';
 const FAIL_CLOSED_RULE_ID = 5001;
 let nativePort;
+let connectionGuardReady = Promise.resolve(false);
 let currentRules = [];
 let requestSequence = 0;
 let stateRequestId = null;
@@ -11,9 +12,11 @@ let stateRulesRevision = null;
 let expectedRulesRevision = null;
 let incomingRules = [];
 let fetchingState = false;
+let stateRequestStartedAt = 0;
 let refreshAfterSync = false;
 let dnrQueue = Promise.resolve();
 const seenAttempts = new Map();
+const pendingNavigations = new Map();
 const STATE_PAGE_SIZE = 500;
 
 function getBrowserFamily() {
@@ -29,11 +32,14 @@ function connectNative() {
   if (nativePort) return nativePort;
   try {
     nativePort = chrome.runtime.connectNative(NATIVE_HOST);
+    const connectedPort = nativePort;
     nativePort.onDisconnect.addListener(() => {
+      if (nativePort !== connectedPort) return;
       nativePort = undefined;
       fetchingState = false;
+      stateRequestStartedAt = 0;
       stateRequestId = null;
-      requireLockyConnection();
+      connectionGuardReady = requireLockyConnection();
       setTimeout(() => { connectNative(); refreshState(); }, 3000);
     });
     nativePort.onMessage.addListener(message => {
@@ -45,11 +51,11 @@ function connectNative() {
       }
       void handleStatePage(message);
     });
-    requireLockyConnection();
+    connectionGuardReady = requireLockyConnection();
     return nativePort;
   } catch {
     nativePort = undefined;
-    requireLockyConnection();
+    connectionGuardReady = requireLockyConnection();
     setTimeout(() => { connectNative(); refreshState(); }, 3000);
     return undefined;
   }
@@ -71,7 +77,7 @@ function failClosedRule() {
 }
 
 function requireLockyConnection() {
-  void enqueueDnrUpdate(async () => {
+  return enqueueDnrUpdate(async () => {
     const rule = failClosedRule();
     if (typeof chrome.declarativeNetRequest.updateSessionRules === 'function') {
       const existing = await chrome.declarativeNetRequest.getSessionRules();
@@ -84,7 +90,7 @@ function requireLockyConnection() {
     if (!existing.some(item => item.id === rule.id)) {
       await chrome.declarativeNetRequest.updateDynamicRules({ addRules: [rule] });
     }
-  }).catch(() => {});
+  }).then(() => true, () => false);
 }
 
 function clearLockyConnectionGuard() {
@@ -125,20 +131,29 @@ async function syncDynamicRules() {
 function requestStatePage(offset, limit) {
   if (!nativePort) return;
   stateRequestId = ++requestSequence;
+  stateRequestStartedAt = Date.now();
   nativePort.postMessage({ id: stateRequestId, type: 'getState', offset, limit });
 }
 
 function finishStateSync() {
   fetchingState = false;
+  stateRequestStartedAt = 0;
   stateRequestId = null;
   if (refreshAfterSync) {
     refreshAfterSync = false;
     refreshState();
+    return;
   }
+  flushPendingNavigations();
 }
 
 async function handleStatePage(message) {
   if (message.limit === 0) {
+    if (!(await connectionGuardReady)) {
+      reportHealthFailure('Locky no pudo activar el bloqueo de emergencia.');
+      return;
+    }
+    send('connected', { browserFamily: getBrowserFamily() });
     if (stateRulesRevision === message.rulesRevision && currentRules.length === message.totalRules) {
       await verifyDynamicRules();
       finishStateSync();
@@ -205,8 +220,19 @@ function stableJson(value) {
 function refreshState() {
   if (!nativePort && !connectNative()) return;
   if (fetchingState) {
+    if (Date.now() - stateRequestStartedAt > 15_000) {
+      const stalledPort = nativePort;
+      nativePort = undefined;
+      fetchingState = false;
+      stateRequestId = null;
+      stateRequestStartedAt = 0;
+      connectionGuardReady = requireLockyConnection();
+      stalledPort?.disconnect();
+      if (!connectNative()) return;
+    } else {
     refreshAfterSync = true;
     return;
+    }
   }
   fetchingState = true;
   expectedRulesRevision = null;
@@ -214,8 +240,39 @@ function refreshState() {
   requestStatePage(0, 0);
 }
 
+function ensureRefreshAlarm() {
+  try {
+    Promise.resolve(chrome.alarms.create('locky-refresh', { periodInMinutes: 0.5 }))
+      .catch(error => reportHealthFailure(error.message));
+  } catch (error) {
+    reportHealthFailure(error.message);
+  }
+}
+
 function onNavigation(details) {
   if (details.frameId !== 0) return;
+  if (stateRulesRevision === null) {
+    const key = `${details.tabId}:${details.url}`;
+    pendingNavigations.set(key, details);
+    // Browser startup can emit several navigations before the first state page
+    // arrives. Keep this bounded in case the native host stays unavailable.
+    while (pendingNavigations.size > 200) {
+      pendingNavigations.delete(pendingNavigations.keys().next().value);
+    }
+    if (!fetchingState) refreshState();
+    return;
+  }
+  reportNavigation(details);
+}
+
+function flushPendingNavigations() {
+  if (stateRulesRevision === null || fetchingState || pendingNavigations.size === 0) return;
+  const pending = [...pendingNavigations.values()];
+  pendingNavigations.clear();
+  for (const details of pending) reportNavigation(details);
+}
+
+function reportNavigation(details) {
   const matched = findBrowserRule(details.url, currentRules);
   if (!matched) return;
   const key = `${details.tabId}:${details.url}`;
@@ -228,7 +285,6 @@ function onNavigation(details) {
 chrome.webNavigation.onBeforeNavigate.addListener(onNavigation);
 chrome.webNavigation.onErrorOccurred.addListener(onNavigation);
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create('locky-refresh', { periodInMinutes: 0.5 });
   refreshState();
 });
 chrome.runtime.onStartup.addListener(refreshState);
@@ -236,5 +292,6 @@ chrome.alarms.onAlarm.addListener(alarm => {
   if (alarm.name === 'locky-refresh') refreshState();
 });
 
+ensureRefreshAlarm();
 connectNative();
 refreshState();

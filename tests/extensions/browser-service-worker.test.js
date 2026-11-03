@@ -16,50 +16,87 @@ function event() {
   };
 }
 
-async function startExtension({ browserFamily, rules, userAgent, brave = false }) {
+async function flushMicrotasks() {
+  for (let index = 0; index < 8; index += 1) await Promise.resolve();
+}
+
+async function startExtension({
+  browserFamily, rules, userAgent, brave = false, startupOnLoad = false,
+  refreshAlarmExists = false, deferStateReplies = false, awaitSync = true, nativeUnavailable = false,
+}) {
   const nativeMessages = [];
   const dynamicRules = [];
   const sessionRules = [];
+  const alarmsCreated = [];
+  const scheduledAlarms = new Map();
+  if (refreshAlarmExists) {
+    scheduledAlarms.set('locky-refresh', { name: 'locky-refresh', periodInMinutes: 0.5 });
+  }
+  const guardAtConnectionReports = [];
+  const deferredStateRequests = [];
+  const timers = [];
+  let now = Date.now();
+  let nativeAvailable = !nativeUnavailable;
+  let nativeConnectCount = 0;
   let ready;
   const updated = new Promise(resolve => { ready = resolve; });
+  function respondToStateRequest(message) {
+    const reply = message.limit === 0
+      ? { rules: [], totalRules: rules.length }
+      : { rules, totalRules: rules.length };
+    queueMicrotask(() => nativePort.onMessage.emit({
+      id: message.id,
+      ok: true,
+      type: 'state',
+      offset: message.offset,
+      limit: message.limit,
+      rulesRevision: 1,
+      ...reply,
+    }));
+  }
   const nativePort = {
     onDisconnect: event(),
     onMessage: event(),
+    disconnect() { this.onDisconnect.emit(); },
     postMessage(message) {
       nativeMessages.push(message);
+      if (message.type === 'connected') {
+        guardAtConnectionReports.push(sessionRules.some(rule => rule.id === 5001));
+      }
       if (message.type !== 'getState') return;
-      const reply = message.limit === 0
-        ? { rules: [], totalRules: rules.length }
-        : { rules, totalRules: rules.length };
-      queueMicrotask(() => nativePort.onMessage.emit({
-        id: message.id,
-        ok: true,
-        type: 'state',
-        offset: message.offset,
-        limit: message.limit,
-        rulesRevision: 1,
-        ...reply,
-      }));
+      if (deferStateReplies) deferredStateRequests.push(message);
+      else respondToStateRequest(message);
     },
   };
   const context = {
     URL,
     Map,
     Set,
-    Date,
+    Date: class extends Date { static now() { return now; } },
     JSON,
     Promise,
     queueMicrotask,
-    setTimeout,
+    setTimeout(callback, delayMs) { timers.push({ callback, delayMs }); return timers.length; },
     navigator: { userAgent, ...(brave ? { brave: {} } : {}) },
   };
   const browserApi = {
       runtime: {
-        connectNative: () => nativePort,
+        connectNative() {
+          nativeConnectCount += 1;
+          if (!nativeAvailable) throw new Error('Locky is not running yet.');
+          return nativePort;
+        },
         onInstalled: event(),
         onStartup: event(),
       },
-      alarms: { create() {}, onAlarm: event() },
+      alarms: {
+        async get(name) { return scheduledAlarms.get(name); },
+        create(name, alarmInfo) {
+          alarmsCreated.push({ name, alarmInfo });
+          scheduledAlarms.set(name, { name, ...alarmInfo });
+        },
+        onAlarm: event(),
+      },
       declarativeNetRequest: {
         async getDynamicRules() { return dynamicRules; },
         async getSessionRules() { return sessionRules; },
@@ -95,14 +132,38 @@ async function startExtension({ browserFamily, rules, userAgent, brave = false }
   }
   const source = await readFile(path.join(extensionDirectory, 'service-worker.js'), 'utf8');
   vm.runInContext(source, vmContext);
-  await updated;
-  await new Promise(resolve => setTimeout(resolve, 0));
+  if (startupOnLoad) browserApi.runtime.onStartup.emit();
+  async function waitForStateSync() {
+    await updated;
+    await new Promise(resolve => setTimeout(resolve, 0));
+  }
+  async function replyToNextStateRequest() {
+    const request = deferredStateRequests.shift();
+    assert.ok(request, 'a deferred getState request is waiting for a reply');
+    respondToStateRequest(request);
+    await new Promise(resolve => setTimeout(resolve, 0));
+  }
+  if (awaitSync) await waitForStateSync();
   return {
     nativeMessages,
     dynamicRules,
     sessionRules,
+    alarmsCreated,
+    guardAtConnectionReports,
     webNavigation: browserApi.webNavigation,
+    waitForSync: waitForStateSync,
+    replyToNextStateRequest,
     disconnect() { nativePort.onDisconnect.emit(); },
+    setNativeAvailable(value) { nativeAvailable = value; },
+    getNativeConnectCount() { return nativeConnectCount; },
+    runNextTimeout() {
+      const timer = timers.shift();
+      assert.ok(timer, 'a native reconnect retry is scheduled');
+      timer.callback();
+      return timer.delayMs;
+    },
+    fireRefreshAlarm() { browserApi.alarms.onAlarm.emit({ name: 'locky-refresh' }); },
+    advanceTime(ms) { now += ms; },
   };
 }
 
@@ -133,6 +194,149 @@ test('Chrome worker syncs a DNR block rule and reports blocked navigation', asyn
   });
   assertBlockedNavigation(extension);
   assert.equal(extension.nativeMessages.some(message => message.type === 'health' && message.browserFamily === 'chrome' && message.ok), true);
+});
+
+test('Chromium reports a blocked navigation that arrives before its first state sync', async () => {
+  const extension = await startExtension({
+    browserFamily: 'chrome',
+    rules: blockedRule,
+    userAgent: 'Mozilla/5.0 Chrome/155.0.0.0 Safari/537.36',
+    deferStateReplies: true,
+    awaitSync: false,
+  });
+
+  const navigation = { frameId: 0, tabId: 8, url: 'https://blocked.example/path' };
+  extension.webNavigation.onBeforeNavigate.emit(navigation);
+  assert.equal(extension.nativeMessages.some(message => message.type === 'blocked'), false);
+
+  await extension.replyToNextStateRequest();
+  assert.equal(extension.nativeMessages.some(message => message.type === 'blocked'), false);
+  await extension.replyToNextStateRequest();
+  await extension.waitForSync();
+
+  assert.equal(extension.nativeMessages.filter(message => (
+    message.type === 'blocked' && message.url === navigation.url
+  )).length, 1);
+  extension.webNavigation.onErrorOccurred.emit(navigation);
+  assert.equal(extension.nativeMessages.filter(message => (
+    message.type === 'blocked' && message.url === navigation.url
+  )).length, 1, 'the matching onErrorOccurred event is deduplicated');
+});
+
+test('Chromium restores its heartbeat alarm when an installed extension starts with the browser', async () => {
+  const extension = await startExtension({
+    browserFamily: 'chrome',
+    rules: blockedRule,
+    userAgent: 'Mozilla/5.0 Chrome/155.0.0.0 Safari/537.36',
+    startupOnLoad: true,
+  });
+
+  assert.deepEqual(JSON.parse(JSON.stringify(extension.alarmsCreated)), [{
+    name: 'locky-refresh',
+    alarmInfo: { periodInMinutes: 0.5 },
+  }]);
+});
+
+test('Chromium reschedules an existing heartbeat alarm when its worker starts', async () => {
+  const extension = await startExtension({
+    browserFamily: 'chrome',
+    rules: blockedRule,
+    userAgent: 'Mozilla/5.0 Chrome/155.0.0.0 Safari/537.36',
+    refreshAlarmExists: true,
+  });
+
+  assert.deepEqual(JSON.parse(JSON.stringify(extension.alarmsCreated)), [{
+    name: 'locky-refresh',
+    alarmInfo: { periodInMinutes: 0.5 },
+  }]);
+});
+
+test('Chromium reports its native connection while the fail-closed rule is active', async () => {
+  const extension = await startExtension({
+    browserFamily: 'chrome', rules: blockedRule,
+    userAgent: 'Mozilla/5.0 Chrome/155.0.0.0 Safari/537.36',
+  });
+
+  assert.deepEqual(extension.guardAtConnectionReports, [true]);
+  assert.equal(extension.nativeMessages.some(message => (
+    message.type === 'connected' && message.browserFamily === 'chrome'
+  )), true);
+});
+
+test('Brave connects when Locky starts after the extension and keeps fail-closed protection meanwhile', async () => {
+  const extension = await startExtension({
+    browserFamily: 'brave',
+    brave: true,
+    rules: blockedRule,
+    userAgent: 'Mozilla/5.0 Chrome/155.0.0.0 Safari/537.36',
+    nativeUnavailable: true,
+    awaitSync: false,
+  });
+  await flushMicrotasks();
+  assert.equal(extension.nativeMessages.some(message => message.type === 'getState'), false);
+  assert.equal(extension.sessionRules.some(rule => rule.id === 5001), true);
+
+  extension.setNativeAvailable(true);
+  assert.equal(extension.runNextTimeout(), 3000);
+  await extension.waitForSync();
+
+  assert.ok(extension.getNativeConnectCount() >= 3);
+  assert.equal(extension.nativeMessages.some(message => message.type === 'connected' && message.browserFamily === 'brave'), true);
+  assert.equal(extension.nativeMessages.some(message => message.type === 'health' && message.browserFamily === 'brave' && message.ok), true);
+  assert.equal(extension.sessionRules.some(rule => rule.id === 5001), false);
+});
+
+test('Brave reconnects and resynchronizes after Locky restarts with the browser open', async () => {
+  const extension = await startExtension({
+    browserFamily: 'brave',
+    brave: true,
+    rules: blockedRule,
+    userAgent: 'Mozilla/5.0 Chrome/155.0.0.0 Safari/537.36',
+  });
+  const connectionsBeforeRestart = extension.nativeMessages.filter(message => message.type === 'connected').length;
+
+  extension.disconnect();
+  await flushMicrotasks();
+  assert.equal(extension.sessionRules.some(rule => rule.id === 5001), true);
+  assert.equal(extension.runNextTimeout(), 3000);
+  await extension.waitForSync();
+
+  assert.ok(extension.nativeMessages.filter(message => message.type === 'connected').length > connectionsBeforeRestart);
+  assert.equal(extension.nativeMessages.some(message => message.type === 'health' && message.browserFamily === 'brave' && message.ok), true);
+  assert.equal(extension.sessionRules.some(rule => rule.id === 5001), false);
+});
+
+test('Brave refreshes native state after a service-worker wake alarm', async () => {
+  const extension = await startExtension({
+    browserFamily: 'brave',
+    brave: true,
+    rules: blockedRule,
+    userAgent: 'Mozilla/5.0 Chrome/155.0.0.0 Safari/537.36',
+  });
+  const stateRequestsBeforeWake = extension.nativeMessages.filter(message => message.type === 'getState').length;
+
+  extension.fireRefreshAlarm();
+  await extension.waitForSync();
+
+  assert.ok(extension.nativeMessages.filter(message => message.type === 'getState').length > stateRequestsBeforeWake);
+  assert.equal(extension.nativeMessages.some(message => message.type === 'health' && message.browserFamily === 'brave' && message.ok), true);
+});
+
+test('Brave reconnects when a native state request stops answering', async () => {
+  const extension = await startExtension({
+    browserFamily: 'brave', brave: true,
+    rules: blockedRule,
+    userAgent: 'Mozilla/5.0 Chrome/155.0.0.0 Safari/537.36',
+    deferStateReplies: true,
+    awaitSync: false,
+  });
+  const connectionsBefore = extension.getNativeConnectCount();
+  extension.advanceTime(16_000);
+  extension.fireRefreshAlarm();
+  await flushMicrotasks();
+  assert.ok(extension.getNativeConnectCount() > connectionsBefore);
+  assert.ok(extension.nativeMessages.filter(message => message.type === 'getState').length >= 2);
+  assert.ok(extension.sessionRules.some(rule => rule.id === 5001));
 });
 
 test('Chromium worker identifies Brave and Edge while syncing the same rule contract', async t => {
