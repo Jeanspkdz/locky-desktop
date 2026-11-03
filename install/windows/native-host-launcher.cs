@@ -12,6 +12,7 @@ internal static class LockyNativeHost
     private const int MaxMessageBytes = 1024 * 1024;
     private const string DefaultPipeName = "locky-desktop";
     private static readonly Encoding Utf8 = new UTF8Encoding(false);
+    private static volatile bool desktopPipeVerified;
     private static string testLaunchMarker;
 
     public static int Main(string[] args)
@@ -62,7 +63,9 @@ internal static class LockyNativeHost
             string response;
             try
             {
-                response = SendToDesktop(Utf8.GetString(message), appExecutable, appRoot, pipeName);
+                string request = Utf8.GetString(message);
+                DelayTestStateRequest(request);
+                response = SendToDesktop(request, appExecutable, appRoot, pipeName);
             }
             catch (Exception error)
             {
@@ -82,6 +85,8 @@ internal static class LockyNativeHost
 
     private static void MonitorDesktopPipe(string pipeName)
     {
+        DateTime firstConnectionDeadline = DateTime.UtcNow.AddSeconds(15);
+        int consecutiveFailures = 0;
         while (true)
         {
             Thread.Sleep(3000);
@@ -100,11 +105,23 @@ internal static class LockyNativeHost
                             || response.Result.IndexOf("\"ok\":true", StringComparison.Ordinal) < 0
                             || response.Result.IndexOf("\"type\":\"state\"", StringComparison.Ordinal) < 0)
                             throw new IOException("Locky Desktop did not answer the health check.");
+                        desktopPipeVerified = true;
+                        consecutiveFailures = 0;
                     }
                 }
             }
             catch
             {
+                if (!desktopPipeVerified && DateTime.UtcNow < firstConnectionDeadline)
+                {
+                    Trace("Waiting for Locky Desktop to finish startup before checking the pipe again.");
+                    continue;
+                }
+                if (++consecutiveFailures < 3)
+                {
+                    Trace("Desktop pipe health check failed; retrying before closing the native host.");
+                    continue;
+                }
                 Trace("Desktop pipe is unavailable; closing native host so the browser extension can fail closed and reconnect.");
                 Environment.Exit(0);
                 return;
@@ -115,7 +132,7 @@ internal static class LockyNativeHost
     private static string SendToDesktop(string message, string appExecutable, string appRoot, string pipeName)
     {
         Exception lastError = null;
-        for (int attempt = 0; attempt < 40; attempt++)
+        for (int attempt = 0; attempt < 20; attempt++)
         {
             using (NamedPipeClientStream pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut))
             {
@@ -132,6 +149,7 @@ internal static class LockyNativeHost
                         string response = reader.ReadLine();
                         if (response == null) throw new IOException("Locky Desktop closed the local connection.");
                         Trace("Received desktop response.");
+                        desktopPipeVerified = true;
                         return response;
                     }
                 }
@@ -146,6 +164,19 @@ internal static class LockyNativeHost
         }
 
         throw new IOException("Locky Desktop did not answer the browser request.", lastError);
+    }
+
+    private static void DelayTestStateRequest(string message)
+    {
+        if (Environment.GetEnvironmentVariable("LOCKY_TEST_MODE") != "1"
+            || message.IndexOf("\"type\":\"getState\"", StringComparison.Ordinal) < 0
+            || message.IndexOf("\"limit\":0", StringComparison.Ordinal) < 0)
+            return;
+
+        int delayMs;
+        if (Int32.TryParse(Environment.GetEnvironmentVariable("LOCKY_TEST_STATE_DELAY_MS"), out delayMs)
+            && delayMs > 0)
+            Thread.Sleep(Math.Min(delayMs, 15000));
     }
 
     private static string GetPipeName()

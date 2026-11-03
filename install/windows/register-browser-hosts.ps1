@@ -5,13 +5,15 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $hostName = 'com.locky.desktop'
-$manifestDirectory = Join-Path $env:LOCALAPPDATA 'LockyDesktop'
+$manifestDirectory = $PSScriptRoot
+$localToolsDirectory = Join-Path $env:LOCALAPPDATA 'LockyDesktop'
 $manifestPath = Join-Path $manifestDirectory "$hostName.json"
 $chromiumExtensionId = 'pgphggplmacpiglkndjhpaojeeoomfdn'
 $firefoxExtensionId = 'locky-desktop@locky.local'
 $resolvedAppExecutable = (Resolve-Path -LiteralPath $AppExecutable).Path
 $resolvedAppRoot = (Resolve-Path -LiteralPath $AppRoot).Path
 New-Item -ItemType Directory -Path $manifestDirectory -Force | Out-Null
+New-Item -ItemType Directory -Path $localToolsDirectory -Force | Out-Null
 
 $launcherSourcePath = Join-Path $PSScriptRoot 'native-host-launcher.cs'
 $launcherSource = Get-Content -LiteralPath $launcherSourcePath -Raw
@@ -27,7 +29,7 @@ if (-not (Test-Path -LiteralPath $launcherPath)) {
   if ($LASTEXITCODE -ne 0) { throw 'No se pudo compilar el host de mensajería nativa de Locky.' }
 }
 $windowMonitorSourcePath = Join-Path $PSScriptRoot 'browser-window-monitor.cs'
-$windowMonitorPath = Join-Path $manifestDirectory 'browser-window-monitor.exe'
+$windowMonitorPath = Join-Path $localToolsDirectory 'browser-window-monitor.exe'
 & $compilerPath /nologo /target:exe "/out:$windowMonitorPath" $windowMonitorSourcePath
 if ($LASTEXITCODE -ne 0) { throw 'No se pudo compilar el detector de ventanas de navegador de Locky.' }
 
@@ -67,10 +69,18 @@ foreach ($relativeKey in $registrations) {
   Set-Item -LiteralPath $keyPath -Value $(if ($relativeKey -eq 'Software\Mozilla\NativeMessagingHosts') { $firefoxManifestPath } else { $manifestPath })
 }
 
+$startupTaskName = 'LockyDesktop'
+$startupUser = "$env:USERDOMAIN\$env:USERNAME"
+$startupAction = New-ScheduledTaskAction -Execute $resolvedAppExecutable -Argument ('"{0}" --background' -f $resolvedAppRoot) -WorkingDirectory $resolvedAppRoot
+$startupTrigger = New-ScheduledTaskTrigger -AtLogOn -User $startupUser
+$startupTrigger.Delay = 'PT15S'
+$startupSettings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -MultipleInstances IgnoreNew -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit ([TimeSpan]::Zero)
+$startupPrincipal = New-ScheduledTaskPrincipal -UserId $startupUser -LogonType Interactive -RunLevel Limited
+Register-ScheduledTask -TaskName $startupTaskName -Action $startupAction -Trigger $startupTrigger -Settings $startupSettings -Principal $startupPrincipal -Description 'Start Locky Desktop after the current user signs in.' -Force | Out-Null
+
+# The delayed logon task replaces the legacy Run entry so Windows cannot launch two copies.
 $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
-New-Item -Path $runKey -Force | Out-Null
-$startupCommand = '"{0}" "{1}" --background' -f $resolvedAppExecutable, $resolvedAppRoot
-New-ItemProperty -LiteralPath $runKey -Name 'LockyDesktop' -Value $startupCommand -PropertyType String -Force | Out-Null
+Remove-ItemProperty -LiteralPath $runKey -Name 'LockyDesktop' -ErrorAction SilentlyContinue
 
 $chromiumPolicies = @(
   @{ Browser = 'Google\Chrome'; Name = 'IncognitoModeAvailability' },
@@ -87,7 +97,7 @@ $firefoxPolicyPath = 'HKCU:\Software\Policies\Mozilla\Firefox'
 New-Item -Path $firefoxPolicyPath -Force | Out-Null
 New-ItemProperty -LiteralPath $firefoxPolicyPath -Name 'PrivateBrowsingModeAvailability' -Value 1 -PropertyType DWord -Force | Out-Null
 
-Write-Output 'Native messaging and private-browsing policies are configured for Chrome, Brave, Edge, and Firefox.'
+Write-Output "Native messaging, the $startupTaskName logon task, and private-browsing policies are configured for Chrome, Brave, Edge, and Firefox."
 Write-Output 'Install the unpacked Chromium extension from extensions/chromium in Chrome, Brave, and Edge.'
 Write-Output 'Firefox requires loading extensions/firefox/manifest.json as a temporary add-on from about:debugging after each browser restart.'
 Write-Output 'Opera is not configured or declared protected.'

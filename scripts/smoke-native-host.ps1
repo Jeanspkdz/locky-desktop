@@ -1,6 +1,7 @@
 $ErrorActionPreference = 'Stop'
-$manifestPath = Join-Path $env:LOCALAPPDATA 'LockyDesktop/com.locky.desktop.json'
-if (-not (Test-Path -LiteralPath $manifestPath)) {
+$registrationKey = 'HKCU:\Software\Google\Chrome\NativeMessagingHosts\com.locky.desktop'
+$manifestPath = if (Test-Path -LiteralPath $registrationKey) { (Get-Item -LiteralPath $registrationKey).GetValue('') }
+if ([string]::IsNullOrWhiteSpace($manifestPath) -or -not (Test-Path -LiteralPath $manifestPath)) {
   throw 'Native host is not registered. Run pnpm setup:dev first.'
 }
 

@@ -23,6 +23,7 @@ $requiredPackageFiles = @(
   'resources/app/src/main.cjs',
   'resources/locky/installed.flag',
   'resources/locky/icon.ico',
+  'resources/locky/locky-brand.ico',
   'resources/locky/native-host-launcher.cs',
   'resources/locky/register-browser-hosts.ps1'
 )
@@ -53,20 +54,91 @@ $appExecutable = Join-Path $installRoot 'Locky Desktop.exe'
 $appRoot = Join-Path $installRoot 'resources/app'
 $registrationScript = Join-Path $installRoot 'resources/locky/register-browser-hosts.ps1'
 
-$runningCopies = Get-CimInstance Win32_Process | Where-Object {
-  $_.ExecutablePath -and [System.StringComparer]::OrdinalIgnoreCase.Equals($_.ExecutablePath, $appExecutable)
-}
-foreach ($process in $runningCopies) {
-  Stop-Process -Id $process.ProcessId -Force -ErrorAction SilentlyContinue
+$nativeManifestPaths = @(
+  (Join-Path $env:LOCALAPPDATA 'LockyDesktop/com.locky.desktop.json'),
+  (Join-Path $env:LOCALAPPDATA 'LockyDesktop/com.locky.desktop-firefox.json'),
+  (Join-Path $installRoot 'resources/locky/com.locky.desktop.json'),
+  (Join-Path $installRoot 'resources/locky/com.locky.desktop-firefox.json')
+)
+$stashedManifests = [System.Collections.Generic.List[object]]::new()
+$registrationCompleted = $false
+try {
+  foreach ($manifestPath in $nativeManifestPaths) {
+    if (-not (Test-Path -LiteralPath $manifestPath)) { continue }
+    $disabledPath = "$manifestPath.install-$([Guid]::NewGuid().ToString('N'))"
+    Move-Item -LiteralPath $manifestPath -Destination $disabledPath
+    $stashedManifests.Add([pscustomobject]@{ Original = $manifestPath; Disabled = $disabledPath })
+  }
+
+  $nativeHosts = @(Get-Process -Name 'locky-native-host*' -ErrorAction SilentlyContinue)
+  foreach ($hostProcess in $nativeHosts) {
+    Stop-Process -Id $hostProcess.Id -Force -ErrorAction SilentlyContinue
+  }
+  $hostStopDeadline = (Get-Date).AddSeconds(15)
+  do {
+    $nativeHosts = @(Get-Process -Name 'locky-native-host*' -ErrorAction SilentlyContinue)
+    if ($nativeHosts.Count -eq 0) { break }
+    Start-Sleep -Milliseconds 250
+  } while ((Get-Date) -lt $hostStopDeadline)
+  if ($nativeHosts.Count -gt 0) {
+    throw 'El host nativo sigue ejecutándose; no se copiarán archivos durante la actualización.'
+  }
+
+  $processName = [System.IO.Path]::GetFileNameWithoutExtension($appExecutable)
+  $runningCopies = @(Get-Process -Name $processName -ErrorAction SilentlyContinue)
+  foreach ($process in $runningCopies) {
+    Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+  }
+  $stopDeadline = (Get-Date).AddSeconds(15)
+  do {
+    $runningCopies = @(Get-Process -Name $processName -ErrorAction SilentlyContinue)
+    if ($runningCopies.Count -eq 0) { break }
+    Start-Sleep -Milliseconds 250
+  } while ((Get-Date) -lt $stopDeadline)
+  if ($runningCopies.Count -gt 0) {
+    throw 'Locky sigue ejecutándose; no se copiarán archivos sobre la app abierta.'
+  }
+  Start-Sleep -Milliseconds 500
+
+  New-Item -ItemType Directory -Path $installRoot -Force | Out-Null
+  Get-ChildItem -LiteralPath $packageRoot -Force | Copy-Item -Destination $installRoot -Recurse -Force
+
+  & $registrationScript -AppExecutable $appExecutable -AppRoot $appRoot
+
+  $desktopShortcut = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Locky Desktop.lnk'
+  if (Test-Path -LiteralPath $desktopShortcut) {
+    $shortcutShell = New-Object -ComObject WScript.Shell
+    $shortcut = $shortcutShell.CreateShortcut($desktopShortcut)
+    $shortcut.TargetPath = $appExecutable
+    $shortcut.Arguments = '"{0}"' -f $appRoot
+    $shortcut.WorkingDirectory = $installRoot
+    $shortcut.IconLocation = Join-Path $installRoot 'resources/locky/locky-brand.ico'
+    $shortcut.Description = 'Locky Desktop'
+    $shortcut.Save()
+  }
+
+  $registrationCompleted = $true
+} finally {
+  foreach ($manifest in $stashedManifests) {
+    if ($registrationCompleted) {
+      Remove-Item -LiteralPath $manifest.Disabled -Force -ErrorAction SilentlyContinue
+      continue
+    }
+    if (Test-Path -LiteralPath $manifest.Original) {
+      Remove-Item -LiteralPath $manifest.Original -Force -ErrorAction SilentlyContinue
+    }
+    Move-Item -LiteralPath $manifest.Disabled -Destination $manifest.Original -ErrorAction SilentlyContinue
+  }
 }
 
-New-Item -ItemType Directory -Path $installRoot -Force | Out-Null
-Get-ChildItem -LiteralPath $packageRoot -Force | Copy-Item -Destination $installRoot -Recurse -Force
-
-& $registrationScript -AppExecutable $appExecutable -AppRoot $appRoot
-Start-Process -FilePath $appExecutable -ArgumentList "`"$appRoot`"" -WorkingDirectory $installRoot
+$explorerPath = Join-Path $env:WINDIR 'explorer.exe'
+$launchArguments = '"{0}" "{1}"' -f $appExecutable, $appRoot
+Start-Process -FilePath $explorerPath -ArgumentList $launchArguments -WorkingDirectory $installRoot -WindowStyle Hidden
 
 Write-Output "Locky quedó instalado en: $installRoot"
-Write-Output 'Carga extensions/chromium como complemento desempaquetado en Chrome, Brave y Edge.'
-Write-Output 'Carga resources/locky/firefox/manifest.json como complemento temporal en Firefox; vuelve a cargarlo después de reiniciar Firefox.'
+Write-Output 'Locky se inició desde Explorer como usuario normal para mantener el acceso al host nativo de los navegadores.'
+$chromiumExtensionPath = Join-Path $installRoot 'resources/locky/chromium'
+$firefoxManifestPath = Join-Path $installRoot 'resources/locky/firefox/manifest.json'
+Write-Output "Carga la extensión Chromium sin empaquetar desde: $chromiumExtensionPath"
+Write-Output "Carga $firefoxManifestPath como complemento temporal en Firefox; vuelve a cargarlo después de reiniciar Firefox."
 Write-Output 'Para reparar la integración, vuelve a ejecutar este instalador como administrador.'

@@ -62,7 +62,8 @@ New-Item -ItemType Directory -Path $outputPath -Force | Out-Null
 Get-ChildItem -LiteralPath $electronDist | Copy-Item -Destination $outputPath -Recurse
 Rename-Item -LiteralPath (Join-Path $outputPath 'electron.exe') -NewName 'Locky Desktop.exe'
 & (Join-Path $PSScriptRoot 'set-exe-icon.ps1') -Executable (Join-Path $outputPath 'Locky Desktop.exe') -Icon (Join-Path $projectRoot 'assets/locky.ico')
-New-Item -ItemType Directory -Path $appPath, $lockyPath -Force | Out-Null
+$appAssetsPath = Join-Path $appPath 'assets'
+New-Item -ItemType Directory -Path $appPath, $lockyPath, $appAssetsPath -Force | Out-Null
 
 $appKoffiPath = Join-Path $appNodeModules 'koffi'
 $appKoffiNativePath = Join-Path $appNodeModules "@koromix/$nativePackageName"
@@ -72,8 +73,10 @@ Copy-Item -LiteralPath $nativePackagePath -Destination $appKoffiNativePath -Recu
 
 Copy-Item -LiteralPath (Join-Path $projectRoot 'src') -Destination $appPath -Recurse
 Copy-Item -LiteralPath (Join-Path $projectRoot 'package.json') -Destination $appPath
+Copy-Item -LiteralPath (Join-Path $projectRoot 'assets/locky.svg') -Destination (Join-Path $appAssetsPath 'locky.svg')
 Copy-Item -LiteralPath (Join-Path $projectRoot 'assets/locky.png') -Destination (Join-Path $lockyPath 'icon.png')
 Copy-Item -LiteralPath (Join-Path $projectRoot 'assets/locky.ico') -Destination (Join-Path $lockyPath 'icon.ico')
+Copy-Item -LiteralPath (Join-Path $projectRoot 'assets/locky.ico') -Destination (Join-Path $lockyPath 'locky-brand.ico')
 Copy-Item -LiteralPath (Join-Path $projectRoot 'extensions/chromium') -Destination (Join-Path $lockyPath 'chromium') -Recurse
 Copy-Item -LiteralPath (Join-Path $projectRoot 'extensions/firefox') -Destination (Join-Path $lockyPath 'firefox') -Recurse
 Copy-Item -LiteralPath (Join-Path $projectRoot 'install/windows/register-browser-hosts.ps1') -Destination $lockyPath

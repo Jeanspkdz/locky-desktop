@@ -6,3 +6,5 @@ npm-debug.log*
 pnpm-debug.log*
 *.tmp
 locky-state.json
+install/windows/com.locky.desktop*.json
+install/windows/locky-native-host-*.exe
