@@ -56,5 +56,4 @@ La simulación de un intento bloqueado en el panel es una herramienta de desarro
 
 - [Descripción del producto](../PRODUCT.md)
 - [Arquitectura](arquitectura.md)
-- [Instalación en Windows](../install/windows/README.md)
 - [Glosario](../GLOSSARY.md)

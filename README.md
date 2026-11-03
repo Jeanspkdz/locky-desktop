@@ -24,4 +24,3 @@ Run `pnpm smoke:native-host` to check the native host connection, or `pnpm test`
 
 - [Product description and scope](docs/descripcion-de-locky-desktop.md)
 - [Architecture](docs/arquitectura.md)
-- [Windows setup and packaging](install/windows/README.md)
