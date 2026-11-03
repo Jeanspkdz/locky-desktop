@@ -1,4 +1,4 @@
-# Bloqueo de navegación — implementation map
+# Navigation Blocking — Implementation Map
 
 ## Notes
 

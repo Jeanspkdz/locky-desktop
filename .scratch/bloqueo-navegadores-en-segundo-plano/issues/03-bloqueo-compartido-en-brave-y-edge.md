@@ -1,17 +1,17 @@
-# 03: Bloqueo compartido en Brave y Edge
+# 03: Shared Lock in Brave and Edge
 
-**What to build:** Un intento prohibido en Chrome, Brave o Edge activa un único bloqueo de navegadores que cubre todas las ventanas abiertas de los tres con el mismo tiempo restante.
+**What to build:** A prohibited attempt in Chrome, Brave, or Edge starts one shared browser lock that covers all open windows in all three browsers with the same remaining time.
 
-**Blocked by:** 02: Primer bloqueo sobre Chrome.
+**Blocked by:** 02: First Lock Over Chrome.
 
 **Status:** resolved
 
-- [ ] Un intento prohibido en Brave o Edge impide cargar la página y activa el mismo bloqueo que en Chrome.
-- [ ] Todas las ventanas abiertas de Chrome, Brave y Edge muestran la página de bloqueo, incluidas ventanas nuevas durante el período.
-- [ ] El tiempo restante es compartido y un intento adicional no crea otro período ni reinicia el actual.
-- [ ] La configuración interna y otras pestañas de un navegador cubierto quedan detrás de su ventana de bloqueo mientras Locky funciona.
-- [ ] Las demás aplicaciones de Windows siguen disponibles.
+- [ ] A prohibited attempt in Brave or Edge prevents the page from loading and starts the same lock as in Chrome.
+- [ ] All open Chrome, Brave, and Edge windows show the lock screen, including new windows opened during the period.
+- [ ] Remaining time is shared, and another attempt neither creates a new period nor resets the current one.
+- [ ] Internal settings and other tabs in a covered browser remain behind its lock window while Locky runs.
+- [ ] Other Windows applications remain available.
 
 ## Answer
 
-El mismo estado `desktopLock` y su `endsAt` se comparte entre Chrome, Brave y Edge. El controlador crea un overlay para cada ventana Chromium visible y una ventana nueva recibe el tiempo que queda. Las pruebas del worker verifican la identificación de Brave y Edge y las del controlador verifican los tres grupos de ventana; el smoke instalado queda pendiente en el ticket 07.
+The same `desktopLock` state and its `endsAt` are shared across Chrome, Brave, and Edge. The controller creates an overlay for each visible Chromium window, and a new window receives the remaining time. Worker tests verify Brave and Edge identification, and controller tests cover all three window groups; installed smoke testing is tracked in ticket 07.

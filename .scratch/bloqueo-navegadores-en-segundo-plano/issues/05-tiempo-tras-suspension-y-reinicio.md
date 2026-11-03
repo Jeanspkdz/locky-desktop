@@ -1,17 +1,17 @@
-# 05: El tiempo sobrevive a suspensión y reinicio
+# 05: Time Survives Sleep and Restart
 
-**What to build:** El bloqueo de navegadores conserva su vencimiento al suspender o reiniciar Windows, y libera los navegadores al cumplirse los siete minutos incluso si el equipo reinicia sin Internet.
+**What to build:** The browser lock retains its expiry across Windows sleep or restart, and releases browsers after seven minutes even if the computer restarts without internet.
 
-**Blocked by:** 02: Primer bloqueo sobre Chrome.
+**Blocked by:** 02: First Lock Over Chrome.
 
 **Status:** resolved
 
-- [ ] El tiempo de suspensión cuenta dentro de los siete minutos.
-- [ ] Tras reiniciar Windows durante un bloqueo, Locky vuelve a mostrar la página de bloqueo por el tiempo restante cuando se abre un navegador cubierto.
-- [ ] Tras reiniciar sin Internet, el vencimiento se calcula con la hora de Windows y no espera indefinidamente una fuente externa.
-- [ ] Al vencer el bloqueo, las páginas permitidas vuelven a estar disponibles y las páginas prohibidas siguen bloqueadas.
-- [ ] Se documenta y verifica que adelantar manualmente la hora de Windows puede acortar ese bloqueo en curso.
+- [ ] Sleep time counts toward the seven minutes.
+- [ ] After restarting Windows during a lock, Locky shows the lock screen for the remaining time when a covered browser opens.
+- [ ] After an offline restart, expiry is calculated from Windows time without waiting indefinitely for an external source.
+- [ ] When the lock expires, allowed pages become available again and prohibited pages remain blocked.
+- [ ] Document and verify that manually advancing the Windows clock can shorten the active lock.
 
 ## Answer
 
-El vencimiento del bloqueo se persiste como hora de Windows y se calcula con `Date.now()`, por lo que la suspensión, el reinicio y un reinicio sin Internet cuentan el tiempo transcurrido; cambiar el reloj puede acortar el período vigente. La prueba de `StateStore` restaura el bloqueo con un vencimiento futuro y verifica el tiempo restante como si el proceso hubiera reiniciado sin conexión. El ciclo físico de reinicio no se ejecutó.
+The lock expiry is persisted as Windows time and calculated with `Date.now()`, so sleep, restart, and an offline restart count elapsed time; changing the clock can shorten the active period. The `StateStore` test restores a lock with a future expiry and checks the remaining time as if the process had restarted offline. A physical restart cycle was not run.

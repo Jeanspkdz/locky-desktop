@@ -1,17 +1,17 @@
-# 02: Primer bloqueo sobre Chrome
+# 02: First Lock Over Chrome
 
-**What to build:** Un intento de entrar a una página prohibida en Chrome impide su carga y muestra una ventana propia de Locky sobre Chrome, con el tiempo restante de siete minutos, sin cubrir el escritorio entero.
+**What to build:** An attempt to visit a prohibited page in Chrome prevents it from loading and shows a Locky window over Chrome with the remaining time in the seven-minute lock, without covering the entire desktop.
 
 **Blocked by:** None (can start immediately).
 
 **Status:** resolved
 
-- [ ] Chrome impide cargar la página prohibida y comunica el intento a Locky.
-- [ ] Aparece la página de bloqueo en una ventana de Locky que cubre la ventana de Chrome, con el tiempo restante visible.
-- [ ] Las demás aplicaciones de Windows siguen disponibles.
-- [ ] Otro intento durante el bloqueo no reinicia el vencimiento; al cumplirse siete minutos la ventana desaparece y una página permitida vuelve a estar disponible.
-- [ ] Un nuevo intento después del vencimiento inicia otro bloqueo de siete minutos.
+- [ ] Chrome prevents the prohibited page from loading and reports the attempt to Locky.
+- [ ] The lock screen appears in a Locky window covering Chrome, with the remaining time visible.
+- [ ] Other Windows applications remain available.
+- [ ] Another attempt during the lock does not reset expiry; after seven minutes the window disappears and an allowed page becomes available again.
+- [ ] A new attempt after expiry starts another seven-minute lock.
 
 ## Answer
 
-El intento comunicado por la extensión inicia el período compartido de siete minutos con hora de Windows. La pantalla de bloqueo muestra `mm:ss`; un intento durante el período conserva el vencimiento y uno posterior inicia otro. La regla DNR impide cargar el destino prohibido. La prueba del worker y del controlador cubre este flujo en el seam automatizado; falta comprobar la interacción instalada en el smoke manual del ticket 07.
+The attempt reported by the extension starts the shared seven-minute period using Windows time. The lock screen shows `mm:ss`; an attempt during the period preserves expiry, and a later attempt starts a new period. The DNR rule prevents the prohibited destination from loading. Worker and controller tests cover this flow at the automated seam; installed interaction remains to be checked in ticket 07's manual smoke test.

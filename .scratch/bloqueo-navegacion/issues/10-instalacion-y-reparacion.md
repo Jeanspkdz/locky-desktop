@@ -1,18 +1,18 @@
-# 10: Instalación y reparación
+# 10: Installation and Repair
 
-**What to build:** Una instalación con permisos de administrador deja operativas Locky y las integraciones de los navegadores cubiertos al iniciar Windows. Si una integración deja de funcionar, solo el navegador afectado queda impedido y la persona recibe una indicación de reparación; el resto del equipo sigue funcionando.
+**What to build:** An administrator-level installation makes Locky and the covered browser integrations available when Windows starts. If an integration stops working, only the affected browser is blocked and the user receives repair guidance; the rest of the computer continues working.
 
 **Type:** task
 
-**Blocked by:** 03: Bloqueo del escritorio en todos los monitores; 04: Recuperación de tiempos tras reinicio; 05: Lista inicial preaprobada; 06: Protección en Edge; 07: Protección en Brave; 08: Protección en Firefox.
+**Blocked by:** 03: Desktop Lock Across All Monitors; 04: Restore Timers After Restart; 05: Preapproved Initial Set; 06: Edge Protection; 07: Brave Protection; 08: Firefox Protection.
 
 **Status:** claimed
 
-- [ ] La instalación con permisos de administrador configura Locky y las integraciones cubiertas sin cambiar el funcionamiento de aplicaciones que no sean navegadores.
-- [x] Locky vuelve a estar disponible al iniciar sesión en Windows y conserva reglas y períodos pendientes.
-- [x] Si falla la integración de un navegador, solo ese navegador queda impedido hasta repararla y se muestra una indicación útil.
-- [x] Los otros navegadores cubiertos y las demás aplicaciones siguen funcionando mientras se repara el navegador afectado.
-- [x] La instalación no declara protegida una variante de Opera que no haya superado los criterios del ticket 09: el setup local no incluye ninguna variante.
+- [ ] The administrator-level installation configures Locky and covered integrations without changing how non-browser applications work.
+- [x] Locky becomes available again when signing in to Windows and retains rules and pending periods.
+- [x] If a browser integration fails, only that browser is blocked until repaired and a useful notice is shown.
+- [x] Other covered browsers and applications keep working while the affected browser is repaired.
+- [x] The installation does not claim protection for an Opera variant that has not met ticket 09's criteria; local setup includes no Opera variant.
 
 ## Comments
 

@@ -1,23 +1,23 @@
-# Bloqueo de navegadores en segundo plano — implementation map
+# Background Browser Lock — Implementation Map
 
 ## Notes
 
-- La especificación fuente es `spec.md`; los tickets forman el grafo de implementación.
-- La rama de integración activa es `integration`.
-- La validación de Chrome, Brave y Edge instalados usa perfiles temporales desechables; el harness no debe tocar perfiles normales.
+- The source specification is `spec.md`; tickets form the implementation graph.
+- The active integration branch is `integration`.
+- Validation of installed Chrome, Brave, and Edge uses disposable temporary profiles; the harness must not touch normal profiles.
 
 ## Decisions-so-far
 
-- Tickets 01–06 están implementados en la rama de integración. El overlay usa una ventana propiedad de cada ventana Chromium, y el vencimiento compartido se almacena como hora de Windows. Véanse los Answers de los tickets 01–06.
-- Las extensiones mantienen navegación web bloqueada con una regla DNR de sesión si se desconectan; solo liberan esa regla después de sincronizar reglas válidas.
-- Los fallos de asociación del overlay se muestran como reparación del navegador afectado; una instalación empaquetada cierra solo ese navegador.
-- `src/domain/protected-browser-families.cjs` es la fuente única del mapa familia→ejecutable. Browser health, watcher, control de procesos y scope de pruebas comparten Chrome, Brave y Edge; Firefox y Opera no se detectan ni entran en reparación.
-- Ticket 07 quedó `resolved` tras `pnpm smoke:browser-lifecycle` y `pnpm smoke:desktop-recovery` el 1 de noviembre. El E2E instalado comprobó rutas bloqueadas, overlays/countdown, configuración cerrada y reabierta en la misma instancia, minimizar/restaurar, ventanas nuevas, cerrar/reabrir navegadores y vencimiento real a siete minutos. La reparación con perfil temporal de Chrome sin extensión cerró solo el árbol PID de prueba; Brave/Edge temporales siguieron abiertos. Después, la ventana/PID normal de Chrome seguía presente y fuera de scope; no había una ventana Edge visible en la captura inicial. El launcher C# compilado temporalmente detectó la pipe caída, salió y relanzó automáticamente el Electron de prueba tras una solicitud reconectada; se conservaron la regla y el `endsAt`, que venció en el deadline original. `pnpm test` pasó 69/69. Véase [issue 07](issues/07-reparacion-y-verificacion-en-tres-navegadores.md).
-- La suite automatizada pasó 69/69; el smoke del vigilante completó 100 snapshots (mediana 8.337 ms, p95 12.566 ms, máximo 14.179 ms, estimación de CPU de 1.782 % a 500 ms). Los dos auxiliares C# compilaron y los cuatro scripts PowerShell parsearon sin errores.
-- El smoke de ticket 07 usa DevTools pipe y carga la extensión en perfiles temporales porque las versiones branded actuales de Chrome ya no cargan extensiones con `--load-extension`; la reparación E2E está restringida al PID de Chrome temporal.
-- El proveedor inicial contiene 129 dominios, que se consolidan automáticamente como reglas preaprobadas. No se muestra la lista ni existe botón de aprobación. El estado previo conserva sus reglas y las propuestas guardadas por versiones anteriores se migran a reglas consolidadas. Véase [ticket 05](../bloqueo-navegacion/issues/05-lista-inicial-revisable.md).
+- Tickets 01–06 are implemented on the integration branch. The overlay uses a window owned by each Chromium window, and the shared expiry is stored as Windows time. See the answers for tickets 01–06.
+- Extensions keep web navigation blocked with a session DNR rule when disconnected; they remove that rule only after syncing valid rules.
+- Overlay attachment failures are shown as a repair notice for the affected browser; a packaged installation closes only that browser.
+- `src/domain/protected-browser-families.cjs` is the single source for the family-to-executable map. Browser health, watcher, process control, and test scope use Chrome, Brave, and Edge; Firefox and Opera are not detected or included in repair handling.
+- Ticket 07 was marked `resolved` after `pnpm smoke:browser-lifecycle` and `pnpm smoke:desktop-recovery` on November 1. The installed E2E test checked blocked paths, overlays and countdown, settings closed and reopened in the same instance, minimize and restore, new windows, browser close and reopen, and actual seven-minute expiry. Repair with a temporary Chrome profile without the extension closed only the test PID tree; temporary Brave and Edge remained open. The normal Chrome window/PID remained present and out of scope; no Edge window was visible in the initial capture. The temporarily compiled C# launcher detected the missing pipe, exited, and automatically relaunched the test Electron process after a reconnect request; the rule and `endsAt` were preserved and expired at the original deadline. `pnpm test` passed 69/69. See [issue 07](issues/07-reparacion-y-verificacion-en-tres-navegadores.md).
+- The automated suite passed 69/69; the watcher smoke completed 100 snapshots (median 8.337 ms, p95 12.566 ms, maximum 14.179 ms, estimated CPU 1.782% at 500 ms). Both C# helpers compiled and all four PowerShell scripts parsed without errors.
+- Ticket 07's smoke uses a DevTools pipe and loads the extension in temporary profiles because current branded Chrome versions no longer load extensions with `--load-extension`; E2E repair is restricted to the temporary Chrome PID.
+- The initial provider contains 129 domains, automatically consolidated as preapproved rules. The list and approval button are not shown. Existing state preserves its rules, and proposals saved by older versions migrate to consolidated rules. See [ticket 05](../bloqueo-navegacion/issues/05-lista-inicial-revisable.md).
 
 ## Fog
 
-- El snapshot Win32 inicial no encontró una ventana visible de Edge preexistente; la comprobación de ventana normal preservada se limita a la ventana visible de Chrome que sí capturó el harness. Los procesos y ventanas temporales E2E quedaron dentro del alcance PID explícito.
-- La recuperación automática se probó con una copia temporal del launcher C# y rutas app/pipe/datos aisladas; no se invocó el registro del launcher ni el binario instalado. La caída del worker nativo del navegador y un reinicio físico de Windows no se simularon.
+- The initial Win32 snapshot found no preexisting visible Edge window; preservation checks are limited to the visible Chrome window captured by the harness. Temporary E2E processes and windows remained within the explicit PID scope.
+- Automatic recovery was tested with a temporary copy of the C# launcher and isolated app, pipe, and data paths; neither the registered launcher nor the installed binary was invoked. A browser native worker failure and a physical Windows restart were not simulated.

@@ -1,16 +1,16 @@
-# 05: Lista inicial preaprobada
+# 05: Preapproved Initial Set
 
-**What to build:** Los dominios del proveedor inicial están preaprobados y se consolidan al iniciar Locky. La interfaz no muestra la lista ni ofrece una acción para aprobarla. Las reglas agregadas manualmente conservan su período de verificación de diez minutos.
+**What to build:** The provider's initial domains are preapproved and consolidated when Locky starts. The interface does not show the set or offer an approval action. Manually added rules retain their ten-minute verification period.
 
-**Blocked by:** 02: Reglas de dominio y ruta.
+**Blocked by:** 02: Domain and Path Rules.
 
 **Status:** resolved
 
-- [x] Cada dominio del proveedor se consolida como regla permanente desde el inicio.
-- [x] La interfaz no muestra la lista inicial ni ofrece botón de aprobación.
-- [x] Los datos pendientes guardados por una versión anterior se migran a reglas consolidadas.
-- [x] Una sincronización repetida conserva las reglas y no crea duplicados.
-- [x] Las reglas agregadas manualmente siguen usando el período de verificación de diez minutos.
+- [x] Each provider domain is consolidated as a permanent rule at startup.
+- [x] The interface does not show the initial set or an approval button.
+- [x] Pending data saved by an earlier version is migrated to consolidated rules.
+- [x] Repeated synchronization preserves rules without creating duplicates.
+- [x] Manually added rules continue to use the ten-minute verification period.
 
 ## Answer
 

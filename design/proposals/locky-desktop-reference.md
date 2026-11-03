@@ -1,56 +1,56 @@
-# Locky Desktop · diseño basado en la referencia
+# Locky Desktop · Reference-Based Design
 
-![Mockup desktop](locky-desktop-reference.png)
+![Desktop mockup](locky-desktop-reference.png)
 
-La imagen adjunta por el usuario es una **referencia visual móvil**. Este entregable la adapta a una ventana de escritorio de Windows. Se conservan el fondo azul noche, los encabezados blancos grandes, las líneas divisorias, los iconos sencillos y el acento turquesa. No se trasladan la barra de estado del teléfono, la navegación inferior, ni las opciones DNS/VPN o Accessibility, que no pertenecen a la especificación de Locky Desktop.
+The image attached by the user is a **mobile visual reference**. This deliverable adapts it to a Windows desktop window. It retains the midnight-blue background, large white headings, dividers, simple icons, and turquoise accent. It omits the phone status bar, bottom navigation, and DNS/VPN or Accessibility options because they are outside the Locky Desktop specification.
 
-## Medidas para implementación
+## Implementation Measurements
 
-| Elemento | Especificación |
+| Element | Specification |
 | --- | --- |
-| Ventana de referencia | 1600 × 1000 px; mínimo útil 1100 × 700 px |
-| Barra de título | 52 px de alto; controles de ventana a la derecha |
-| Barra lateral | 264 px de ancho; iconos de 22 px; elementos de 48 px de alto |
-| Área principal | Padding 44 px; dos columnas: izquierda 58%, derecha 42%; separación 56 px |
-| Título principal | 64 px / 1,08; peso 700 |
-| Títulos de sección | 36 px / 1,15; peso 700 |
-| Estado | 28 px / 1,2; peso 700; línea de apoyo 20 px / 1,4 |
-| Filas | Alto mínimo 96 px, icono 32 px, separador de 1 px |
-| Acción principal | Alto 56 px; ancho máximo 540 px; radio 10 px; área táctil/clic mínimo 44 px |
-| Espaciado | Base 8 px; grupos de 16, 24, 32 y 48 px |
+| Reference window | 1600 × 1000 px; useful minimum 1100 × 700 px |
+| Title bar | 52 px high; window controls on the right |
+| Sidebar | 264 px wide; 22 px icons; 48 px high items |
+| Main area | 44 px padding; two columns: left 58%, right 42%; 56 px gap |
+| Main heading | 64 px / 1.08; weight 700 |
+| Section headings | 36 px / 1.15; weight 700 |
+| Status | 28 px / 1.2; weight 700; supporting line 20 px / 1.4 |
+| Rows | Minimum height 96 px, 32 px icon, 1 px divider |
+| Primary action | Height 56 px; max width 540 px; radius 10 px; minimum touch/click target 44 px |
+| Spacing | 8 px base; groups of 16, 24, 32, and 48 px |
 
-En ventanas inferiores a 1100 px, las dos columnas se apilan en el área principal; la barra lateral se reduce a 72 px con nombres accesibles por tooltip y lector de pantalla. El contenido puede desplazarse verticalmente sin ocultar acciones.
+In windows narrower than 1100 px, stack the two columns in the main area; reduce the sidebar to 72 px with accessible names available through tooltips and screen readers. Content can scroll vertically without hiding actions.
 
-## Colores
+## Colors
 
-| Token | Valor | Uso |
+| Token | Value | Use |
 | --- | --- | --- |
-| Fondo | `#14213D` | Ventana y barra lateral |
-| Fondo profundo | `#0B1726` | Barra de título y zonas de contraste |
-| Texto principal | `#F8F5EF` | Títulos y valores |
-| Texto secundario | `#B8C5D3` | Descripciones y estados pendientes |
-| Acción / foco | `#2EC4B6` | Botón, elemento seleccionado y foco |
-| Positivo | `#92E6B2` | Integración verificada o protección real, solo tras verificación |
-| Alerta | `#FF6B6B` | Fallo de integración o acción que requiere atención |
-| Divisor | `#304454` | Líneas de 1 px |
+| Background | `#14213D` | Window and sidebar |
+| Deep background | `#0B1726` | Title bar and contrast areas |
+| Primary text | `#F8F5EF` | Headings and values |
+| Secondary text | `#B8C5D3` | Descriptions and pending states |
+| Action / focus | `#2EC4B6` | Button, selected item, and focus |
+| Positive | `#92E6B2` | Verified integration or real protection, only after verification |
+| Alert | `#FF6B6B` | Integration failure or action requiring attention |
+| Divider | `#304454` | 1 px lines |
 
-El estado **pendiente** debe comunicarlo el texto, no un icono de éxito. En la maqueta aparece turquesa para dirigir la mirada; al implementarlo, conviene reservar el verde claro para estados realmente verificados y usar el turquesa en acciones y foco.
+The **pending** state must be communicated by text, not a success icon. The mockup uses turquoise to draw attention; in implementation, reserve light green for genuinely verified states and use turquoise for actions and focus.
 
-## Estados
+## States
 
-| Componente | Normal | Interacción | Pendiente / error |
+| Component | Default | Interaction | Pending / error |
 | --- | --- | --- | --- |
-| Navegación lateral | Texto secundario, icono claro | Seleccionado: fondo `#193449`, acento turquesa de 3 px, texto turquesa; foco visible de 2 px | Se mantiene accesible por teclado |
-| Acción «Revisar lista inicial» | Fondo `#174150`, texto turquesa; sin sombra | Hover: fondo `#1B5060`; presionado: `#123846`; foco de 2 px `#2EC4B6` | Puede abrir la vista vacía; **Aprobar** queda deshabilitado si la lista real no existe |
-| Fila de navegación | Título claro, descripción secundaria, chevrón | Hover: fondo `#172B3B`; foco de 2 px | El texto explica el estado sin depender del color |
-| Navegador | Nombre y estado «Pendiente de verificación» | La fila abre detalle o reparación cuando exista | Fallo: coral + «Reparar integración»; verificado: positivo + «Protegido» |
-| Regla consolidada | Estado explícito «Consolidada» | Se puede consultar | No aparecen acciones de editar o retirar |
-| Regla en verificación | Tiempo y acción «Cancelar regla» | Cancelación disponible durante 10 minutos | La página añadida sigue accesible hasta consolidarse |
+| Sidebar navigation | Secondary text, light icon | Selected: `#193449` background, 3 px turquoise accent, turquoise text; visible 2 px focus | Remains keyboard accessible |
+| “Review initial set” action | `#174150` background, turquoise text; no shadow | Hover: `#1B5060`; pressed: `#123846`; 2 px `#2EC4B6` focus | May open the empty view; **Approve** stays disabled if the real set does not exist |
+| Navigation row | Light title, secondary description, chevron | Hover: `#172B3B`; 2 px focus | Text explains the state without relying on color |
+| Browser | Name and “Pending verification” state | Row opens details or repair when available | Failure: coral plus “Repair integration”; verified: positive state plus “Protected” |
+| Consolidated rule | Explicit “Consolidated” state | Can be viewed | No edit or removal actions |
+| Rule under verification | Time and “Cancel rule” action | Can be cancelled for 10 minutes | Added page remains accessible until consolidation |
 
-## Fidelidad al producto
+## Product Fidelity
 
-El mockup presenta datos vacíos porque todavía no existe una lista inicial de dominios ni integraciones verificadas. «Revisar lista inicial» lleva a la vista de revisión, pero no autoriza aprobar un conjunto vacío. La pantalla de bloqueo de siete minutos es una superficie separada: debe decir únicamente que se activó el bloqueo y ofrecer «Cerrar navegadores», sin dominio ni contador.
+The mockup shows empty data because the initial domain set and verified integrations are not yet available. “Review initial set” opens the review view but does not authorize approving an empty set. The seven-minute lock screen is a separate surface: it must only say that the lock was activated and offer “Close browsers”, with no domain or countdown.
 
-## Generación
+## Generation
 
-Modo: `imagegen` integrado; uso `ui-mockup`. La imagen adjunta por el usuario se empleó **solo como referencia de estilo**. Prompt resumido: convertir su interfaz móvil de fondo azul noche, jerarquía blanca, separadores finos e iconos sencillos en una ventana Windows horizontal de Locky, con barra lateral y dos columnas, estados pendientes honestos, lista inicial vacía y navegadores por verificar; excluir por completo la barra de teléfono, navegación inferior, DNS/VPN y funciones no especificadas.
+Mode: integrated `imagegen` tool, `ui-mockup`. The user's attached image was used **only as a style reference**. Prompt summary: adapt the midnight-blue mobile interface with white hierarchy, thin dividers, and simple icons into a horizontal Locky Windows window with a sidebar and two columns, truthful pending states, an empty initial set, and browsers awaiting verification; omit the phone bar, bottom navigation, DNS/VPN, and unspecified features.

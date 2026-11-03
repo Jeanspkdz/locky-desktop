@@ -1,60 +1,60 @@
-# Locky · concepto móvil de alta fidelidad
+# Locky · High-Fidelity Mobile Concept
 
-![Mockup móvil](locky-mobile-hifi.png)
+![Mobile mockup](locky-mobile-hifi.png)
 
-Este es un mockup de formato móvil solicitado para explorar la apariencia. Locky es una aplicación de escritorio local para Windows construida con Electron; no es una aplicación web. Este mockup tampoco cambia el alcance del producto para crear una app móvil.
+This mobile-format mockup was requested to explore the visual style. Locky is a local Windows desktop application built with Electron, not a web app. This mockup does not expand the product scope to include a mobile app.
 
-## Base de implementación
+## Implementation Baseline
 
-- Lienzo de referencia: 390 × 844 dp/pt; contenido desplazable entre encabezado y navegación inferior.
-- Márgenes horizontales: 16; separación entre bloques: 16–24; espacio interno de tarjetas: 20–24.
-- Cuadrícula de 4 puntos. Área táctil mínima: 44 × 44. Respetar las áreas seguras del sistema arriba y abajo.
-- Fuente: sans legible de interfaz; `Segoe UI` es una opción natural al trasladar el diseño a la app de Windows. Pesos 400, 600 y 700. Cifras en alineación tabular cuando se muestren tiempos.
-- Tipo: título principal 28/34, título de tarjeta 20/26, cuerpo 16/24, etiquetas y navegación 13/18; no reducir texto funcional por debajo de 13.
-- Radios: 16 para tarjetas, 12 para botones y avisos, 10 para iconos sobre superficie.
+- Reference canvas: 390 × 844 dp/pt; content scrolls between the header and bottom navigation.
+- Horizontal margins: 16; spacing between blocks: 16–24; card padding: 20–24.
+- Four-point grid. Minimum touch target: 44 × 44. Respect top and bottom system safe areas.
+- Font: legible sans serif UI font; `Segoe UI` is a natural choice when adapting the design to the Windows app. Weights 400, 600, and 700. Use tabular numerals for displayed times.
+- Type sizes: main heading 28/34, card heading 20/26, body 16/24, labels and navigation 13/18; functional text must not be smaller than 13.
+- Corner radii: 16 for cards, 12 for buttons and notices, 10 for icons on surfaces.
 
-## Colores
+## Colors
 
-| Token | Valor | Uso |
+| Token | Value | Use |
 | --- | --- | --- |
-| `background` | `#14213D` | Fondo y navegación inferior |
-| `surface` | `#F8F5EF` | Tarjetas y superficies principales |
-| `primary` | `#3A86FF` | Acción principal y selección |
-| `positive` | `#2EC4B6` | Estado verificado o protegido, únicamente cuando sea real |
-| `alert` | `#FF6B6B` | Icono y acento de alertas |
-| `ink` | `#14213D` | Texto en superficies y en botón azul |
-| `on-dark` | `#F8F5EF` | Texto sobre fondo azul noche |
+| `background` | `#14213D` | Background and bottom navigation |
+| `surface` | `#F8F5EF` | Cards and primary surfaces |
+| `primary` | `#3A86FF` | Primary action and selection |
+| `positive` | `#2EC4B6` | Verified or protected state, only when true |
+| `alert` | `#FF6B6B` | Alert icon and accent |
+| `ink` | `#14213D` | Text on surfaces and blue button |
+| `on-dark` | `#F8F5EF` | Text on midnight blue background |
 
-Para texto pequeño, usar `ink` sobre `primary` (contraste aproximado 4,59:1), `ink` sobre `positive` (7,37:1), e `ink` sobre `surface` en alertas. El texto blanco sobre `primary` (3,48:1) y el coral como texto sobre crema (2,55:1) no alcanzan 4,5:1; por eso el mockup final usa azul noche en ambos casos. El coral comunica la alerta mediante icono y superficie tintada, nunca como único indicador.
+For small text, use `ink` on `primary` (approximately 4.59:1 contrast), `ink` on `positive` (7.37:1), and `ink` on `surface` for alerts. White on `primary` (3.48:1) and coral text on cream (2.55:1) do not meet 4.5:1, so the final mockup uses midnight blue in both cases. Coral communicates alerts through an icon and tinted surface, never as the only indicator.
 
-## Pantalla de inicio
+## Home Screen
 
-| Componente | Tamaño / disposición | Contenido y comportamiento |
+| Component | Size / layout | Content and behavior |
 | --- | --- | --- |
-| Encabezado | 24 de separación superior tras área segura; alto flexible | Marca Locky, saludo y subtítulo. No presenta protección activa si sigue pendiente. |
-| Tarjeta de estado | ancho `100% - 32`, radio 16, relleno 24 | “Configuración pendiente”, explicación y acción. Altura según contenido; no truncar el texto. |
-| Botón principal | ancho completo dentro de tarjeta, alto 52, radio 12 | “Revisar lista inicial”. Abre la lista aunque esté vacía; la aprobación permanece deshabilitada mientras no haya dominios concretos. |
-| Tarjetas de acceso | alto mínimo 104, radio 16, relleno 20, separación 12 | “Mis reglas” y “Navegadores”; toda la tarjeta es accionable. Icono 32, chevrón 20. |
-| Aviso | alto mínimo 64, radio 12, relleno 16 | “Aún no hay dominios para revisar”, icono coral, texto azul noche. |
-| Navegación inferior | 72 de contenido más área segura, fondo azul noche | Inicio, Reglas, Lista, Navegadores. Iconos 24, texto 12–13. Indicador activo azul eléctrico más etiqueta. |
+| Header | 24 top spacing after safe area; flexible height | Locky brand, greeting, and subtitle. Do not claim active protection while setup is pending. |
+| Status card | width `100% - 32`, radius 16, padding 24 | “Configuración pendiente” (Setup pending), explanation, and action. Height follows content; do not truncate text. |
+| Primary button | Full card width, height 52, radius 12 | “Revisar lista inicial” (Review initial set). Opens the set even when empty; approval stays disabled until actual domains are shown. |
+| Shortcut cards | Minimum height 104, radius 16, padding 20, gap 12 | “Mis reglas” (My rules) and “Navegadores” (Browsers); the whole card is actionable. Icon 32, chevron 20. |
+| Notice | Minimum height 64, radius 12, padding 16 | “Aún no hay dominios para revisar” (There are no domains to review yet), coral icon, midnight-blue text. |
+| Bottom navigation | 72 content height plus safe area, midnight blue background | Inicio (Home), Reglas (Rules), Lista (Set), Navegadores (Browsers). Icons 24, text 12–13. Active indicator uses electric blue plus a label. |
 
-## Estados de los componentes
+## Component States
 
-| Componente | Normal | Presionado / foco | Deshabilitado / carga |
+| Component | Default | Pressed / focus | Disabled / loading |
 | --- | --- | --- | --- |
-| Botón principal | Fondo `primary`, texto `ink` 600, alto 52 | Oscurecer fondo un 8%; foco con anillo `surface` de 2 px separado 2 px | Opacidad 45% si no hay acción posible; en carga conservar ancho y mostrar indicador con nombre accesible |
-| Tarjeta accionable | `surface`, texto `ink`, sin sombra pesada | Oscurecer superficie un 4%; anillo `primary` de 2 px en foco | Si no está disponible, explicar por qué; no usar solo opacidad |
-| Pestaña inferior | Icono y etiqueta `surface` al 75% | Activa: `primary`, peso 700, indicador visible; foco de 2 px | Las rutas indispensables no se ocultan por estado |
-| Estado positivo | Icono o punto `positive` + texto `ink` sobre superficie | No depende solo del color | Mostrar únicamente tras verificación real de la integración |
-| Alerta | Icono `alert` + texto `ink` sobre superficie crema o coral tintado | Acción de recuperación visible si existe | No usar coral para texto pequeño |
+| Primary button | `primary` background, `ink` 600 text, height 52 | Darken background by 8%; focus uses a 2 px `surface` ring with 2 px offset | 45% opacity if no action is possible; while loading preserve width and show an accessible named indicator |
+| Action card | `surface`, `ink` text, no heavy shadow | Darken surface by 4%; 2 px `primary` focus ring | Explain why unavailable; do not rely on opacity alone |
+| Bottom tab | Icon and label in `surface` at 75% | Active: `primary`, weight 700, visible indicator; 2 px focus ring | Do not hide essential routes based on state |
+| Positive state | `positive` icon or dot plus `ink` text on a surface | Do not rely on color alone | Show only after the integration is actually verified |
+| Alert | `alert` icon plus `ink` text on cream or coral-tinted surface | Show a recovery action when one exists | Do not use coral for small text |
 
-## Contenido y límites
+## Content and Limits
 
-- La lista inicial todavía no contiene dominios reales. La pantalla puede abrirse, pero su aprobación no debe habilitarse hasta mostrar el conjunto exacto.
-- Las integraciones de navegadores figuran pendientes; no debe aparecer un estado positivo antes de verificarlas.
-- La regla nueva permanece accesible durante sus diez minutos de verificación. Una regla consolidada no ofrece editar ni retirar.
-- La futura pantalla de bloqueo conserva solo el mensaje de activación y la acción «Cerrar navegadores», sin dominio ni cuenta atrás.
+- The initial set does not yet contain real domains. The screen may open, but approval must remain disabled until the exact set is shown.
+- Browser integrations are pending; do not show a positive state before verification.
+- A new rule remains accessible during its ten-minute verification period. A consolidated rule has no edit or removal action.
+- The future lock screen keeps only the activation message and “Close browsers” action, with no domain or countdown.
 
-## Generación
+## Generation
 
-Modo: herramienta integrada `imagegen` (`ui-mockup`), con una edición de contraste sobre la primera imagen. Prompt final: pantalla móvil de Locky, fondo y navegación `#14213D`, superficies `#F8F5EF`, botón `#3A86FF` con texto `#14213D`, turquesa `#2EC4B6` para estados positivos, coral `#FF6B6B` para alertas con texto `#14213D`; inicio en español con configuración pendiente, revisión de lista, tarjetas Mis reglas y Navegadores, aviso de lista vacía y navegación inferior. Sin dominios inventados ni afirmación de protección activa.
+Mode: integrated `imagegen` tool (`ui-mockup`), with a contrast edit to the first image. Final prompt: Locky mobile screen, background and navigation `#14213D`, surfaces `#F8F5EF`, `#3A86FF` button with `#14213D` text, turquoise `#2EC4B6` for positive states, coral `#FF6B6B` alerts with `#14213D` text; Spanish home screen with setup pending, initial set review, My Rules and Browsers cards, empty-set notice, and bottom navigation. No invented domains or claims of active protection.

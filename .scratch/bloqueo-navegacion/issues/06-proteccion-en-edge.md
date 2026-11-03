@@ -1,15 +1,15 @@
-# 06: Protección en Edge
+# 06: Edge Protection
 
-**What to build:** Edge aplica las reglas de dominio y ruta de Locky y activa el bloqueo del escritorio ante una página prohibida. La navegación InPrivate queda deshabilitada.
+**What to build:** Edge enforces Locky's domain and path rules and activates the desktop lock when a prohibited page is attempted. InPrivate browsing is disabled.
 
-**Blocked by:** 01: Primer bloqueo en Chrome; 02: Reglas de dominio y ruta.
+**Blocked by:** 01: First Block in Chrome; 02: Domain and Path Rules.
 
 **Status:** resolved
 
-- [x] Una página prohibida no carga en Edge y activa la página de bloqueo.
-- [x] Una página permitida carga; las reglas de ruta no bloquean el resto del sitio.
-- [x] InPrivate no puede abrirse durante el uso protegido de Edge.
-- [x] Las reglas consolidadas se aplican de nuevo tras cerrar y abrir Edge.
+- [x] A prohibited page does not load in Edge and activates the lock screen.
+- [x] An allowed page loads; path rules do not block the rest of the site.
+- [x] InPrivate cannot be opened while Edge is protected.
+- [x] Consolidated rules are applied again after Edge is closed and reopened.
 
 ## Comments
 

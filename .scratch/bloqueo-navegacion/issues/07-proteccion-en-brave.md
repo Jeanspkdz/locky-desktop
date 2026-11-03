@@ -1,15 +1,15 @@
-# 07: Protección en Brave
+# 07: Brave Protection
 
-**What to build:** Brave aplica las reglas de dominio y ruta de Locky y activa el bloqueo del escritorio ante una página prohibida. Su navegación privada queda deshabilitada.
+**What to build:** Brave enforces Locky's domain and path rules and activates the desktop lock when a prohibited page is attempted. Private browsing is disabled.
 
-**Blocked by:** 01: Primer bloqueo en Chrome; 02: Reglas de dominio y ruta.
+**Blocked by:** 01: First Block in Chrome; 02: Domain and Path Rules.
 
 **Status:** resolved
 
-- [x] Una página prohibida no carga en Brave y activa la página de bloqueo.
-- [x] Una página permitida carga; las reglas de ruta no bloquean el resto del sitio.
-- [x] No se puede abrir una ventana privada durante el uso protegido de Brave.
-- [x] Las reglas consolidadas se aplican de nuevo tras cerrar y abrir Brave.
+- [x] A prohibited page does not load in Brave and activates the lock screen.
+- [x] An allowed page loads; path rules do not block the rest of the site.
+- [x] A private window cannot be opened while Brave is protected.
+- [x] Consolidated rules are applied again after Brave is closed and reopened.
 
 ## Comments
 

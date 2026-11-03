@@ -1,17 +1,17 @@
-# 06: Recuperación ante fallos
+# 06: Failure Recovery
 
-**What to build:** Si Locky deja de responder durante un bloqueo, las extensiones restringen la navegación web y la aplicación intenta reiniciarse; al reconectar, los navegadores recuperan el estado y tiempo restante correctos.
+**What to build:** If Locky stops responding during a lock, extensions restrict web browsing and the application attempts to restart; after reconnecting, browsers recover the correct state and remaining time.
 
-**Blocked by:** 01: Locky permanece en segundo plano; 02: Primer bloqueo sobre Chrome.
+**Blocked by:** 01: Locky Runs in the Background; 02: First Lock Over Chrome.
 
 **Status:** resolved
 
-- [ ] Una caída inesperada provoca un intento automático de reiniciar Locky.
-- [ ] Mientras no hay respuesta de Locky, Chrome, Brave y Edge no cargan nuevas páginas web sin confirmar el estado.
-- [ ] Al volver Locky, cada extensión recupera las reglas consolidadas y el vencimiento del bloqueo compartido.
-- [ ] Si el período ya venció durante la caída, se libera la navegación permitida; las páginas prohibidas continúan bloqueadas.
-- [ ] La prueba distingue una caída recuperable de una intervención deliberada de una cuenta administradora de Windows.
+- [ ] An unexpected failure triggers an automatic attempt to restart Locky.
+- [ ] While Locky is not responding, Chrome, Brave, and Edge do not load new web pages without confirming state.
+- [ ] When Locky returns, each extension recovers consolidated rules and the shared lock expiry.
+- [ ] If the period expired during the failure, allowed browsing is released while prohibited pages remain blocked.
+- [ ] The test distinguishes a recoverable failure from deliberate intervention by a Windows administrator.
 
 ## Answer
 
-El host nativo consulta el pipe y exige una respuesta `getState`; si Locky no responde, cierra el host para que Chromium active `onDisconnect`. La extensión coloca una regla DNR de sesión que bloquea navegación web, reintenta y la elimina solo después de recibir y aplicar el estado. El host reinicia Locky con `--background`. La prueba del worker verifica el bloqueo al desconectar; los dos helpers C# compilaron. La caída y recuperación de proceso real aún no se inyectó en una sesión de navegador.
+The native host checks the pipe and requires a `getState` response; if Locky does not respond, it closes the host so Chromium fires `onDisconnect`. The extension adds a session DNR rule that blocks web navigation, retries, and removes the rule only after receiving and applying state. The host restarts Locky with `--background`. The worker test verifies blocking on disconnect; both C# helpers compiled. A real process failure and recovery have not yet been injected into a browser session.

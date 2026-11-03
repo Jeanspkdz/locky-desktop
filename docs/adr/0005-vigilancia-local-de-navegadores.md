@@ -4,7 +4,7 @@
 
 Locky needs to detect browser processes and windows to verify the integration and show the lock screen over each window. Previously, the 500 ms polling loop launched `tasklist.exe` and `browser-window-monitor.exe`; the latter also attached the lock window to the browser.
 
-## Decisión
+## Decision
 
 Locky uses Koffi to call Windows APIs from the main process. Polling runs every 500 ms while a browser is open and every 3 seconds when none is open. Lock windows update only when their bounds or remaining second changes. The helper executable remains responsible for attaching a newly created lock window to the browser.
 

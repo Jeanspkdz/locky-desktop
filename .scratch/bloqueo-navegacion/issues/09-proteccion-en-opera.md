@@ -1,16 +1,16 @@
-# 09: Protección en las variantes de Opera
+# 09: Opera Variant Protection
 
-**What to build:** Cada variante de Opera incluida en la instalación aplica las reglas de Locky, activa el bloqueo del escritorio y tiene deshabilitada su navegación privada. La cobertura se declara por variante comprobada, sin asumir que todas se comportan igual.
+**What to build:** Each Opera variant included in the installation enforces Locky's rules, activates the desktop lock, and has private browsing disabled. Coverage is claimed per verified variant; do not assume they all behave the same.
 
-**Blocked by:** 01: Primer bloqueo en Chrome; 02: Reglas de dominio y ruta.
+**Blocked by:** 01: First Block in Chrome; 02: Domain and Path Rules.
 
 **Status:** needs-info
 
-- [ ] Se identifican las variantes de Opera que se incluirán en la instalación y se informa cuáles están cubiertas.
-- [ ] En cada variante incluida, una página prohibida no carga y activa la página de bloqueo.
-- [ ] En cada variante incluida, una página permitida carga y las reglas de ruta no bloquean el resto del sitio.
-- [ ] En cada variante incluida, no se puede abrir la navegación privada.
-- [ ] Una variante que no cumpla estos criterios no se declara protegida.
+- [ ] Identify which Opera variants will be included and report which are covered.
+- [ ] In each included variant, a prohibited page does not load and activates the lock screen.
+- [ ] In each included variant, allowed pages load and path rules do not block the rest of the site.
+- [ ] In each included variant, private browsing cannot be opened.
+- [ ] Do not declare a variant protected unless it meets these criteria.
 
 ## Comments
 

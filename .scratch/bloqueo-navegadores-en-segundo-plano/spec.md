@@ -1,79 +1,79 @@
-# Bloqueo de navegadores en segundo plano
+# Background Browser Lock
 
 Status: ready-for-human
 
 ## Problem Statement
 
-Quiero que Locky proteja mi equipo sin mantener abierta su ventana de configuración. Cuando intente entrar a una página prohibida en Chrome, Brave o Edge, quiero que los tres navegadores queden inutilizables durante siete minutos, mientras puedo seguir usando las demás aplicaciones de Windows. El diseño anterior bloquea el escritorio completo y no corresponde a este comportamiento.
+I want Locky to protect my computer without keeping its settings window open. When I try to visit a prohibited page in Chrome, Brave, or Edge, all three browsers should be unusable for seven minutes while I can continue using other Windows applications. The previous design locked the entire desktop and does not match this behavior.
 
 ## Solution
 
-Locky se inicia con mi sesión de Windows y permanece activo en segundo plano aunque cierre la ventana de configuración. Las extensiones de Chrome, Brave y Edge impiden cargar páginas prohibidas y comunican el intento a Locky. Locky inicia un único bloqueo de navegadores de siete minutos, muestra una ventana propia sobre cada navegador abierto y muestra el tiempo restante. Las ventanas siguen al navegador, se ocultan si está minimizado y reaparecen al restaurarlo o reabrirlo. El bloqueo persiste tras suspensión y reinicio; al vencer, desaparecen las ventanas y la navegación permitida vuelve a estar disponible. Las páginas prohibidas siguen bloqueadas.
+Locky starts with my Windows session and remains active in the background when I close the settings window. The Chrome, Brave, and Edge extensions prevent prohibited pages from loading and notify Locky of the attempt. Locky starts one shared seven-minute browser lock, displays its own window over each open browser, and shows the time remaining. The windows follow their browsers, hide when a browser is minimized, and reappear when it is restored or reopened. The lock survives sleep and restart. When it expires, the windows disappear and allowed browsing becomes available again; prohibited pages remain blocked.
 
 ## User Stories
 
-1. Como persona que usa Locky, quiero que se inicie al iniciar mi sesión de Windows, para tener protección sin abrirlo manualmente.
-2. Como persona que usa Locky, quiero que el proceso siga activo al cerrar la ventana de configuración, para mantener la protección en segundo plano.
-3. Como persona que usa Locky, quiero volver a abrir la configuración sin crear una segunda instancia de protección, para consultar reglas y estado.
-4. Como persona que usa Chrome, quiero que una página prohibida no llegue a cargar, para no ver su contenido.
-5. Como persona que usa Brave, quiero que una página prohibida no llegue a cargar, para no ver su contenido.
-6. Como persona que usa Edge, quiero que una página prohibida no llegue a cargar, para no ver su contenido.
-7. Como persona que usa cualquiera de esos navegadores, quiero que un intento prohibido inicie un único bloqueo compartido de siete minutos, para que cambiar de navegador no lo evite.
-8. Como persona que usa Locky, quiero ver la página de bloqueo en una ventana sobre cada navegador afectado, para saber por qué no puedo usarlo.
-9. Como persona que usa Locky, quiero ver el tiempo restante, para saber cuándo podré volver a navegar.
-10. Como persona que usa varios navegadores a la vez, quiero que Chrome, Brave y Edge queden cubiertos, para que ninguno permita eludir el bloqueo.
-11. Como persona que usa varias ventanas de un navegador, quiero que todas queden cubiertas, para no cambiar a una ventana libre.
-12. Como persona que usa varias pestañas, quiero que ninguna pestaña normal ni página interna del navegador permita interactuar con él durante el bloqueo.
-13. Como persona que mueve o cambia el tamaño de un navegador, quiero que su ventana de bloqueo continúe cubriéndolo, para que el bloqueo no quede desalineado.
-14. Como persona que minimiza un navegador, quiero que su ventana de bloqueo se oculte, para poder usar otras aplicaciones.
-15. Como persona que restaura un navegador minimizado, quiero que la página de bloqueo reaparezca por el tiempo restante.
-16. Como persona que cierra un navegador, quiero que el temporizador siga avanzando, para que cerrarlo no cancele el bloqueo.
-17. Como persona que reabre un navegador durante el bloqueo, quiero que quede cubierto de nuevo por el tiempo restante.
-18. Como persona que usa otras aplicaciones de Windows, quiero que sigan disponibles durante el bloqueo de navegadores.
-19. Como persona que suspende Windows, quiero que el tiempo suspendido cuente dentro de los siete minutos.
-20. Como persona que reinicia Windows, quiero que el bloqueo continúe por el tiempo restante al iniciar sesión otra vez.
-21. Como persona que reinicia sin Internet, quiero que Locky calcule el vencimiento con la hora de Windows, para no quedar bloqueada indefinidamente.
-22. Como persona que espera el vencimiento, quiero que desaparezcan las ventanas de bloqueo y se recuperen las pestañas permitidas.
-23. Como persona que vuelve a intentar abrir una página prohibida después del vencimiento, quiero que empiecen otros siete minutos de bloqueo.
-24. Como persona que intenta abrir otra página prohibida durante un bloqueo activo, quiero que el vencimiento original se conserve y no se reinicie el contador.
-25. Como persona que usa Locky, quiero que la aplicación intente recuperarse automáticamente tras un fallo, para que la protección vuelva sin intervención manual.
-26. Como persona que usa un navegador mientras Locky no responde, quiero que la extensión impida la navegación web hasta reconectar y confirmar el estado, para que un fallo no libere páginas por error.
-27. Como persona que usa Locky, quiero que un navegador sin extensión o con una integración fallida se cierre y se indique cómo repararlo, para saber cuál quedó sin protección.
-28. Como persona que usa varios navegadores, quiero que una integración fallida afecte solo al navegador correspondiente, para no cerrar los demás por ese fallo.
+1. As a Locky user, I want it to start when I sign in to Windows so that protection is active without opening it manually.
+2. As a Locky user, I want its process to remain active after I close the settings window so that background protection continues.
+3. As a Locky user, I want to reopen settings without creating a second protection instance so I can check rules and status.
+4. As a Chrome user, I want prohibited pages to be prevented from loading so I cannot see their content.
+5. As a Brave user, I want prohibited pages to be prevented from loading so I cannot see their content.
+6. As an Edge user, I want prohibited pages to be prevented from loading so I cannot see their content.
+7. As a user of any of these browsers, I want a prohibited attempt to start one shared seven-minute lock so switching browsers cannot evade it.
+8. As a Locky user, I want to see the lock screen in a window over each affected browser so I know why I cannot use it.
+9. As a Locky user, I want to see the remaining time so I know when I can browse again.
+10. As someone using multiple browsers, I want Chrome, Brave, and Edge covered so none can be used to evade the lock.
+11. As someone using multiple windows in a browser, I want them all covered so I cannot switch to an unlocked window.
+12. As someone using multiple tabs, I want no regular tab or internal browser page to be interactive during the lock.
+13. As someone moving or resizing a browser, I want its lock window to keep covering it so the lock remains aligned.
+14. As someone minimizing a browser, I want its lock window to hide so I can use other applications.
+15. As someone restoring a minimized browser, I want the lock screen to reappear for the remaining time.
+16. As someone closing a browser, I want the timer to keep running so closing it does not cancel the lock.
+17. As someone reopening a browser during the lock, I want it covered again for the remaining time.
+18. As someone using other Windows applications, I want them to remain available during the browser lock.
+19. As someone putting Windows to sleep, I want the sleep time to count toward the seven minutes.
+20. As someone restarting Windows, I want the lock to continue for the remaining time after signing in again.
+21. As someone restarting without internet, I want Locky to calculate expiry using Windows time so I am not locked indefinitely.
+22. As someone waiting for expiry, I want the lock windows to disappear and allowed tabs to become available again.
+23. As someone attempting a prohibited page after expiry, I want another seven-minute lock to begin.
+24. As someone attempting another prohibited page during an active lock, I want the original expiry to remain without restarting the timer.
+25. As a Locky user, I want the application to recover automatically after a failure so protection resumes without manual intervention.
+26. As someone using a browser while Locky is unresponsive, I want the extension to block web navigation until it reconnects and confirms state so a failure does not accidentally allow pages.
+27. As a Locky user, I want a browser with a missing extension or failed integration to close and show repair instructions so I know which browser is unprotected.
+28. As someone using multiple browsers, I want an integration failure to affect only the corresponding browser so the others are not closed.
 
 ## Implementation Decisions
 
-- Esta especificación sustituye el comportamiento de pantalla de escritorio de la especificación anterior y de su ticket de bloqueo; conserva las reglas de dominio y ruta y el período de verificación de diez minutos.
-- El alcance de navegadores protegidos en este flujo es Chrome, Brave y Edge. Firefox y Opera no forman parte de este cambio.
-- La aplicación nativa conserva el estado compartido, el vencimiento y la coordinación entre navegadores. Las extensiones impiden la carga de páginas prohibidas y notifican los intentos mediante la comunicación local existente.
-- El bloqueo usa ventanas de Locky sobre las ventanas de navegador, no pestañas de extensión ni una pantalla que cubra todo el escritorio. La ventana debe seguir ubicación, tamaño, visibilidad y estado minimizado de cada navegador.
-- Las extensiones no pueden reemplazar páginas internas del navegador. La ventana nativa cubre la interfaz del navegador mientras Locky funciona; si el proceso nativo falla, las extensiones restringen la navegación web hasta recuperar la conexión. Esto no promete impedir toda interacción con páginas internas durante una caída del proceso nativo.
-- El período de siete minutos es compartido entre los tres navegadores. Un intento durante un bloqueo vigente no cambia su vencimiento. Uno posterior al vencimiento crea un período nuevo.
-- El estado del bloqueo sobrevive a reinicio. La suspensión cuenta dentro del período. Tras reiniciar sin Internet, se usa la hora de Windows para el vencimiento; se acepta que adelantar manualmente el reloj pueda acortar ese bloqueo. La regla consolidada sigue vigente.
-- Locky se inicia en segundo plano con la sesión de Windows, permanece activo al cerrar su configuración y evita procesos duplicados. Un nuevo lanzamiento abre la configuración de la instancia activa.
-- Los dominios del proveedor inicial están preaprobados y se consolidan al iniciar Locky. La interfaz no muestra esa lista ni ofrece un botón para aprobarla. Las reglas agregadas manualmente conservan el período de verificación de diez minutos.
-- Un mecanismo de recuperación vuelve a iniciar Locky tras un fallo inesperado. La protección no promete resistir a un administrador de Windows que cierre o altere deliberadamente sus componentes.
-- Una integración ausente o fallida provoca el cierre del navegador afectado y una indicación de reparación en Locky, sin cerrar los otros navegadores.
+- This specification replaces the full-desktop screen behavior in the previous specification and its lock ticket; it retains domain and path rules and the ten-minute verification period.
+- The browsers covered by this flow are Chrome, Brave, and Edge. Firefox and Opera are outside this change.
+- The native application stores shared state and expiry and coordinates the browsers. Extensions prevent prohibited pages from loading and report attempts through the existing local communication.
+- The lock uses Locky windows over browser windows, not extension tabs or a screen covering the entire desktop. Each window must follow its browser's position, size, visibility, and minimized state.
+- Extensions cannot replace internal browser pages. The native window covers the browser interface while Locky runs; if the native process fails, extensions restrict web navigation until the connection recovers. This does not promise to prevent all interaction with internal browser pages during a native process failure.
+- The seven-minute period is shared by all three browsers. An attempt during an active lock does not change its expiry. An attempt after expiry starts a new period.
+- The lock state survives restarts. Sleep counts toward the period. After restarting without internet, Windows time is used for expiry; manually advancing the clock may shorten the active lock. The consolidated rule remains in effect.
+- Locky starts in the background with the Windows session, stays active after settings close, and avoids duplicate processes. Launching it again opens settings for the active instance.
+- The provider's initial domains are preapproved and consolidated at startup. The interface does not show that set or offer an approval button. Manually added rules keep the ten-minute verification period.
+- A recovery mechanism restarts Locky after an unexpected failure. Protection does not claim to resist a Windows administrator deliberately closing or changing its components.
+- A missing or failed integration closes the affected browser and shows a repair notice in Locky without closing the other browsers.
 
 ## Testing Decisions
 
-- La prueba principal atraviesa el flujo observable en Chrome, Brave y Edge: navegación a una página prohibida, carga impedida, ventana de bloqueo visible con cuenta regresiva, cobertura de los tres navegadores y liberación tras siete minutos. El usuario confirmó expresamente que espera esta prueba en los tres navegadores.
-- La misma prueba de extremo a extremo cubre cerrar y reabrir un navegador, minimizarlo y restaurarlo, mantener disponibles otras aplicaciones, y abrir una nueva ventana durante el bloqueo. La prueba observa ventanas y navegación, no nombres de funciones ni detalles internos de Electron.
-- En el límite más alto que permita automatización estable, se prueban suspensión o avance equivalente del tiempo, reinicio con bloqueo activo, reinicio sin conexión, caída y recuperación del proceso, y pérdida de integración. Un ensayo manual en Windows complementa los casos que no puedan simularse de forma fiel.
-- Las pruebas existentes del estado de siete minutos, los workers de las extensiones y el controlador de ventanas sirven como antecedente. Se adaptan para el nuevo comportamiento visible; no se preservan expectativas de pantalla completa por monitor.
-- La prueba del arranque verifica que los dominios del proveedor se consoliden sin acción de aprobación y que la interfaz no muestre una lista ni un botón.
-- Una buena prueba falla cuando una página prohibida carga, un navegador queda descubierto, el contador se reinicia indebidamente, el bloqueo permanece después de vencer o la protección desaparece al cerrar la configuración.
+- The primary test exercises the observable flow in Chrome, Brave, and Edge: navigate to a prohibited page, verify it is blocked, see a lock window with a countdown, confirm coverage across all three browsers, and confirm release after seven minutes. The user explicitly requested this test in all three browsers.
+- The same end-to-end test covers closing and reopening a browser, minimizing and restoring it, keeping other applications available, and opening a new window during the lock. It observes windows and navigation, not function names or Electron internals.
+- At the highest level stable automation allows, test sleep or equivalent time advancement, restart during an active lock, restart without connectivity, process failure and recovery, and integration loss. Manual Windows testing supplements cases that cannot be simulated faithfully.
+- Existing tests for the seven-minute state, extension workers, and window controller provide a baseline. Adapt them to the new visible behavior; do not retain expectations for a full-screen overlay on each monitor.
+- The startup test verifies that provider domains are consolidated without approval and that the interface shows neither a list nor an approval button.
+- A good test fails if a prohibited page loads, a browser is uncovered, the timer restarts incorrectly, the lock remains after expiry, or protection stops when settings close.
 
 ## Out of Scope
 
-- Bloquear todo el escritorio o impedir el uso de aplicaciones ajenas a Chrome, Brave y Edge.
-- Incorporar o validar Firefox, Opera u otros navegadores en este flujo.
-- Cambiar la semántica de las reglas de dominio y ruta o el período de verificación de diez minutos.
-- Garantizar resistencia frente a cambios deliberados de una cuenta administradora de Windows.
-- Prometer que la extensión sola cubra páginas internas del navegador cuando Locky no esté funcionando.
+- Locking the entire desktop or blocking applications other than Chrome, Brave, and Edge.
+- Adding or validating Firefox, Opera, or other browsers in this flow.
+- Changing domain or path rule semantics or the ten-minute verification period.
+- Guaranteeing resistance to deliberate changes by a Windows administrator.
+- Claiming that the extension alone covers internal browser pages when Locky is not running.
 
 ## Further Notes
 
-- El vocabulario del producto y la decisión de usar ventanas nativas sobre los navegadores están documentados en el glosario y en ADR 0004.
-- La especificación anterior de bloqueo de navegación contiene decisiones históricas incompatibles sobre pantalla completa, Firefox, Opera y hora verificada sin conexión. Para este flujo prevalece esta especificación.
-- `ready-for-agent` indica que este comportamiento está listo para implementarse; no afirma que ya esté instalado o funcionando en los navegadores del usuario.
+- Product vocabulary and the decision to use native windows over browsers are documented in the glossary and ADR 0004.
+- The previous navigation blocking specification contains historical decisions that conflict on full-screen behavior, Firefox, Opera, and verified time without connectivity. This specification takes precedence for this flow.
+- `ready-for-agent` means this behavior is ready to implement; it does not mean it is installed or working in the user's browsers.

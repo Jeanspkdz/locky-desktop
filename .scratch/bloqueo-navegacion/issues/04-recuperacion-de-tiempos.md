@@ -1,15 +1,15 @@
-# 04: Recuperación de tiempos tras reinicio
+# 04: Restore Timers After Restart
 
-**What to build:** Los períodos de verificación y de bloqueo del escritorio conservan su duración al suspender o reiniciar Windows y no se acortan cambiando la hora visible. Si tras reiniciar no hay internet para verificar la hora, Locky mantiene el estado pendiente hasta poder comprobarla.
+**What to build:** Verification periods and desktop locks retain their duration across Windows sleep and restart and are not shortened by changing the displayed clock. If internet is unavailable after restart to verify the time, Locky keeps the state pending until it can be checked.
 
-**Blocked by:** 02: Reglas de dominio y ruta; 03: Bloqueo del escritorio en todos los monitores.
+**Blocked by:** 02: Domain and Path Rules; 03: Desktop Lock Across All Monitors.
 
 **Status:** resolved
 
-- [x] Cambiar la hora visible de Windows no acorta los períodos de siete o diez minutos.
-- [x] Tras suspender o reiniciar, las reglas pendientes y el bloqueo del escritorio conservan el tiempo que corresponda.
-- [x] Tras reiniciar sin conexión, Locky no libera un estado pendiente basándose solo en la hora local.
-- [x] Cuando vuelve la conexión y se verifica la hora, Locky resuelve el tiempo restante y muestra la página de bloqueo solo si hay un navegador cubierto abierto.
+- [x] Changing the displayed Windows clock does not shorten the seven- or ten-minute periods.
+- [x] After sleep or restart, pending rules and the desktop lock retain the appropriate remaining time.
+- [x] After an offline restart, Locky does not clear a pending state based only on the local clock.
+- [x] When connectivity returns and time is verified, Locky resolves the remaining time and shows the lock screen only if a covered browser is open.
 
 ## Answer
 

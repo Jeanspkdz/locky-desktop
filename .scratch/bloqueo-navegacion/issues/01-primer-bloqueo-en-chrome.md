@@ -1,20 +1,20 @@
-# 01: Primer bloqueo en Chrome
+# 01: First Block in Chrome
 
-**What to build:** Al intentar abrir en Chrome un dominio configurado como página prohibida, la página no carga y Locky muestra la página de bloqueo en Electron. Este primer recorrido conecta navegador, reglas y escritorio con un caso simple y demostrable.
+**What to build:** When someone tries to open a domain configured as prohibited in Chrome, the page does not load and Locky shows its lock screen in Electron. This first flow connects the browser, rules, and desktop through a simple, demonstrable case.
 
 **Blocked by:** None (can start immediately).
 
 **Status:** resolved
 
-- [x] Un dominio configurado como prohibido no carga en Chrome y activa la página de bloqueo.
-- [x] Un dominio no prohibido sigue cargando normalmente.
-- [x] La página de bloqueo muestra el mensaje acordado sin revelar el dominio.
-- [x] El modo incógnito de Chrome está deshabilitado mientras Chrome está protegido.
-- [x] El recorrido funciona en Windows usando dependencias y scripts gestionados por `pnpm`.
+- [x] A domain configured as prohibited does not load in Chrome and activates the lock screen.
+- [x] A domain that is not prohibited continues to load normally.
+- [x] The lock screen shows the agreed message without revealing the domain.
+- [x] Chrome Incognito is disabled while Chrome is protected.
+- [x] The flow works on Windows using dependencies and scripts managed by `pnpm`.
 
 ## Evidence
 
-- `src/renderer/lock.html` renders “Se activó el bloqueo” and “Cerrar navegadores”; `src/renderer/lock.js` only invokes the close action. The overlay receives no blocked URL or timer value.
+- `src/renderer/lock.html` renders “Lock activated” and “Close browsers”; `src/renderer/lock.js` only invokes the close action. The overlay receives no blocked URL or timer value.
 
 ## Comments
 

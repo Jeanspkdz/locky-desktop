@@ -1,17 +1,17 @@
-# 04: La ventana de bloqueo sigue al navegador
+# 04: The Lock Window Follows the Browser
 
-**What to build:** Durante un bloqueo, la ventana de Locky permanece sobre cada navegador afectado al moverlo, cambiar su tamaño, minimizarlo, restaurarlo, cerrarlo o reabrirlo.
+**What to build:** During a lock, the Locky window stays over each affected browser as it is moved, resized, minimized, restored, closed, or reopened.
 
-**Blocked by:** 02: Primer bloqueo sobre Chrome.
+**Blocked by:** 02: First Lock Over Chrome.
 
 **Status:** resolved
 
-- [ ] Mover o redimensionar un navegador mantiene la página de bloqueo alineada con su ventana.
-- [ ] Minimizar un navegador oculta su página de bloqueo y permite usar otras aplicaciones.
-- [ ] Restaurarlo o abrirlo de nuevo antes del vencimiento vuelve a mostrar el bloqueo por el tiempo restante.
-- [ ] Cerrar todos los navegadores no cancela ni pausa el temporizador.
-- [ ] Una ventana de bloqueo no queda visible sobre otras aplicaciones cuando su navegador está minimizado o cerrado.
+- [ ] Moving or resizing a browser keeps the lock screen aligned with its window.
+- [ ] Minimizing a browser hides its lock screen and allows other applications to be used.
+- [ ] Restoring or reopening it before expiry shows the lock again for the remaining time.
+- [ ] Closing all browsers does not cancel or pause the timer.
+- [ ] A lock window is not left over other applications when its browser is minimized or closed.
 
 ## Answer
 
-El monitor Win32 actualiza la posición y dimensiones cada medio segundo, marca ventanas minimizadas y deja que cada overlay sea ventana propiedad del navegador, sin z-order global superior. El controlador prueba bounds individuales, minimización/restauración, cierre/reapertura y vencimiento. Si Windows rechaza la asociación, Locky oculta ese overlay, muestra reparación para ese navegador y en instalaciones empaquetadas cierra solo esa familia.
+The Win32 monitor updates position and dimensions every half second, marks minimized windows, and makes each overlay an owned window of its browser without global topmost z-order. The controller tests individual bounds, minimize and restore, close and reopen, and expiry. If Windows rejects the attachment, Locky hides that overlay, shows a repair notice for that browser, and in packaged installations closes only that browser family.

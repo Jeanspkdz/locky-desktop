@@ -1,16 +1,16 @@
-# 02: Reglas de dominio y ruta
+# 02: Domain and Path Rules
 
-**What to build:** La persona puede agregar una regla de dominio o de ruta desde Locky, revisar la página durante diez minutos y cancelar la regla antes de que se consolide. Después de consolidarla, la propia aplicación no ofrece editarla ni retirarla; Chrome aplica la regla correcta.
+**What to build:** Users can add a domain or path rule in Locky, review the page for ten minutes, and cancel the rule before it is consolidated. After consolidation, the application does not offer editing or removal; Chrome enforces the correct rule.
 
-**Blocked by:** 01: Primer bloqueo en Chrome.
+**Blocked by:** 01: First Block in Chrome.
 
 **Status:** resolved
 
-- [x] Una regla de dominio cubre el dominio, sus subdominios y todas sus rutas, sin alcanzar dominios de nombre parecido.
-- [x] Una regla de ruta cubre la ruta indicada y sus rutas inferiores, sin alcanzar otras rutas o perfiles parecidos.
-- [x] La página agregada permanece accesible durante los diez minutos de verificación y la regla puede cancelarse entonces.
-- [x] Al terminar la verificación sin cancelación, la regla se consolida y la aplicación no ofrece editarla ni retirarla.
-- [x] Las reglas consolidadas siguen aplicándose al cerrar y volver a abrir Locky.
+- [x] A domain rule covers the domain, its subdomains, and all its paths without matching similarly named domains.
+- [x] A path rule covers the specified path and its descendants without matching other paths or similar profiles.
+- [x] An added page remains accessible during the ten-minute verification period, and the rule can be cancelled during that time.
+- [x] If verification ends without cancellation, the rule is consolidated and the application offers no edit or removal action.
+- [x] Consolidated rules remain enforced after Locky is closed and reopened.
 
 ## Answer
 
