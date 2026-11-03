@@ -8,6 +8,18 @@ const require = createRequire(import.meta.url);
 const { StateStore } = require('../../src/main/state-store.cjs');
 const { remainingLockMs } = await import('../../src/domain/locky-state.js');
 
+test('an absent state file loads a safe empty state', async t => {
+  const directory = await fs.mkdtemp(path.join(process.cwd(), '.scratch', 'locky-store-'));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const state = await new StateStore(path.join(directory, 'missing.json')).read();
+
+  assert.equal(state.revision, 0);
+  assert.deepEqual(state.rules, []);
+  assert.deepEqual(state.pendingRules, []);
+  assert.equal(state.desktopLock, null);
+  assert.deepEqual(state.browserHealth, {});
+});
+
 test('rules, pending timers, and offline lock expiry survive creating a new store instance', async t => {
   const directory = await fs.mkdtemp(path.join(process.cwd(), '.scratch', 'locky-store-'));
   t.after(() => fs.rm(directory, { recursive: true, force: true }));
@@ -43,4 +55,19 @@ test('a corrupt state file is surfaced instead of silently dropping permanent ru
   await fs.writeFile(filePath, '{broken json', 'utf8');
 
   await assert.rejects(new StateStore(filePath).read(), /estado/i);
+});
+
+test('a failed state write does not poison later writes after the filesystem recovers', async t => {
+  const directory = await fs.mkdtemp(path.join(process.cwd(), '.scratch', 'locky-store-'));
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const parentPath = path.join(directory, 'blocked-parent');
+  await fs.writeFile(parentPath, 'file instead of directory');
+  const store = new StateStore(path.join(parentPath, 'state.json'));
+
+  await assert.rejects(store.write({ version: 1, rules: [] }));
+  await fs.rm(parentPath);
+  await fs.mkdir(parentPath);
+  await store.write({ version: 1, rules: [{ id: 'recovered' }] });
+
+  assert.deepEqual(JSON.parse(await fs.readFile(path.join(parentPath, 'state.json'), 'utf8')).rules, [{ id: 'recovered' }]);
 });

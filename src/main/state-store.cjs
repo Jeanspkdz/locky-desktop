@@ -43,7 +43,7 @@ class StateStore {
   }
 
   async write(state) {
-    this.writeQueue = this.writeQueue.then(async () => {
+    this.writeQueue = this.writeQueue.catch(() => {}).then(async () => {
       await fs.mkdir(path.dirname(this.filePath), { recursive: true });
       const temporaryPath = `${this.filePath}.tmp`;
       await fs.writeFile(temporaryPath, JSON.stringify(state, null, 2), 'utf8');

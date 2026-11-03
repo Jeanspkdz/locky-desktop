@@ -37,3 +37,10 @@ test('después de vencer se inicia un período nuevo de siete minutos', () => {
 
   assert.equal(second.endsAt, first.endsAt + 420_000);
 });
+
+test('the test-only lock period is honored when starting a browser lock', () => {
+  assert.deepEqual(startDesktopLock(null, 1_000, 12_000), {
+    startedAt: 1_000,
+    endsAt: 13_000,
+  });
+});

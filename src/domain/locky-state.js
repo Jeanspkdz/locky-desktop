@@ -28,9 +28,9 @@ export function consolidateExpiredRules(state, now) {
   };
 }
 
-export function startDesktopLock(current, now) {
+export function startDesktopLock(current, now, periodMs = DESKTOP_LOCK_PERIOD_MS) {
   if (current && current.endsAt > now) return current;
-  return { startedAt: now, endsAt: now + DESKTOP_LOCK_PERIOD_MS };
+  return { startedAt: now, endsAt: now + periodMs };
 }
 
 export function remainingLockMs(lock, now) {
