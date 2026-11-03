@@ -13,6 +13,9 @@ const { fetchTrustedTime } = require('./main/trusted-time.cjs');
 const { createOverlayController } = require('./main/overlay-controller.cjs');
 const { createBrowserProcessControl } = require('./main/browser-process-control.cjs');
 const { createBrowserProcessScopeReader } = require('./main/browser-process-scope.cjs');
+const { createSingleInstanceWindowPresenter } = require('./main/single-instance-window-presenter.cjs');
+const { createRetryingBrowserWatcher } = require('./main/retrying-browser-watcher.cjs');
+const { createDiagnosticLogger } = require('./main/diagnostic-log.cjs');
 const { selectProtectedBrowserFamilies } = require('./domain/protected-browser-families.cjs');
 const {
   addPendingRule,
@@ -34,6 +37,7 @@ const browserProcessControl = createBrowserProcessControl({
   ...(runtimeConfig.testMode ? { getProcessIds: family => readBrowserProcessScope()[family] ?? [] } : {}),
 });
 if (runtimeConfig.userDataPath) app.setPath('userData', runtimeConfig.userDataPath);
+const diagnosticLogger = createDiagnosticLogger(path.join(app.getPath('userData'), 'locky-diagnostics.log'));
 const browserWindowMonitorPath = runtimeConfig.browserWindowMonitorPath
   ?? path.join(process.env.LOCALAPPDATA ?? app.getPath('appData'), 'LockyDesktop', 'browser-window-monitor.exe');
 const installedMarker = path.join(process.resourcesPath, 'locky', 'installed.flag');
@@ -49,18 +53,23 @@ let domainRules;
 let sessionClock;
 let clockRetryTimer;
 let browserHealthRules;
-let browserWatcher;
 let browserWatcherFailed = false;
 let lastBrowserFamilies = [];
 let appQuitting = false;
 const browserRuntime = new Map();
+const browserWatcher = createRetryingBrowserWatcher(() => require('./main/windows-browser-watcher.cjs').createWindowsBrowserWatcher(undefined, {
+  getProcessScope: runtimeConfig.testMode ? readBrowserProcessScope : undefined,
+}));
 const overlayController = createOverlayController({
   BrowserWindow,
   attachToBrowser: (browserId, overlay) => {
     const overlayHandle = overlay.getNativeWindowHandle().readBigUInt64LE().toString(16);
     return execFileAsync(browserWindowMonitorPath, ['--attach', browserId, overlayHandle], { windowsHide: true, timeout: 1500 });
   },
-  onAttachFailure: browserWindow => { void reportOverlayAttachFailure(browserWindow.family); },
+  onAttachFailure: (browserWindow, error) => {
+    diagnosticLogger.error('OVERLAY_ATTACH_FAILURE', error);
+    void reportOverlayAttachFailure(browserWindow.family);
+  },
   preloadPath: path.join(__dirname, 'preload.cjs'),
   lockPagePath: path.join(__dirname, 'renderer/lock.html'),
 });
@@ -106,6 +115,8 @@ function showSettingsWindow() {
   settingsWindow.focus();
 }
 
+const settingsWindowPresenter = createSingleInstanceWindowPresenter(showSettingsWindow);
+
 function syncOverlayVisibility(browserWindows) {
   const remainingMs = remainingLockMs(state?.desktopLock, Date.now());
   overlayController.sync({
@@ -125,13 +136,21 @@ async function closeBrowserFamily(family) {
 }
 
 async function saveAndPublish(nextState) {
-  const rulesChanged = state && nextState.rules !== state.rules;
-  state = {
+  const previousState = state;
+  const rulesChanged = previousState && nextState.rules !== previousState.rules;
+  const publishedState = {
     ...nextState,
-    revision: (state?.revision ?? 0) + 1,
-    rulesRevision: (state?.rulesRevision ?? 0) + (rulesChanged ? 1 : 0),
+    revision: (previousState?.revision ?? 0) + 1,
+    rulesRevision: (previousState?.rulesRevision ?? 0) + (rulesChanged ? 1 : 0),
   };
-  await store.write(state);
+  state = publishedState;
+  try {
+    await store.write(publishedState);
+  } catch (error) {
+    if (state === publishedState) state = previousState;
+    diagnosticLogger.error('STATE_WRITE_FAILURE', error);
+    throw error;
+  }
   if (settingsWindow && !settingsWindow.isDestroyed()) settingsWindow.webContents.send('state:changed', publicState());
 }
 
@@ -166,18 +185,13 @@ async function checkTimers() {
     }
     let snapshot;
     try {
-      if (!browserWatcher) {
-        browserWatcher = require('./main/windows-browser-watcher.cjs').createWindowsBrowserWatcher(undefined, {
-          getProcessScope: runtimeConfig.testMode ? readBrowserProcessScope : undefined,
-        });
-      }
       snapshot = browserWatcher.snapshot();
     } catch (error) {
       nextInterval = 3000;
       await handleBrowserWatcherFailure(error);
       return;
     }
-    const detectedFamilies = selectProtectedBrowserFamilies(snapshot.families ?? []);
+    const detectedFamilies = selectProtectedBrowserFamilies((snapshot.windows ?? []).map(window => window.family));
     const browserWindows = snapshot.windows.filter(window => browserProcessControl.hasFamily(window.family)).map(window => ({
       ...window,
       bounds: { x: window.x, y: window.y, width: window.width, height: window.height },
@@ -214,17 +228,18 @@ async function checkTimers() {
     for (const family of detectedFamilies) {
       let runtime = browserRuntime.get(family);
       if (!runtime) {
-        runtime = { startedAt: nowMono, lastHealthyAt: null };
+        runtime = browserHealthRules.createBrowserRuntime(nowMono);
         browserRuntime.set(family, runtime);
         await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'checking' } } });
       }
-      const failure = browserHealthRules.integrationFailureReason(runtime, nowMono);
+      const integration = browserHealthRules.evaluateBrowserIntegration(runtime, nowMono, enforceUnhealthyBrowsers, state.rules);
+      const failure = integration.failure;
       if (failure) {
         const current = state.browserHealth[family];
         if (current?.status !== 'repair' || current.reason !== failure) {
           await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'repair', reason: failure } } });
         }
-        if (browserHealthRules.shouldEnforceBrowserIntegration(enforceUnhealthyBrowsers, state.rules)) await closeBrowserFamily(family);
+        if (integration.closeBrowser) await closeBrowserFamily(family);
       }
     }
     syncOverlayVisibility(browserWindows);
@@ -249,8 +264,9 @@ function scheduleMonitor(intervalMs) {
 async function handleBrowserWatcherFailure(error) {
   if (browserWatcherFailed) return;
   browserWatcherFailed = true;
-  console.error('Falló el vigilante de navegadores.', error);
   const familiesToRepair = browserProcessControl.familiesForWatcherFailure(lastBrowserFamilies);
+  console.error('Falló el vigilante de navegadores.', error);
+  diagnosticLogger.error('BROWSER_WATCHER_FAILURE', error);
   if (browserHealthRules.shouldEnforceBrowserIntegration(enforceUnhealthyBrowsers, state.rules)) {
     await Promise.all(familiesToRepair.map(closeBrowserFamily));
   }
@@ -281,7 +297,10 @@ function startPipeServer() {
         if (!line.trim()) continue;
         let request;
         try { request = JSON.parse(line); } catch { continue; }
-        void handleNativeMessage(request).then(response => sendPipeResponse(socket, { id: request.id, ...response }));
+        void handleNativeMessage(request).then(response => sendPipeResponse(socket, { id: request.id, ...response })).catch(error => {
+          diagnosticLogger.error('NATIVE_MESSAGE_FAILURE', error);
+          sendPipeResponse(socket, { id: request.id, ok: false, error: 'Locky no pudo procesar la solicitud del navegador.' });
+        });
       }
     });
   });
@@ -307,8 +326,24 @@ async function handleNativeMessage(message) {
   }
   if (message.type === 'blocked') {
     if (!domainRules.findMatchingRule(message.url, state.rules)) return { ok: false, error: 'La URL no coincide con una regla consolidada.' };
-    await saveAndPublish({ ...state, desktopLock: startDesktopLock(state.desktopLock, Date.now()) });
+    await saveAndPublish({
+      ...state,
+      desktopLock: startDesktopLock(state.desktopLock, Date.now(), runtimeConfig.lockPeriodMs ?? undefined),
+    });
     await checkTimers();
+    return { ok: true };
+  }
+  if (message.type === 'connected') {
+    const family = message.browserFamily;
+    if (!browserProcessControl.hasFamily(family)) return { ok: false, error: 'Navegador no reconocido por Locky.' };
+    const runtime = browserRuntime.get(family) ?? {
+      ...browserHealthRules.createBrowserRuntime(performance.now()),
+    };
+    runtime.lastConnectedAt = performance.now();
+    browserRuntime.set(family, runtime);
+    if (state.browserHealth[family]?.status !== 'healthy' && state.browserHealth[family]?.status !== 'checking') {
+      await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'checking' } } });
+    }
     return { ok: true };
   }
   if (message.type === 'health') {
@@ -324,6 +359,7 @@ async function handleNativeMessage(message) {
     }
     runtime.startedAt = 0;
     runtime.lastHealthyAt = null;
+    runtime.lastConnectedAt = null;
     browserRuntime.set(family, runtime);
     await saveAndPublish({ ...state, browserHealth: { ...state.browserHealth, [family]: { status: 'repair', reason: 'extension' } } });
     if (browserHealthRules.shouldEnforceBrowserIntegration(enforceUnhealthyBrowsers, state.rules)) await closeBrowserFamily(family);
@@ -467,6 +503,10 @@ if (process.argv.includes('--native-host')) {
     browserHealthRules = await import('./domain/browser-health.js');
     store = new StateStore(path.join(app.getPath('userData'), 'locky-state.json'));
     state = await store.read();
+    const resetHealth = browserHealthRules.resetBrowserHealthForStartup(state.browserHealth);
+    if (JSON.stringify(resetHealth) !== JSON.stringify(state.browserHealth)) {
+      await saveAndPublish({ ...state, browserHealth: resetHealth });
+    }
     const blocklist = await getCandidates();
     const approvedState = applyApprovedDomains(state, blocklist.candidates, blocklist.checkedAt);
     domainRules.assertRuleSetCapacity([...approvedState.rules, ...approvedState.pendingRules]);
@@ -475,13 +515,14 @@ if (process.argv.includes('--native-host')) {
     registerIpc();
     startPipeServer();
     createSettingsWindow();
+    settingsWindowPresenter.markReady();
     void checkTimers();
     void synchronizeClock();
   }).catch(error => {
     dialog.showErrorBox('Locky no pudo iniciar', `${error.message}\n\nSe conserva el archivo de estado para no descartar reglas permanentes.`);
     app.quit();
   });
-  app.on('second-instance', showSettingsWindow);
+  app.on('second-instance', () => settingsWindowPresenter.request());
   app.on('window-all-closed', () => {});
 }
 

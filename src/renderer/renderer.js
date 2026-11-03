@@ -80,15 +80,15 @@ function renderBrowserHealth(health, enforcementEnabled, hasRules) {
             ? 'La extensión dejó de responder. Revísala antes de activar reglas.'
             : 'Extensión no detectada. Instálala antes de activar reglas.'
         : value.reason === 'overlay'
-          ? 'Reparación necesaria: Locky no pudo cubrir la ventana del navegador. Repara la instalación y vuelve a abrirlo.'
+          ? 'Reparación necesaria: Locky no pudo cubrir la ventana del navegador. Repara la instalación y, si el navegador está abierto como administrador, ejecútalo con el mismo nivel de permisos que Locky.'
         : value.reason === 'watcher'
           ? enforcementEnabled
             ? 'Reparación necesaria: Locky no puede vigilar los navegadores. Se cerraron para mantener la protección.'
             : 'Reparación necesaria: Locky no puede vigilar los navegadores. Reinicia Locky después de reparar la integración.'
         : value.reason === 'missing'
           ? enforcementEnabled
-            ? 'Reparación necesaria: instala o habilita la extensión Locky. El navegador fue cerrado.'
-            : 'Reparación necesaria: instala o habilita la extensión Locky. En modo desarrollo el navegador no se cierra.'
+            ? 'Reparación necesaria: Locky no recibió respuesta de la extensión. El navegador fue cerrado.'
+            : 'Reparación necesaria: Locky no recibió respuesta de la extensión. En modo desarrollo el navegador no se cierra.'
           : value.reason === 'stale'
             ? enforcementEnabled
               ? 'Reparación necesaria: la extensión dejó de responder. El navegador fue cerrado.'
