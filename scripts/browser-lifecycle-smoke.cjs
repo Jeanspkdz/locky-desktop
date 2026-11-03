@@ -2,13 +2,13 @@ const { spawn, execFileSync } = require('node:child_process');
 const nodeAssert = require('node:assert/strict');
 const fs = require('node:fs');
 const http = require('node:http');
-const os = require('node:os');
 const path = require('node:path');
 const { setTimeout: delay } = require('node:timers/promises');
 const { snapshotWindows } = require('./browser-e2e-windows.cjs');
 
 const projectRoot = path.resolve(__dirname, '..');
-const blockedHost = 'pornhub.com';
+const blockedHost = 'example.com';
+const blockedPath = '/locky-prueba-2026';
 const EXTENSION_PATH = path.join(projectRoot, 'extensions', 'chromium');
 const EXTENSION_ID = 'pgphggplmacpiglkndjhpaojeeoomfdn';
 let testMarkerHost = '';
@@ -71,18 +71,30 @@ function findElectronBinary() {
 function verifyNativeHostRegistration() {
   const localAppData = process.env.LOCALAPPDATA;
   assert(localAppData, 'LOCALAPPDATA is unavailable.');
-  const manifestPath = path.join(localAppData, 'LockyDesktop', 'com.locky.desktop.json');
+  const browserRegistryKeys = [
+    'HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\com.locky.desktop',
+    'HKCU\\Software\\BraveSoftware\\Brave-Browser\\NativeMessagingHosts\\com.locky.desktop',
+    'HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\com.locky.desktop',
+  ];
+  const manifestPaths = browserRegistryKeys.map(registryKey => {
+    const output = execFileSync('reg.exe', ['query', registryKey, '/ve'], {
+      encoding: 'utf8',
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return output.match(/\((?:Default|Predeterminado)\)\s+REG_SZ\s+(.+)$/im)?.[1]?.trim() ?? null;
+  });
+  const manifestPath = manifestPaths[0];
+  assert(manifestPath, 'The Chrome native host is not registered. Run `pnpm run setup:dev` first.');
+  assert(manifestPaths.every(candidate => path.resolve(candidate).toLowerCase() === path.resolve(manifestPath).toLowerCase()),
+    'Chrome, Brave, and Edge must use the same native host manifest.');
   assert(fs.existsSync(manifestPath), 'The registered Chromium native host manifest is missing.');
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   assert(fs.existsSync(manifest.path), 'The registered Chromium native host executable is missing.');
   assert(manifest.allowed_origins?.includes(`chrome-extension://${EXTENSION_ID}/`), 'The registered native host does not allow this extension.');
-  for (const browserPath of [
-    'HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\com.locky.desktop',
-    'HKCU\\Software\\BraveSoftware\\Brave-Browser\\NativeMessagingHosts\\com.locky.desktop',
-    'HKCU\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\com.locky.desktop',
-  ]) {
-    execFileSync('reg.exe', ['query', browserPath, '/ve'], { windowsHide: true, stdio: 'ignore' });
-  }
+  nodeAssert.equal(path.dirname(manifestPath), path.dirname(manifest.path), 'The manifest and host executable must share a browser-readable directory.');
+  assert(fs.existsSync(path.join(path.dirname(manifestPath), 'register-browser-hosts.ps1')),
+    'The manifest must be beside the browser host registration script, not in the per-user runtime folder.');
   const monitorPath = path.join(localAppData, 'LockyDesktop', 'browser-window-monitor.exe');
   assert(fs.existsSync(monitorPath), 'The installed browser window monitor is missing.');
 }
@@ -289,6 +301,35 @@ async function readOverlayCountdowns(appDevTools, expectedCount) {
   return values.every(Boolean) ? values : null;
 }
 
+async function assertOverlayCenters(appDevTools, expectedCount) {
+  const targets = (await listAppTargets(appDevTools.port))
+    .filter(target => target.type === 'page' && target.title === 'Bloqueo activado');
+  assert(targets.length >= expectedCount, 'Expected lock pages are missing for the centering check.');
+  for (const target of targets) {
+    const page = await cdpConnect(target.webSocketDebuggerUrl);
+    try {
+      await page.send('Runtime.enable');
+      const result = await page.send('Runtime.evaluate', {
+        expression: `(() => {
+          const rect = document.querySelector('.timer-frame').getBoundingClientRect();
+          return {
+            actualX: screenX + rect.left + rect.width / 2,
+            actualY: screenY + rect.top + rect.height / 2,
+            expectedX: screen.availLeft + screen.availWidth / 2,
+            expectedY: screen.availTop + screen.availHeight / 2,
+          };
+        })()`,
+        returnByValue: true,
+      });
+      const center = result.result.value;
+      assert(Math.abs(center.actualX - center.expectedX) <= 3, `Lock timer is not horizontally centered: ${JSON.stringify(center)}`);
+      assert(Math.abs(center.actualY - center.expectedY) <= 100, `Lock timer is too far from the vertical center: ${JSON.stringify(center)}`);
+    } finally {
+      page.close();
+    }
+  }
+}
+
 async function getPageTarget(browser) {
   const targets = await waitFor('an installed browser page target', async () => {
     try {
@@ -339,6 +380,32 @@ async function extensionWorkerIdentity(browser) {
       if (sessionId) await browser.browserDevTools.connection.send('Target.detachFromTarget', { sessionId }).catch(() => {});
     }
   }, 15_000, 100);
+}
+
+async function inspectExtensionWorker(browser) {
+  if (!browser?.browserDevTools) return null;
+  const { targetInfos } = await browser.browserDevTools.connection.send('Target.getTargets').catch(() => ({ targetInfos: [] }));
+  const worker = targetInfos.find(target => target.type === 'service_worker'
+    && target.url?.startsWith(`chrome-extension://${EXTENSION_ID}/`));
+  if (!worker) return { present: false };
+  let sessionId;
+  try {
+    ({ sessionId } = await browser.browserDevTools.connection.send('Target.attachToTarget', {
+      targetId: worker.targetId,
+      flatten: true,
+    }));
+    await browser.browserDevTools.connection.send('Runtime.enable', {}, sessionId);
+    const result = await browser.browserDevTools.connection.send('Runtime.evaluate', {
+      expression: 'chrome.alarms.getAll().then(alarms => JSON.stringify({alarms:alarms.map(({name,scheduledTime,periodInMinutes})=>({name,scheduledTime,periodInMinutes})),nativePort:Boolean(nativePort),fetchingState,refreshAfterSync,currentRules:currentRules.length,stateRulesRevision}))',
+      awaitPromise: true,
+      returnByValue: true,
+    }, sessionId);
+    return result.result.value ? { present: true, ...JSON.parse(result.result.value) } : { present: true, evaluation: result.result.type };
+  } catch (error) {
+    return { present: true, error: error.message };
+  } finally {
+    if (sessionId) await browser.browserDevTools.connection.send('Target.detachFromTarget', { sessionId }).catch(() => {});
+  }
 }
 
 async function readState(statePath) {
@@ -568,16 +635,27 @@ function startBrowser(spec, executable, profilePath, fixturePort, testEnv, inclu
 }
 
 async function browserClose(browser) {
-  if (!browser.browserDevTools) return;
-  try { await browser.browserDevTools.connection.send('Browser.close'); }
-  catch {}
-  browser.browserDevTools.connection.close();
-  await waitFor(`${browser.spec.label} test process exit`, () => browser.process.exitCode !== null || browser.process.signalCode !== null, 15_000)
-    .catch(() => {
-      // This fallback is constrained to the root PID created by this harness.
-      try { execFileSync('taskkill.exe', ['/PID', String(browser.process.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }); }
+  if (browser.browserDevTools) {
+    try { await browser.browserDevTools.connection.send('Browser.close'); }
+    catch {}
+    browser.browserDevTools.connection.close();
+  }
+  const killTestBrowserTree = () => {
+    const processRows = powershellProcessRows();
+    const processIds = browserPidsFor(browser, processRows);
+    for (const processId of processIds) {
+      try { execFileSync('taskkill.exe', ['/PID', String(processId), '/T', '/F'], { windowsHide: true, stdio: 'ignore' }); }
       catch {}
-    });
+    }
+  };
+  await waitFor(`${browser.spec.label} test process exit`, () => browser.process.exitCode !== null || browser.process.signalCode !== null, 15_000)
+    .catch(killTestBrowserTree);
+  await waitFor(`${browser.spec.label} isolated browser descendants to exit`, () => (
+    browserPidsFor(browser, powershellProcessRows()).length === 0
+  ), 10_000).catch(killTestBrowserTree);
+  await waitFor(`${browser.spec.label} isolated browser cleanup`, () => (
+    browserPidsFor(browser, powershellProcessRows()).length === 0
+  ), 5_000);
   browser.browserDevTools = null;
 }
 
@@ -666,28 +744,60 @@ async function inspectRepairUi(appDevTools, family) {
 
 async function run() {
   assert(process.platform === 'win32', 'The installed browser lifecycle smoke requires Windows.');
-  const electronBinary = findElectronBinary();
-  const executableByFamily = Object.fromEntries(BROWSER_SPECS.map(spec => [spec.family, findExecutable(spec)]));
+  const selectedSpecs = process.argv.includes('--brave-chrome')
+    ? BROWSER_SPECS.filter(spec => spec.family === 'chrome' || spec.family === 'brave')
+    : BROWSER_SPECS;
+  const useRunningInstalledApp = process.env.LOCKY_E2E_USE_RUNNING_INSTALLED === '1';
+  const healthHoldMs = Number(process.env.LOCKY_CHROME_HEALTH_HOLD_MS ?? (
+    process.argv.includes('--chrome-health') ? 70_000 : Number.NaN
+  ));
+  const lockPeriodMs = Number(process.env.LOCKY_E2E_LOCK_PERIOD_MS ?? (process.argv.includes('--brave-chrome') ? 120_000 : 180_000));
+  assert(Number.isSafeInteger(lockPeriodMs) && lockPeriodMs >= 1000 && lockPeriodMs <= 420_000, 'The browser lifecycle smoke lock period must be between 1 second and 7 minutes.');
+  assert(!useRunningInstalledApp || (Number.isFinite(healthHoldMs) && healthHoldMs > 0), 'The installed-app mode requires LOCKY_CHROME_HEALTH_HOLD_MS.');
+  const electronBinary = useRunningInstalledApp ? null : findElectronBinary();
+  const executableByFamily = Object.fromEntries(selectedSpecs.map(spec => [spec.family, findExecutable(spec)]));
   verifyNativeHostRegistration();
   const preexistingBrowserWindows = snapshotWindows().filter(window => (
     window.className === 'Chrome_WidgetWin_1' && isBrowserWindowTitle(window.title)
   ));
   log(`pre-existing browser windows captured outside test scope: ${preexistingBrowserWindows.length}`);
+  if (useRunningInstalledApp) {
+    const chromeProcesses = powershellProcessRows().filter(row => String(row.Name).toLowerCase() === 'chrome.exe');
+    assert(chromeProcesses.length === 0, 'The installed-app health smoke requires Chrome to be fully closed before it starts.');
+  }
 
-  const runDirectory = await fs.promises.mkdtemp(path.join(os.tmpdir(), `locky-browser-e2e-${process.pid}-`));
+  const runRoot = path.join(projectRoot, '.scratch');
+  await fs.promises.mkdir(runRoot, { recursive: true });
+  const runDirectory = await fs.promises.mkdtemp(path.join(runRoot, `locky-browser-e2e-${process.pid}-`));
   const userDataPath = path.join(runDirectory, 'locky-data');
   const scopePath = path.join(runDirectory, 'browser-scope.json');
+  const installedRulesPath = process.env.LOCKY_E2E_RULES_STATE_PATH;
+  const statePath = useRunningInstalledApp
+    ? process.env.LOCKY_E2E_INSTALLED_STATE_PATH ?? path.join(process.env.APPDATA ?? '', 'locky-desktop', 'locky-state.json')
+    : path.join(userDataPath, 'locky-state.json');
   await fs.promises.mkdir(userDataPath, { recursive: true });
   await fs.promises.writeFile(scopePath, '{}');
   testMarkerHost = `locky-e2e-${process.pid}-${Date.now().toString(36)}.invalid`;
-  await fs.promises.writeFile(path.join(userDataPath, 'locky-state.json'), JSON.stringify({
-    version: 1,
-    revision: 0,
-    rulesRevision: 0,
-    rules: [{ id: 'e2e-sentinel', type: 'domain', host: testMarkerHost, path: '/', source: 'user' }],
-  }));
+  if (!useRunningInstalledApp) {
+    let rules = [];
+    if (installedRulesPath) {
+      const savedState = await readState(installedRulesPath);
+      assert(Array.isArray(savedState?.rules), 'The requested local rules state does not contain a rules array.');
+      rules = savedState.rules.filter(rule => rule.id !== 'e2e-sentinel');
+      log(`isolated profile seeded with ${rules.length} rules from local state plus its probe rule`);
+    }
+    rules.push({ id: 'e2e-safe-route', type: 'path', host: blockedHost, path: blockedPath, source: 'user' });
+    rules.push({ id: 'e2e-sentinel', type: 'domain', host: testMarkerHost, path: '/', source: 'user' });
+    await fs.promises.writeFile(statePath, JSON.stringify({
+      version: 1,
+      revision: 0,
+      rulesRevision: 0,
+      rules,
+    }));
+  }
 
   const testPipeName = `locky-e2e-${process.pid}-${Date.now().toString(36)}`;
+  const testLaunchMarker = `locky-e2e-${process.pid}-${Date.now().toString(36)}`;
   const appPort = await reservePort();
   const fixtureRequests = [];
   const fixtureServer = http.createServer((request, response) => {
@@ -700,43 +810,69 @@ async function run() {
     fixtureServer.listen(0, '127.0.0.1', resolve);
   });
   const fixturePort = fixtureServer.address().port;
-  const testEnv = {
-    ...process.env,
-    LOCKY_TEST_MODE: '1',
-    LOCKY_TEST_PIPE_NAME: testPipeName,
-    LOCKY_TEST_USER_DATA_DIR: userDataPath,
-    LOCKY_TEST_BROWSER_SCOPE_FILE: scopePath,
-    LOCKY_ENFORCE_UNHEALTHY_BROWSER: '1',
-    LOCKY_NATIVE_HOST_TRACE: '1',
-  };
-  delete testEnv.LOCKY_TEST_NO_OVERLAY;
-  delete testEnv.LOCKY_TEST_HIDE_SETTINGS;
+  const testEnv = useRunningInstalledApp
+    ? { ...process.env, LOCKY_NATIVE_HOST_TRACE: '1' }
+    : {
+      ...process.env,
+      LOCKY_TEST_MODE: '1',
+      LOCKY_TEST_PIPE_NAME: testPipeName,
+      LOCKY_TEST_USER_DATA_DIR: userDataPath,
+      LOCKY_TEST_BROWSER_SCOPE_FILE: scopePath,
+      LOCKY_TEST_LOCK_PERIOD_MS: String(lockPeriodMs),
+      LOCKY_TEST_APP_EXECUTABLE: electronBinary,
+      LOCKY_TEST_APP_ROOT: projectRoot,
+      LOCKY_TEST_LAUNCH_MARKER: testLaunchMarker,
+      LOCKY_TEST_STATE_DELAY_MS: '0',
+      LOCKY_ENFORCE_UNHEALTHY_BROWSER: '1',
+      LOCKY_NATIVE_HOST_TRACE: '1',
+    };
+  if (useRunningInstalledApp) {
+    for (const key of Object.keys(testEnv)) if (key.startsWith('LOCKY_TEST_')) delete testEnv[key];
+    delete testEnv.LOCKY_ENFORCE_UNHEALTHY_BROWSER;
+  } else {
+    delete testEnv.LOCKY_TEST_NO_OVERLAY;
+    delete testEnv.LOCKY_TEST_HIDE_SETTINGS;
+  }
 
   let appProcess;
+  let appStderrPath;
   let appDevTools;
   const secondInstance = { child: null };
   let appProcessTreeStopper;
   const browsers = [];
   let expiryTimer;
   try {
-    appProcess = spawn(electronBinary, [projectRoot, `--remote-debugging-port=${appPort}`], {
-      cwd: projectRoot,
-      env: testEnv,
-      stdio: 'ignore',
-      windowsHide: false,
-    });
-    appProcessPid = appProcess.pid;
-    appProcess.once('error', error => { appProcess.startError = error; });
-    appDevTools = await waitForDevTools(appPort);
-    const statePath = path.join(userDataPath, 'locky-state.json');
-    await waitFor('isolated state with consolidated rules', async () => {
+    if (useRunningInstalledApp) {
+      await waitFor('the running installed Locky state with consolidated rules', async () => {
+        const state = await readState(statePath);
+        if (!state || state.rules.length === 0) return null;
+        assert(!state.desktopLock || state.desktopLock.endsAt <= Date.now(), 'The installed-app health smoke will not start during an active browser lock.');
+        return state;
+      }, 10_000);
+      log('using the already running installed Locky instance; no second app was started');
+    } else {
+      appStderrPath = path.join(runDirectory, 'locky-stderr.log');
+      const appStderrHandle = fs.openSync(appStderrPath, 'w');
+      appProcess = spawn(electronBinary, [projectRoot, `--remote-debugging-port=${appPort}`], {
+        cwd: projectRoot,
+        env: testEnv,
+        stdio: ['ignore', 'ignore', appStderrHandle, 'ignore', 'ignore'],
+        windowsHide: false,
+      });
+      fs.closeSync(appStderrHandle);
+      appProcess.stderrPath = appStderrPath;
+      appProcessPid = appProcess.pid;
+      appProcess.once('error', error => { appProcess.startError = error; });
+      appDevTools = await waitForDevTools(appPort);
+      await waitFor('isolated state with consolidated rules', async () => {
       const state = await readState(statePath);
       return state && state.rules.length > 0 ? state : null;
-    }, 45_000);
-    log('isolated Locky instance is running with real overlays enabled');
+      }, 45_000);
+      log('isolated Locky instance is running with real overlays enabled');
+    }
 
     const initialProfiles = path.join(runDirectory, 'profiles');
-    for (const [index, spec] of BROWSER_SPECS.entries()) {
+    for (const [index, spec] of selectedSpecs.entries()) {
       const browser = startBrowser(
         spec,
         executableByFamily[spec.family],
@@ -753,13 +889,77 @@ async function run() {
         log(`${spec.label} extension worker reports Brave=${browser.extensionIdentity.brave}; Edge=${browser.extensionIdentity.edge}`);
       }
       await waitForHealth(statePath, spec.family, 'healthy', browser);
-      log(`${spec.label} extension connected in a disposable profile (${index + 1}/${BROWSER_SPECS.length})`);
+      log(`${spec.label} extension connected in a disposable profile (${index + 1}/${selectedSpecs.length})`);
+      if (spec.family === 'chrome' && Number.isFinite(healthHoldMs) && healthHoldMs > 0) {
+        const startedAt = Date.now();
+        const healthTransitions = [];
+        let lastHealth = null;
+        while (Date.now() - startedAt < Math.min(healthHoldMs, 120_000)) {
+          const state = await readState(statePath);
+          const health = state?.browserHealth?.chrome ?? null;
+          const serializedHealth = JSON.stringify(health);
+          if (serializedHealth !== lastHealth) {
+            healthTransitions.push({ elapsedMs: Date.now() - startedAt, health });
+            lastHealth = serializedHealth;
+          }
+          await delay(Math.min(500, Math.max(0, healthHoldMs - (Date.now() - startedAt))));
+        }
+        const healthState = await readState(statePath);
+        if (healthState?.browserHealth?.chrome?.status !== 'healthy') {
+          const extensionRuntime = await inspectExtensionWorker(browser);
+          let browserStderr = '';
+          try {
+            browserStderr = fs.readFileSync(browser.nativeTracePath, 'utf8').split(/\r?\n/).filter(Boolean).slice(-8).join(' | ');
+          } catch {}
+          assert(false, `Chrome health changed during the extension hold: health=${JSON.stringify(healthState?.browserHealth?.chrome ?? null)}; transitions=${JSON.stringify(healthTransitions)}; extensionRuntime=${JSON.stringify(extensionRuntime)}; browserStderr=${browserStderr || 'empty'}`);
+        }
+        assert(browser.process.exitCode === null && browser.process.signalCode === null, 'Chrome closed while its extension and native host were healthy.');
+        log(`PASS: Chrome stayed open with a healthy extension for ${Math.ceil(healthHoldMs / 1000)} seconds`);
+        return;
+      }
     }
 
-    const routeBefore = fixtureRequests.filter(request => request.url.startsWith('/blocked-probe')).length;
     let lockEndAt = null;
+    const chromeIndex = browsers.findIndex(browser => browser.spec.family === 'chrome');
+    const firstChrome = browsers[chromeIndex];
+    await browserClose(firstChrome);
+    const firstChromeIdle = await waitForHealth(statePath, 'chrome', 'idle');
+    testEnv.LOCKY_TEST_STATE_DELAY_MS = '5000';
+    const restartedChrome = startBrowser(
+      firstChrome.spec,
+      firstChrome.executable,
+      firstChrome.profilePath,
+      fixturePort,
+      testEnv,
+    );
+    browsers[chromeIndex] = restartedChrome;
+    await scopeBrowserBeforeExtension(restartedChrome, scopePath, browsers);
+    await launchBrowser(restartedChrome, testEnv);
+    const startupRoute = `${blockedPath}/startup-race`;
+    const startupRouteRequests = fixtureRequests.filter(request => request.url === startupRoute).length;
+    const { page: startupPage } = await navigate(
+      restartedChrome,
+      `http://${blockedHost}:${fixturePort}${startupRoute}`,
+    );
+    startupPage.close();
+    const startupLockState = await waitFor('a lock for a prohibited route during Chrome state startup', async () => {
+      const latest = await readState(statePath);
+      return latest?.desktopLock?.endsAt ? latest : null;
+    }, 20_000);
+    nodeAssert.equal(
+      fixtureRequests.filter(request => request.url === startupRoute).length,
+      startupRouteRequests,
+      'The persisted Chrome DNR rule allowed the startup race route to reach the fixture server.',
+    );
+    lockEndAt = startupLockState.desktopLock.endsAt;
+    const restartedChromeHealth = await waitForHealth(statePath, 'chrome', 'healthy', restartedChrome);
+    assert(restartedChromeHealth.revision > firstChromeIdle.revision, 'Chrome did not report a fresh connection after reopening.');
+    testEnv.LOCKY_TEST_STATE_DELAY_MS = '0';
+    log('Chrome reported its blocked startup navigation after native state sync; the persisted DNR rule kept the route blocked');
+
+    const routeBefore = fixtureRequests.filter(request => request.url.startsWith(blockedPath)).length;
     for (const browser of browsers) {
-      const url = `http://${blockedHost}:${fixturePort}/blocked-probe/${browser.spec.family}`;
+      const url = `http://${blockedHost}:${fixturePort}${blockedPath}/${browser.spec.family}`;
       const { page } = await navigate(browser, url);
       page.close();
       const state = await waitFor('a shared browser lock after a blocked route', async () => {
@@ -770,7 +970,7 @@ async function run() {
       nodeAssert.equal(state.desktopLock.endsAt, lockEndAt, 'A repeated blocked route reset the active seven-minute expiry.');
       log(`${browser.spec.label} prohibited route remained blocked`);
     }
-    nodeAssert.equal(fixtureRequests.filter(request => request.url.startsWith('/blocked-probe')).length, routeBefore, 'A prohibited route reached the fixture server.');
+    nodeAssert.equal(fixtureRequests.filter(request => request.url.startsWith(blockedPath)).length, routeBefore, 'A prohibited route reached the fixture server.');
 
     let scope = createScopeWriter(scopePath, browsers)();
     for (const browser of browsers) {
@@ -782,6 +982,8 @@ async function run() {
       );
       log(`${browser.spec.label} has a visible Locky lock window`);
     }
+    await assertOverlayCenters(appDevTools, browsers.length);
+    log('visible Locky timers are centered on their displays');
     assertPreexistingBrowserWindowsUnchanged(preexistingBrowserWindows, scopePath);
     log('pre-existing browser windows remained outside the test scope');
     const scopeForCountdown = JSON.parse(await fs.promises.readFile(scopePath, 'utf8'));
@@ -792,12 +994,19 @@ async function run() {
       const values = await readOverlayCountdowns(appDevTools, visibleWindowCount);
       return values?.length === visibleWindowCount ? values : null;
     }, 20_000);
+    const countdownBaseline = new Map(countdownBefore.map(value => [value.id, value.seconds]));
+    let latestCountdowns = countdownBefore;
     const countdownAfter = await waitFor('the visible lock countdown to advance', async () => {
       const values = await readOverlayCountdowns(appDevTools, visibleWindowCount);
       if (!values) return null;
-      const beforeById = new Map(countdownBefore.map(value => [value.id, value.seconds]));
-      return values.every(value => value.seconds < beforeById.get(value.id)) ? values : null;
-    }, 5_000, 250);
+      latestCountdowns = values;
+      for (const value of values) {
+        if (!countdownBaseline.has(value.id)) countdownBaseline.set(value.id, value.seconds);
+      }
+      return values.every(value => value.seconds < countdownBaseline.get(value.id)) ? values : null;
+    }, 10_000, 250).catch(error => {
+      throw new Error(`${error.message}; initial=${JSON.stringify(countdownBefore)}; latest=${JSON.stringify(latestCountdowns)}`);
+    });
     nodeAssert.equal(countdownAfter.length, visibleWindowCount);
     log('every visible Locky page showed a countdown that advanced');
 
@@ -831,6 +1040,7 @@ async function run() {
       await browserClose(browser);
       createScopeWriter(scopePath, browsers)();
       await waitForOverlay(browser, scopePath, false, 0);
+      const idleState = await waitForHealth(statePath, browser.spec.family, 'idle');
       log(`${browser.spec.label} lock window disappeared when its browser closed`);
 
       const reopened = startBrowser(
@@ -843,7 +1053,8 @@ async function run() {
       browsers[browsers.indexOf(browser)] = reopened;
       await scopeBrowserBeforeExtension(reopened, scopePath, browsers);
       await launchBrowser(reopened, testEnv);
-      await waitForHealth(statePath, reopened.spec.family, 'healthy', reopened);
+      const reconnectedState = await waitForHealth(statePath, reopened.spec.family, 'healthy', reopened);
+      assert(reconnectedState.revision > idleState.revision, `${browser.spec.label} did not report a fresh connection after reopening.`);
       const reopenedOverlays = await waitForOverlay(reopened, scopePath, true);
       assert(reopenedOverlays.browserWindows.length > 0, `${reopened.spec.label} did not reopen a browser window.`);
       const reopenedState = await readState(statePath);
@@ -852,7 +1063,7 @@ async function run() {
     }
 
     const remainingAtWaitStart = Math.max(0, lockEndAt - Date.now());
-    log(`waiting for the shared seven-minute expiry (${Math.ceil(remainingAtWaitStart / 60_000)} min)`);
+    log(`waiting for the shared browser lock expiry (${Math.ceil(remainingAtWaitStart / 1000)} sec)`);
     let lastMinute = Math.ceil(remainingAtWaitStart / 60_000);
     expiryTimer = setInterval(() => {
       const minutes = Math.ceil(Math.max(0, lockEndAt - Date.now()) / 60_000);
@@ -861,15 +1072,27 @@ async function run() {
         log(`expiry countdown: ${minutes} min remaining`);
       }
     }, 15_000);
-    await waitFor('the seven-minute browser lock to expire', async () => {
-      const state = await readState(statePath);
-      return state && !state.desktopLock ? state : null;
-    }, remainingAtWaitStart + 30_000, 500);
+    try {
+      await waitFor('the shared browser lock to expire', async () => {
+        const state = await readState(statePath);
+        return state && !state.desktopLock ? state : null;
+      }, remainingAtWaitStart + 30_000, 500);
+    } catch (error) {
+      const latestState = await readState(statePath);
+      const remainingMs = latestState?.desktopLock
+        ? Math.max(0, latestState.desktopLock.endsAt - Date.now())
+        : 0;
+      let appStderr = '';
+      try {
+        appStderr = fs.readFileSync(appStderrPath, 'utf8').split(/\r?\n/).filter(Boolean).slice(-12).join(' | ');
+      } catch {}
+      throw new Error(`${error.message}; desktopLock=${JSON.stringify(latestState?.desktopLock ?? null)}; remainingMs=${remainingMs}; appExited=${Boolean(appProcess && (appProcess.exitCode !== null || appProcess.signalCode !== null))}; appStderr=${appStderr || 'empty'}`);
+    }
     clearInterval(expiryTimer);
     expiryTimer = null;
     scope = createScopeWriter(scopePath, browsers)();
     for (const browser of browsers) await waitForOverlay(browser, scopePath, false, null);
-    log('the lock expired and all three lock windows disappeared');
+    log(`the lock expired and all ${browsers.length} lock windows disappeared`);
 
     for (const browser of browsers) {
       await waitForAllowedRoute(browser, fixturePort, fixtureRequests);
@@ -909,10 +1132,24 @@ async function run() {
     await inspectRepairUi(appDevTools, 'chrome');
     nodeAssert.equal(repairState.browserHealth.chrome.reason, 'missing');
     assertPreexistingBrowserWindowsUnchanged(preexistingBrowserWindows, scopePath);
-    log('missing-extension repair closed only the scoped Chrome test profile; Brave and Edge remained open');
+    log(`missing-extension repair closed only the scoped Chrome test profile; ${healthyOthers.map(browser => browser.spec.label).join(' and ')} remained open`);
     log('pre-existing browser windows and PIDs remained outside test scope after repair');
     log('settings showed a browser-specific repair instruction');
     log('PASS: installed-browser lifecycle smoke completed');
+  } catch (error) {
+    const failedState = await readState(statePath);
+    const targets = appDevTools
+      ? await appDevTools.connection.send('Target.getTargets').then(result => result.targetInfos.map(target => ({ type: target.type, title: target.title, url: target.url }))).catch(() => [])
+      : [];
+    const diagnosticPath = path.join(userDataPath, 'locky-diagnostics.log');
+    const appStderr = appStderrPath && fs.existsSync(appStderrPath)
+      ? fs.readFileSync(appStderrPath, 'utf8').split(/\r?\n/).filter(Boolean).slice(-15)
+      : [];
+    const diagnostics = fs.existsSync(diagnosticPath)
+      ? fs.readFileSync(diagnosticPath, 'utf8').split(/\r?\n/).filter(Boolean).slice(-15)
+      : [];
+    process.stderr.write(`[browser-lifecycle] failure context: ${JSON.stringify({ browserHealth: failedState?.browserHealth, desktopLock: failedState?.desktopLock, targets, appStderr, diagnostics })}\n`);
+    throw error;
   } finally {
     if (expiryTimer) clearInterval(expiryTimer);
     fs.writeFileSync(scopePath, '{}');
@@ -933,6 +1170,6 @@ async function run() {
 }
 
 run().catch(error => {
-  process.stderr.write(`[browser-lifecycle] FAIL: ${error.message}\n`);
+  process.stderr.write(`[browser-lifecycle] FAIL: ${error.stack ?? error.message}\n`);
   process.exitCode = 1;
 });

@@ -11,9 +11,12 @@
     "smoke:native-host": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/smoke-native-host.ps1",
     "smoke:browser-watcher": "node scripts/browser-watcher-smoke.cjs",
     "smoke:browser-lifecycle": "node scripts/browser-lifecycle-smoke.cjs",
+    "smoke:chrome-extension": "node scripts/browser-lifecycle-smoke.cjs --chrome-health",
     "smoke:desktop-recovery": "node scripts/desktop-recovery-smoke.cjs",
     "install:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-windows.ps1",
-    "test": "node --test",
+    "test": "pnpm run test:unit && pnpm run test:e2e",
+    "test:unit": "node --test",
+    "test:e2e": "node scripts/browser-lifecycle-smoke.cjs",
     "test:domain": "node --test tests/domain/*.test.js",
     "package:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-windows.ps1"
   },
