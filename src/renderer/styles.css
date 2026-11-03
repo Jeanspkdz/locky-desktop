@@ -8,11 +8,9 @@ button,input,select{font:inherit}
 button{cursor:pointer}
 button:disabled{cursor:not-allowed;opacity:.45}
 button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #20d8ec;outline-offset:3px}
-.app-screen .topbar{height:72px;padding:0 40px;border-bottom:1px solid #12303a;display:flex;align-items:center;justify-content:space-between;background:#041017}
-.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#20d8ec;font-family:Bahnschrift,"Segoe UI",sans-serif;font-size:25px;font-weight:700;letter-spacing:.06em}
-.brand-mark{width:42px;height:42px;border:1px solid #17404b;border-radius:11px;display:grid;place-items:center;color:#20d8ec}
-.brand-mark svg{width:31px;height:31px}
-.brand-mark svg,.lock-brand svg{fill:none;stroke:currentColor;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.app-screen .topbar{height:88px;padding:0 40px;border-bottom:1px solid #12303a;display:flex;align-items:center;justify-content:space-between;background:#041017}
+.brand{display:inline-flex;align-items:center;text-decoration:none;line-height:0}
+.brand-logo{display:block;width:72px;height:72px;flex:none}
 .header-state{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border:1px solid #0e6877;border-radius:999px;color:#18d7e9;background:#05212a;font-size:12px;font-weight:700}
 .header-state::before{content:"";width:8px;height:8px;border-radius:50%;background:#21d9e9;box-shadow:0 0 9px #21d9e9}
 .header-state.needs-attention{border-color:#aa7144;color:#ffc476;background:#2a1c15}
@@ -62,13 +60,12 @@ input:focus,select:focus{border-color:#1cd6e8}
 .dev-tools summary{cursor:pointer}
 .dev-tools button{padding:8px 12px;border:1px solid #345965;border-radius:8px;background:#102b35;color:#c8ebf3}
 @media(max-width:800px){.app-screen main{padding:32px 24px 65px}.health-list{gap:10px}.health-row{padding:13px}.dashboard-grid{gap:14px}.panel{padding:20px}}
-@media(max-width:650px){.app-screen .topbar{padding:0 18px}.app-screen main{padding:28px 16px 60px}.hero h1{font-size:37px}.hero p{font-size:16px}.health-list,.dashboard-grid{grid-template-columns:1fr}.health-row{min-height:76px}.dashboard-grid .panel{min-height:0}}
+@media(max-width:650px){.app-screen .topbar{height:72px;padding:0 18px}.brand-logo{width:60px;height:60px}.app-screen main{padding:28px 16px 60px}.hero h1{font-size:37px}.hero p{font-size:16px}.health-list,.dashboard-grid{grid-template-columns:1fr}.health-row{min-height:76px}.dashboard-grid .panel{min-height:0}}
 
 .lock-screen{display:grid;place-items:center;text-align:center;min-height:100vh;background:radial-gradient(circle at 50% 52%,#082d39 0,#061923 28%,#030b10 68%)}
-.lock-content{width:min(100%,1050px);padding:30px 24px 42px;display:flex;flex-direction:column;align-items:center}
-.lock-brand{width:94px;height:94px;border-radius:21px;border:2px solid #061a21;background:#020b10;box-shadow:0 0 0 2px #000,0 15px 38px #0007;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#1bd8ec}
-.lock-brand svg{width:58px;height:58px}
-.lock-brand span{font:700 13px Bahnschrift,"Segoe UI",sans-serif;letter-spacing:.12em}
+.lock-content{width:min(100%,1050px);padding:30px 24px 42px;display:flex;flex-direction:column;align-items:center;transform:translate(var(--lock-center-x,0px),var(--lock-center-y,0px))}
+.lock-brand{width:128px;height:128px;display:block;flex:none}
+.lock-brand img{display:block;width:100%;height:100%}
 .lock-eyebrow{margin:20px 0 12px;color:#1bd8ec;font:700 12px Bahnschrift,"Segoe UI",sans-serif;letter-spacing:.26em}
 .lock-content h1{margin:0;color:#e0f4f7;font:700 clamp(34px,5vw,56px)/1.14 Bahnschrift,"Segoe UI",sans-serif;letter-spacing:-.025em}
 .lock-description{margin:15px 0 25px;color:#92bac7;font-size:19px}
@@ -81,5 +78,5 @@ input:focus,select:focus{border-color:#1cd6e8}
 .blocked-browsers>span::before{content:"";width:9px;height:7px;border:2px solid #1bd8ec;border-radius:2px;margin-right:5px}
 .blocked-browsers strong{color:#d9edf4}
 .lock-footer{margin:20px 0 0;color:#92bac7;font-size:14px}
-@media(max-height:850px){.lock-content{padding-block:14px}.lock-brand{width:78px;height:78px}.lock-brand svg{width:48px;height:48px}.lock-brand span{font-size:11px}.lock-eyebrow{margin:10px 0}.lock-description{margin:9px 0 14px}.timer-frame{width:248px;height:248px}.timer-ring{width:220px;height:220px}#remaining-time{font-size:64px}.blocked-browsers{margin-top:17px}.lock-footer{margin-top:10px}}
-@media(max-height:620px){.lock-content{padding:8px}.lock-brand{width:58px;height:58px}.lock-brand svg{width:36px;height:36px}.lock-brand span{font-size:9px}.lock-eyebrow{margin:6px 0}.lock-content h1{font-size:32px}.lock-description{margin:5px 0 8px;font-size:15px}.timer-frame{width:190px;height:190px}.timer-ring{width:168px;height:168px}#remaining-time{font-size:48px}.timer-ring span{font-size:9px}.blocked-browsers{margin-top:8px}.blocked-browsers>span{padding:6px 10px;font-size:11px}.lock-footer{margin-top:7px;font-size:11px}}
+@media(max-height:850px){.lock-content{padding-block:14px}.lock-brand{width:108px;height:108px}.lock-eyebrow{margin:10px 0}.lock-description{margin:9px 0 14px}.timer-frame{width:248px;height:248px}.timer-ring{width:220px;height:220px}#remaining-time{font-size:64px}.blocked-browsers{margin-top:17px}.lock-footer{margin-top:10px}}
+@media(max-height:620px){.lock-content{padding:8px}.lock-brand{width:78px;height:78px}.lock-eyebrow{margin:6px 0}.lock-content h1{font-size:32px}.lock-description{margin:5px 0 8px;font-size:15px}.timer-frame{width:190px;height:190px}.timer-ring{width:168px;height:168px}#remaining-time{font-size:48px}.timer-ring span{font-size:9px}.blocked-browsers{margin-top:8px}.blocked-browsers>span{padding:6px 10px;font-size:11px}.lock-footer{margin-top:7px;font-size:11px}}

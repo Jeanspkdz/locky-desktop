@@ -37,7 +37,6 @@
 
   <g fill="url(#cyan)" filter="url(#soft-glow)">
     <path d="M256 161c-19 0-34 15-34 34 0 14 9 27 22 32l-9 43h42l-9-43c13-5 22-18 22-32 0-19-15-34-34-34Z" />
-
     <path d="M365 111h48v7h-48zM365 124h31v6h-31z" />
     <path d="M365 153h59v7h-59zM350 163h31v8h-31zM402 165h18v5h-18z" />
     <path d="M354 190h52v8h-52zM337 200h28v7h-28zM406 203h36v6h-36z" />
