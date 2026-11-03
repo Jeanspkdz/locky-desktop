@@ -1,5 +1,5 @@
-# Aplicación nativa coordinada con extensiones de navegador
+# Native Application Coordinated with Browser Extensions
 
-El producto necesita bloquear rutas concretas dentro de un sitio permitido y mostrar una pantalla de Windows cuando ocurre un intento. Se propone que cada navegador aplique la regla antes de cargar la página y avise a un supervisor nativo mediante comunicación local. Esto evita depender de inspeccionar el tráfico HTTPS desde fuera del navegador y permite compartir un único estado de temporizadores entre navegadores. La contrapartida es mantener y verificar una integración para Chrome, Brave, Edge, Firefox y cada variante de Opera incluida.
+The product needs to block specific paths within an allowed site and show a Windows screen when an attempt occurs. Each browser applies the rule before loading the page and notifies a native supervisor through local communication. This avoids inspecting HTTPS traffic outside the browser and allows browsers to share one timer state. The tradeoff is maintaining and verifying an integration for Chrome, Brave, Edge, Firefox, and every included Opera variant.
 
-La presentación de la pantalla de bloqueo fue sustituida por la decisión de [ADR 0004](./0004-bloqueo-sobre-navegadores.md). La coordinación entre extensiones y aplicación nativa sigue vigente.
+The lock screen presentation was superseded by [ADR 0004](./0004-bloqueo-sobre-navegadores.md). Coordination between the extensions and native application remains in effect.

@@ -1,18 +1,18 @@
-# Vigilar los navegadores desde Locky Desktop
+# Monitor Browsers from Locky Desktop
 
 ## Contexto
 
-Locky necesita detectar procesos y ventanas del navegador para verificar la integración y mostrar la pantalla de bloqueo encima de cada ventana. Antes, el ciclo de 500 ms lanzaba `tasklist.exe` y `browser-window-monitor.exe`; este último también se ocupaba de asociar la ventana de bloqueo al navegador.
+Locky needs to detect browser processes and windows to verify the integration and show the lock screen over each window. Previously, the 500 ms polling loop launched `tasklist.exe` and `browser-window-monitor.exe`; the latter also attached the lock window to the browser.
 
 ## Decisión
 
-Locky usa Koffi para consultar las API de Windows desde el proceso principal. El sondeo se ejecuta cada 500 ms mientras haya un navegador abierto y cada 3 segundos cuando no haya ninguno. Las ventanas de bloqueo solo se actualizan cuando cambian sus límites o el segundo restante. El ejecutable auxiliar se conserva para asociar una ventana de bloqueo recién creada al navegador.
+Locky uses Koffi to call Windows APIs from the main process. Polling runs every 500 ms while a browser is open and every 3 seconds when none is open. Lock windows update only when their bounds or remaining second changes. The helper executable remains responsible for attaching a newly created lock window to the browser.
 
-Si la consulta de Windows falla, Locky muestra el estado de reparación, cierra los navegadores que no puede verificar cuando la protección está aplicada y vuelve a intentar la consulta cada 3 segundos.
+If a Windows query fails, Locky shows a repair status, closes browsers it cannot verify while protection is enabled, and retries the query every 3 seconds.
 
 ## Consecuencias
 
-- La inspección repetida ya no inicia procesos externos.
-- Koffi y su módulo nativo de Windows deben incluirse en el paquete portable.
-- El ejecutable auxiliar sigue siendo necesario para asociar las ventanas de bloqueo al navegador.
-- La vigilancia sigue siendo periódica; el intervalo adaptativo reduce las consultas cuando no hay navegadores abiertos.
+- Repeated inspection no longer starts external processes.
+- Koffi and its native Windows module must be included in the portable package.
+- The helper executable is still needed to attach lock windows to browsers.
+- Monitoring remains periodic; the adaptive interval reduces queries when no browsers are open.

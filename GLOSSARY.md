@@ -1,41 +1,41 @@
-# Bloqueo de navegación
+# Navigation Blocking
 
-Conceptos del producto para restringir el acceso a páginas web en un equipo Windows.
+Product terms for restricting access to websites on a Windows computer.
 
-## Lenguaje
+## Language
 
-**Página prohibida**:
-Página web cuyo acceso queda prohibido de forma permanente una vez consolidada su regla.
-_Evitar_: Página no permitida, página restringida
+**Prohibited page**:
+A web page whose access is permanently prohibited once its rule is consolidated.
+_Avoid_: Disallowed page, restricted page
 
-**Regla de dominio**:
-Regla que prohíbe un dominio, todas sus rutas y sus subdominios.
-_Evitar_: Bloqueo de sitio
+**Domain rule**:
+A rule that prohibits a domain, all its paths, and its subdomains.
+_Avoid_: Site block
 
-**Regla de ruta**:
-Regla que prohíbe una ruta concreta y las rutas bajo ella dentro de un sitio permitido.
-_Evitar_: Bloqueo de sitio
+**Path rule**:
+A rule that prohibits a specific path and its child paths within an otherwise allowed site.
+_Avoid_: Site block
 
-**Bloqueo de navegadores**:
-Estado de siete minutos que impide usar Chrome, Brave y Edge tras intentar acceder a una página prohibida. Afecta a todas sus pestañas y ventanas, incluso si se cierran y vuelven a abrir durante ese tiempo; las demás aplicaciones siguen disponibles.
-_Evitar_: Bloqueo del escritorio, período de bloqueo, modo estricto
+**Browser lock**:
+A seven-minute state that prevents Chrome, Brave, and Edge from being used after an attempt to access a prohibited page. It affects all their tabs and windows, even if they are closed and reopened during that time; other applications remain available.
+_Avoid_: Desktop lock, lock period, strict mode
 
-**Página de bloqueo**:
-Contenido que muestra Locky en una ventana situada sobre cada navegador afectado mientras dura el bloqueo de navegadores.
-_Evitar_: Política de bloqueo
+**Lock screen**:
+Content Locky displays in a window over each affected browser while the browser lock is active.
+_Avoid_: Blocking policy
 
-**Período de verificación**:
-Intervalo de diez minutos para revisar una página agregada por la persona antes de que su regla quede consolidada.
-_Evitar_: Período de bloqueo
+**Verification period**:
+A ten-minute interval to review a page added by the user before its rule is consolidated.
+_Avoid_: Lock period
 
-**Regla consolidada**:
-Regla de bloqueo que la aplicación ya no permite retirar ni modificar.
-_Evitar_: Regla activa
+**Consolidated rule**:
+A blocking rule that the application no longer allows users to remove or modify.
+_Avoid_: Active rule
 
-**Conjunto inicial preaprobado**:
-Dominios incluidos por Locky que se consideran aprobados y consolidados desde el inicio, sin aprobación manual en la aplicación.
-_Evitar_: Lista por aprobar
+**Preapproved initial set**:
+Domains included by Locky that are treated as approved and consolidated from startup, without manual approval in the application.
+_Avoid_: List awaiting approval
 
-**Navegador permitido**:
-Navegador autorizado para ejecutarse en el equipo y cuyo modo de navegación privada está deshabilitado.
-_Evitar_: Navegador compatible
+**Allowed browser**:
+A browser authorized to run on the computer with private browsing disabled.
+_Avoid_: Supported browser

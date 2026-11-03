@@ -1,3 +1,3 @@
-# Electron y pnpm para la aplicación de escritorio
+# Electron and pnpm for the Desktop Application
 
-La aplicación se construirá con Electron y JavaScript o TypeScript, usando `pnpm` para dependencias y scripts. Se eligió este ecosistema para compartir lenguaje y herramientas con las extensiones de navegador y porque el producto se desarrollará como aplicación de escritorio para Windows. La elección no elimina las integraciones específicas de Windows necesarias para arranque, políticas de navegador y supervisión de procesos.
+The application will be built with Electron and JavaScript or TypeScript, using `pnpm` for dependencies and scripts. This ecosystem was chosen to share languages and tools with the browser extensions and because the product is a Windows desktop app. This choice does not remove the need for Windows-specific integrations for startup, browser policies, and process monitoring.

@@ -1,14 +1,14 @@
-# Locky Desktop · interfaz de concepto
+# Locky Desktop Concept Interface
 
-Abre `index.html` en un navegador para revisar el prototipo. No instala integraciones ni bloquea navegación.
+Open `index.html` in a browser to review the prototype. It does not install integrations or block navigation.
 
-## Recorridos disponibles
+## Available Flows
 
-- Resumen y navegación entre secciones.
-- Añadir reglas de dominio o ruta, observar la verificación de diez minutos y cancelar una regla pendiente.
-- Ver que las reglas consolidadas no ofrecen edición ni eliminación.
-- Estado vacío de la lista inicial, porque el repositorio aún no aporta sus dominios reales.
-- Estado de instalación pendiente por navegador.
-- Demostración visual de la pantalla de bloqueo; el botón vuelve al prototipo.
+- Overview and navigation between sections.
+- Add domain or path rules, view the ten-minute verification period, and cancel a pending rule.
+- See that consolidated rules have no edit or delete actions.
+- Empty state for the initial set, since the repository does not yet include its actual domains.
+- Per-browser installation pending state.
+- Visual lock screen demonstration; its button returns to the prototype.
 
-Los dos registros de ejemplo de «Mis reglas» son datos ilustrativos, no reglas reales.
+The two sample entries in “My Rules” are illustrative data, not real rules.

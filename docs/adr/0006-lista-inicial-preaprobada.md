@@ -1,5 +1,5 @@
-# Lista inicial preaprobada
+# Preapproved Initial Set
 
 **Status:** Accepted
 
-Los dominios incluidos por Locky en su conjunto inicial se consideran preaprobados y se consolidan al iniciar la aplicación. La interfaz no muestra la lista ni ofrece una acción para aprobarla; esto elimina un paso redundante para un conjunto que ya fue aprobado como política del producto. Las reglas agregadas manualmente conservan los diez minutos de verificación establecidos en ADR 0001. Esta decisión reemplaza la aprobación manual del conjunto inicial descrita en ese ADR.
+Domains included in Locky's initial set are preapproved and consolidated when the application starts. The interface does not show the set or offer an approval action; this removes a redundant step for a set already approved as product policy. Manually added rules retain the ten-minute verification period established in ADR 0001. This decision replaces the manual approval of the initial set described in that ADR.

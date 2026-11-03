@@ -1,9 +1,9 @@
-# Mostrar el bloqueo sobre los navegadores
+# Show the Lock Screen Over Browsers
 
-Cuando se intenta abrir una página prohibida, Locky mantiene un bloqueo compartido de siete minutos para Chrome, Brave y Edge. La aplicación muestra una ventana propia sobre cada navegador afectado y deja disponibles las demás aplicaciones de Windows. Se eligió esta ventana en lugar de una pestaña porque una extensión no puede cubrir las páginas internas del navegador, como su configuración; también sustituye la pantalla de todo el escritorio descrita en ADR 0002. Si se cierra y vuelve a abrir un navegador, el bloqueo reaparece por el tiempo restante, incluso después de reiniciar Windows.
+When someone tries to open a prohibited page, Locky starts a shared seven-minute browser lock for Chrome, Brave, and Edge. The application displays its own window over each affected browser and leaves other Windows applications available. This window was chosen over a tab because an extension cannot cover internal browser pages, such as settings; it also replaces the full-desktop screen described in ADR 0002. If a browser is closed and reopened, the lock reappears for the remaining time, including after Windows restarts.
 
-La ventana de bloqueo se oculta cuando su navegador se minimiza y reaparece al restaurarlo. La suspensión de Windows cuenta dentro de los siete minutos. Si Locky deja de responder, las extensiones impiden la navegación hasta recuperar la conexión y confirmar el estado del bloqueo.
+The lock window is hidden when its browser is minimized and reappears when the browser is restored. Windows sleep counts toward the seven minutes. If Locky stops responding, the extensions block navigation until the connection is restored and the lock state is confirmed.
 
-Locky intenta reiniciarse automáticamente tras un fallo. Cuando termina el bloqueo, las pestañas vuelven a estar disponibles y las páginas prohibidas siguen prohibidas; un intento posterior inicia un bloqueo nuevo de siete minutos. La ventana de bloqueo muestra el tiempo restante.
+Locky attempts to restart automatically after a failure. When the lock ends, tabs become available again and prohibited pages remain blocked; a later attempt starts a new seven-minute lock. The lock window shows the remaining time.
 
-Después de reiniciar Windows sin conexión, Locky usa la hora del sistema para calcular el tiempo restante y libera los navegadores cuando se cumplen los siete minutos. Se acepta que adelantar manualmente ese reloj pueda acortar el bloqueo en curso: la página prohibida permanece bloqueada y otro intento inicia un bloqueo nuevo.
+After Windows restarts without an internet connection, Locky uses the system clock to calculate the remaining time and releases the browsers when seven minutes have elapsed. Manually advancing that clock may shorten the current lock; the prohibited page remains blocked and another attempt starts a new lock.

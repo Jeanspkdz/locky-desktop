@@ -1,7 +1,7 @@
-# Consolidar reglas tras diez minutos de verificación
+# Consolidate Rules After a Ten-Minute Verification Period
 
-**Status:** Superseded by ADR 0006 for the initial bundled domain set.
+**Status:** Superseded by ADR 0006 for the bundled initial domain set.
 
-Las páginas añadidas por la persona permanecen accesibles durante diez minutos y pueden cancelarse en ese intervalo. Después, la regla queda consolidada y la aplicación no permite retirarla ni modificarla. Se eligió esta espera para poder detectar errores antes de asumir un compromiso permanente, sin ofrecer una vía de desactivación una vez consolidado.
+Pages added by the user remain accessible for ten minutes and can be cancelled during that interval. Afterward, the rule is consolidated and the application does not allow it to be removed or modified. This delay gives the user time to catch mistakes before making a lasting commitment, without offering a way to undo it after consolidation.
 
-La decisión original de mostrar la lista inicial para aprobación manual fue reemplazada por [ADR 0006](./0006-lista-inicial-preaprobada.md). La permanencia se refiere a las acciones ofrecidas por la aplicación; una cuenta administradora de Windows conserva capacidad de modificar el sistema externamente.
+The original decision to show the initial set for manual approval was replaced by [ADR 0006](./0006-lista-inicial-preaprobada.md). Permanence refers to the actions available in the application; a Windows administrator can still modify the system externally.
