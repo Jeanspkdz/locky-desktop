@@ -48,7 +48,7 @@ test('a stale integration heartbeat is marked for repair', () => {
 });
 
 test('a recent integration heartbeat keeps the browser healthy', () => {
-  assert.equal(integrationFailureReason({ startedAt: 1000, lastHealthyAt: 10_000 }, 70_000), null);
+  assert.equal(integrationFailureReason({ startedAt: 1000, lastHealthyAt: 10_000 }, 54_999), null);
 });
 
 test('a Locky restart gives already-open Brave a fresh verification grace period', () => {

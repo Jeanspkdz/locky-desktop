@@ -49,6 +49,7 @@ internal static class LockyNativeHost
         Stream input = Console.OpenStandardInput();
         Stream output = Console.OpenStandardOutput();
         byte[] header = new byte[4];
+        string connectedBrowserFamily = null;
         while (ReadHeader(input, header))
         {
             int messageLength = BitConverter.ToInt32(header, 0);
@@ -64,6 +65,9 @@ internal static class LockyNativeHost
             try
             {
                 string request = Utf8.GetString(message);
+                foreach (string family in new[] { "chrome", "brave", "edge" })
+                    if (request.IndexOf("\"browserFamily\":\"" + family + "\"", StringComparison.Ordinal) >= 0)
+                        connectedBrowserFamily = family;
                 DelayTestStateRequest(request);
                 response = SendToDesktop(request, appExecutable, appRoot, pipeName);
             }
@@ -80,7 +84,26 @@ internal static class LockyNativeHost
             output.Flush();
         }
 
+        if (connectedBrowserFamily != null)
+            ReportExtensionDisconnect(pipeName, connectedBrowserFamily);
         return 0;
+    }
+
+    private static void ReportExtensionDisconnect(string pipeName, string family)
+    {
+        try
+        {
+            using (NamedPipeClientStream pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut))
+            {
+                pipe.Connect(250);
+                using (StreamWriter writer = new StreamWriter(pipe, Utf8, 1024, true))
+                {
+                    writer.WriteLine("{\"id\":\"extension-disconnect\",\"type\":\"health\",\"browserFamily\":\"" + family + "\",\"ok\":false}");
+                    writer.Flush();
+                }
+            }
+        }
+        catch (Exception error) { Trace("Could not report extension disconnect: " + error.Message); }
     }
 
     private static void MonitorDesktopPipe(string pipeName)

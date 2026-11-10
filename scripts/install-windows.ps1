@@ -98,6 +98,19 @@ try {
   if ($runningCopies.Count -gt 0) {
     throw 'Locky sigue ejecutándose; no se copiarán archivos sobre la app abierta.'
   }
+
+  # An earlier local setup launches Locky through electron.exe. That process can
+  # keep the single-instance lock and leave the old settings window on screen.
+  $projectRoot = Split-Path -Parent (Split-Path -Parent $packageRoot)
+  $sourceMain = Join-Path $projectRoot 'src/main.cjs'
+  if (Test-Path -LiteralPath $sourceMain) {
+    $sourceElectron = Join-Path $projectRoot 'node_modules/electron/dist/electron.exe'
+    $sourceProcesses = @(Get-CimInstance Win32_Process -Filter "Name = 'electron.exe'" |
+      Where-Object { $_.ExecutablePath -eq $sourceElectron -and $_.CommandLine -like "*$projectRoot*" })
+    foreach ($process in $sourceProcesses) {
+      Stop-Process -Id $process.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+  }
   Start-Sleep -Milliseconds 500
 
   New-Item -ItemType Directory -Path $installRoot -Force | Out-Null

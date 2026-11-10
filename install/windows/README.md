@@ -1,6 +1,6 @@
 # Windows browser setup
 
-`pnpm setup:dev` configures a local development install for the current Windows user. It writes native-messaging registrations and private-browsing policies for Chrome, Brave, Edge, and Firefox, and adds Locky to the user's startup entry. It does not need administrator rights. Windows starts Locky in the background; closing its settings window leaves protection running. Launch Locky again to reopen settings. Development runs report unhealthy integrations but do not close browsers by default.
+`pnpm setup:dev` configures a local install for the current Windows user. It writes native-messaging registrations and private-browsing policies for Chrome, Brave, Edge, and Firefox, and adds Locky to the user's startup entry. It does not need administrator rights. Windows starts Locky in the background; closing its settings window leaves protection running. Launch Locky again to reopen settings. Setup enables enforcement so a browser with a missing or unresponsive extension is closed after the startup grace period.
 
 After setup, load the unpacked Chromium extension from `extensions/chromium` using `chrome://extensions`, `brave://extensions`, and `edge://extensions` respectively. Enable Developer mode and choose **Load unpacked**. In Firefox, open `about:debugging#/runtime/this-firefox` and load `extensions/firefox/manifest.json` as a temporary add-on; Firefox removes temporary add-ons at restart, so load it again each time. A browser without the extension is closed after the 15-second integration startup grace period.
 
@@ -14,4 +14,4 @@ The installer keeps extension loading explicit for this development-only local d
 
 Firefox's local add-on is temporary and must be loaded again after each restart. Opera Stable, Opera GX, and other Opera variants are not configured or declared protected; each must pass real blocking, native-messaging, and private-mode checks before being added.
 
-In a packaged build, if a browser has no recent successful extension heartbeat, Locky closes only that browser and leaves a repair notice in its settings window. The first 15 seconds after startup are allowed for the extension handshake. Development runs do not close browsers by default; set `LOCKY_ENFORCE_UNHEALTHY_BROWSER=1` only in a dedicated test session.
+If a browser has no recent successful extension heartbeat and blocking rules are active, Locky closes only that browser and leaves a repair notice in its settings window. The first 15 seconds after startup are allowed for the extension handshake. An integration that previously responded becomes stale after 45 seconds without a successful heartbeat.

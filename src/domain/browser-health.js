@@ -4,7 +4,7 @@ export const BROWSER_PROCESS_GROUPS = protectedBrowserConfig.BROWSER_PROCESS_GRO
 export const PROTECTED_BROWSER_FAMILIES = protectedBrowserConfig.PROTECTED_BROWSER_FAMILIES;
 
 export const BROWSER_STARTUP_GRACE_MS = 15_000;
-export const BROWSER_HEARTBEAT_TIMEOUT_MS = 60_000;
+export const BROWSER_HEARTBEAT_TIMEOUT_MS = 45_000;
 export const BROWSER_RULE_SYNC_GRACE_MS = 45_000;
 
 export function resetBrowserHealthForStartup() {

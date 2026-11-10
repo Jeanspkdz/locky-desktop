@@ -27,8 +27,8 @@ if (-not (Test-Path -LiteralPath $electronExecutable)) {
 
 & $registrationScript -AppExecutable $electronExecutable -AppRoot $projectRoot
 
-[Environment]::SetEnvironmentVariable('LOCKY_ENFORCE_UNHEALTHY_BROWSER', $null, 'User')
-Write-Output 'Locky se iniciará al iniciar sesión y mostrará reparaciones sin cerrar navegadores en desarrollo.'
+[Environment]::SetEnvironmentVariable('LOCKY_ENFORCE_UNHEALTHY_BROWSER', '1', 'User')
+Write-Output 'Locky se iniciará al iniciar sesión y cerrará el navegador afectado si falla la integración de la extensión.'
 Write-Output 'Carga la extensión Chromium sin empaquetar en Chrome, Brave y Edge antes de volver a abrir esos navegadores.'
 Write-Output 'En Firefox, carga la extensión temporalmente desde about:debugging; tendrás que repetirlo después de reiniciarlo.'
-Write-Output 'Cierra y vuelve a abrir Locky y los navegadores para que se apliquen las políticas y el modo de protección.'
+Write-Output 'Cierra y vuelve a abrir Locky y los navegadores para aplicar las políticas y el modo de protección.'
