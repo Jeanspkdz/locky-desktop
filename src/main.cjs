@@ -15,6 +15,7 @@ const { createBrowserProcessControl } = require('./main/browser-process-control.
 const { createBrowserProcessScopeReader } = require('./main/browser-process-scope.cjs');
 const { createSingleInstanceWindowPresenter } = require('./main/single-instance-window-presenter.cjs');
 const { createRetryingBrowserWatcher } = require('./main/retrying-browser-watcher.cjs');
+const { createBrowserPollScheduler } = require('./main/browser-poll-scheduler.cjs');
 const { createDiagnosticLogger } = require('./main/diagnostic-log.cjs');
 const { selectProtectedBrowserFamilies } = require('./domain/protected-browser-families.cjs');
 const {
@@ -40,14 +41,11 @@ if (runtimeConfig.userDataPath) app.setPath('userData', runtimeConfig.userDataPa
 const diagnosticLogger = createDiagnosticLogger(path.join(app.getPath('userData'), 'locky-diagnostics.log'));
 const browserWindowMonitorPath = runtimeConfig.browserWindowMonitorPath
   ?? path.join(process.env.LOCALAPPDATA ?? app.getPath('appData'), 'LockyDesktop', 'browser-window-monitor.exe');
-const installedMarker = path.join(process.resourcesPath, 'locky', 'installed.flag');
-const enforceUnhealthyBrowsers = app.isPackaged || fsSync.existsSync(installedMarker)
-  || process.env.LOCKY_ENFORCE_UNHEALTHY_BROWSER === '1';
+const enforceUnhealthyBrowsers = true;
 const PIPE_NAME = `\\\\.\\pipe\\${runtimeConfig.pipeName}`;
 let store;
 let settingsWindow;
 let pipeServer;
-let monitorTimer;
 let state = null;
 let domainRules;
 let sessionClock;
@@ -55,7 +53,6 @@ let clockRetryTimer;
 let browserHealthRules;
 let browserWatcherFailed = false;
 let lastBrowserFamilies = [];
-let appQuitting = false;
 const browserRuntime = new Map();
 const browserWatcher = createRetryingBrowserWatcher(() => require('./main/windows-browser-watcher.cjs').createWindowsBrowserWatcher(undefined, {
   getProcessScope: runtimeConfig.testMode ? readBrowserProcessScope : undefined,
@@ -127,6 +124,28 @@ function syncOverlayVisibility(browserWindows) {
   });
 }
 
+function refreshOverlayWindows() {
+  const remainingMs = remainingLockMs(state?.desktopLock, Date.now());
+  if (remainingMs === 0) {
+    overlayController.hideAll();
+    return;
+  }
+  const snapshot = browserWatcher.snapshot();
+  const browserWindows = (snapshot.windows ?? []).filter(window => browserProcessControl.hasFamily(window.family)).map(window => ({
+    ...window,
+    bounds: { x: window.x, y: window.y, width: window.width, height: window.height },
+  }));
+  syncOverlayVisibility(browserWindows);
+}
+
+const browserPollScheduler = createBrowserPollScheduler({
+  detectBrowsers: checkTimers,
+  trackWindows: refreshOverlayWindows,
+  isLockActive: () => remainingLockMs(state?.desktopLock, Date.now()) > 0,
+  onWindowTrackingError: error => diagnosticLogger.error('OVERLAY_TRACKING_FAILURE', error),
+  onLockInactive: () => overlayController.hideAll(),
+});
+
 async function closeBrowsers() {
   await browserProcessControl.closeProtectedBrowsers();
 }
@@ -176,7 +195,6 @@ function publicState() {
 async function checkTimers() {
   if (timerCheckInProgress || !state) return;
   timerCheckInProgress = true;
-  let nextInterval = 3000;
   try {
     const now = sessionClock?.now();
     if (now !== null && now !== undefined) {
@@ -187,17 +205,11 @@ async function checkTimers() {
     try {
       snapshot = browserWatcher.snapshot();
     } catch (error) {
-      nextInterval = 3000;
       await handleBrowserWatcherFailure(error);
       return;
     }
     const detectedFamilies = selectProtectedBrowserFamilies((snapshot.windows ?? []).map(window => window.family));
-    const browserWindows = snapshot.windows.filter(window => browserProcessControl.hasFamily(window.family)).map(window => ({
-      ...window,
-      bounds: { x: window.x, y: window.y, width: window.width, height: window.height },
-    }));
     lastBrowserFamilies = detectedFamilies;
-    nextInterval = detectedFamilies.length ? 500 : 3000;
     if (browserWatcherFailed) {
       browserWatcherFailed = false;
       const browserHealth = { ...state.browserHealth };
@@ -242,23 +254,16 @@ async function checkTimers() {
         if (integration.closeBrowser) await closeBrowserFamily(family);
       }
     }
-    syncOverlayVisibility(browserWindows);
     if (state.desktopLock && remainingLockMs(state.desktopLock, Date.now()) === 0) {
       await saveAndPublish({ ...state, desktopLock: null });
+      browserPollScheduler.stopWindowTracking();
       overlayController.hideAll();
     }
   } catch (error) {
     console.error('No se pudo actualizar el estado de protección.', error);
   } finally {
     timerCheckInProgress = false;
-    scheduleMonitor(nextInterval);
   }
-}
-
-function scheduleMonitor(intervalMs) {
-  if (appQuitting) return;
-  clearTimeout(monitorTimer);
-  monitorTimer = setTimeout(() => void checkTimers(), intervalMs);
 }
 
 async function handleBrowserWatcherFailure(error) {
@@ -283,11 +288,16 @@ async function handleBrowserWatcherFailure(error) {
 }
 
 function sendPipeResponse(socket, message) {
+  if (!socket.writable) return;
   socket.write(`${JSON.stringify(message)}\n`);
 }
 
 function startPipeServer() {
   pipeServer = net.createServer(socket => {
+    socket.on('error', error => {
+      if (error.code === 'EPIPE' || error.code === 'ECONNRESET') return;
+      diagnosticLogger.error('NATIVE_PIPE_SOCKET_FAILURE', error);
+    });
     let buffer = '';
     socket.on('data', chunk => {
       buffer += chunk.toString('utf8');
@@ -330,7 +340,7 @@ async function handleNativeMessage(message) {
       ...state,
       desktopLock: startDesktopLock(state.desktopLock, Date.now(), runtimeConfig.lockPeriodMs ?? undefined),
     });
-    await checkTimers();
+    browserPollScheduler.startWindowTracking();
     return { ok: true };
   }
   if (message.type === 'connected') {
@@ -516,7 +526,7 @@ if (process.argv.includes('--native-host')) {
     startPipeServer();
     createSettingsWindow();
     settingsWindowPresenter.markReady();
-    void checkTimers();
+    browserPollScheduler.start();
     void synchronizeClock();
   }).catch(error => {
     dialog.showErrorBox('Locky no pudo iniciar', `${error.message}\n\nSe conserva el archivo de estado para no descartar reglas permanentes.`);
@@ -527,8 +537,7 @@ if (process.argv.includes('--native-host')) {
 }
 
 app.on('before-quit', () => {
-  appQuitting = true;
-  clearTimeout(monitorTimer);
+  browserPollScheduler.stop();
   clearInterval(clockRetryTimer);
   pipeServer?.close();
 });
