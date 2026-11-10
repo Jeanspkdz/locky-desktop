@@ -46,6 +46,7 @@ When someone attempts to access a prohibited page, a full-screen lock page appea
 30. As a Locky Desktop user, I want only the browser with a failed integration to be blocked and show repair guidance so I can keep using the others.
 31. As a Locky Desktop user, I want non-browser applications to keep working normally so the lock remains limited to the intended browsing activity.
 32. As a Locky Desktop user, I want a new attempt after the seven minutes expire to start another period so protection remains active.
+33. As a Locky Desktop user, I want Locky to close my browser tabs after a prohibited-page attempt and leave one blank tab open so the same destination cannot retrigger the lock when the period ends.
 
 ## Implementation Decisions
 
@@ -54,6 +55,7 @@ When someone attempts to access a prohibited page, a full-screen lock page appea
 - Browser integrations apply domain and path rules before pages load; the desktop application stores rules, state, and timers. They communicate locally without sending browsing history to an external service.
 - The main flow distinguishes pending, cancelled, and consolidated rules. The preapproved initial set is consolidated without manual action; an individually added rule is consolidated after ten minutes unless cancelled.
 - An attempt to access a prohibited page activates the lock screen across all monitors. It shows no domain or countdown and includes a “Close browsers” action.
+- After a prohibited-page attempt, the browser extension closes the existing tabs, opens one blank tab, and then reports the attempt to Locky so the lock screen appears over the blank tab instead of leaving the prohibited destination active.
 - The seven-minute period continues while no browsers are open. The screen is shown only while a covered browser is open; after a restart, it reappears when a browser is reopened if time remains.
 - Use monotonic time during the Windows session and an internet time source to reconstruct timers after restart. If there is no connection after restart, retain pending state until time can be verified.
 - Configure private browsing as disabled in every covered browser. An Opera variant is considered covered only after URL blocking, local communication, and private mode have been verified.

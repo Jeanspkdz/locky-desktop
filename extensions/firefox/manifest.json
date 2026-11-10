@@ -3,11 +3,12 @@
   "name": "Locky Desktop",
   "version": "0.1.0",
   "description": "Aplica las reglas locales de Locky Desktop.",
+  "icons": { "128": "icon.png" },
   "browser_specific_settings": {
     "gecko": { "id": "locky-desktop@locky.local", "strict_min_version": "128.0" }
   },
-  "permissions": ["declarativeNetRequest", "nativeMessaging", "webNavigation", "alarms"],
+  "permissions": ["declarativeNetRequest", "nativeMessaging", "webNavigation", "alarms", "tabs"],
   "host_permissions": ["http://*/*", "https://*/*"],
   "background": { "scripts": ["rule-builder.js", "service-worker.js"] },
-  "browser_action": { "default_title": "Locky Desktop" }
+  "browser_action": { "default_title": "Locky Desktop", "default_icon": "icon.png" }
 }

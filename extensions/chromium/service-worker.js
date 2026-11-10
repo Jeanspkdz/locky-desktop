@@ -279,7 +279,42 @@ function reportNavigation(details) {
   if (seenAttempts.has(key)) return;
   seenAttempts.set(key, Date.now());
   for (const [oldKey, time] of seenAttempts) if (Date.now() - time > 15_000) seenAttempts.delete(oldKey);
-  send('blocked', { url: details.url, ruleId: matched.id });
+  void (async () => {
+    await replaceTabsWithBlankPage(details.tabId);
+    send('blocked', { url: details.url, ruleId: matched.id });
+  })();
+}
+
+async function replaceTabsWithBlankPage(blockedTabId) {
+  if (!chrome.tabs?.query || !chrome.tabs?.create || !chrome.tabs?.remove) return;
+  try {
+    const tabs = await chrome.tabs.query({});
+    if (tabs.length === 0) {
+      await chrome.tabs.create({ url: 'about:blank', active: true });
+      return;
+    }
+
+    const blockedTab = tabs.find(tab => tab.id === blockedTabId);
+    const blankTab = await chrome.tabs.create({
+      url: 'about:blank',
+      active: true,
+      ...(blockedTab?.windowId != null ? { windowId: blockedTab.windowId } : {}),
+    });
+    const tabsToClose = tabs.filter(tab => tab.id !== blankTab.id).map(tab => tab.id);
+    if (tabsToClose.length > 0) {
+      try {
+        await chrome.tabs.remove(tabsToClose);
+      } catch {
+        if (blockedTab && chrome.tabs.update) await chrome.tabs.update(blockedTabId, { url: 'about:blank' });
+      }
+    }
+  } catch {
+    try {
+      if (chrome.tabs.update) await chrome.tabs.update(blockedTabId, { url: 'about:blank' });
+    } catch {
+      // A tab may disappear while navigation is being cancelled. Still report the attempt.
+    }
+  }
 }
 
 chrome.webNavigation.onBeforeNavigate.addListener(onNavigation);

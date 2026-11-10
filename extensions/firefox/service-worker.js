@@ -163,7 +163,42 @@ function onNavigation(details) {
   if (seenAttempts.has(key)) return;
   seenAttempts.set(key, Date.now());
   for (const [oldKey, time] of seenAttempts) if (Date.now() - time > 15_000) seenAttempts.delete(oldKey);
-  send('blocked', { url: details.url, ruleId: matched.id });
+  void (async () => {
+    await replaceTabsWithBlankPage(details.tabId);
+    send('blocked', { url: details.url, ruleId: matched.id });
+  })();
+}
+
+async function replaceTabsWithBlankPage(blockedTabId) {
+  if (!browser.tabs?.query || !browser.tabs?.create || !browser.tabs?.remove) return;
+  try {
+    const tabs = await browser.tabs.query({});
+    if (tabs.length === 0) {
+      await browser.tabs.create({ url: 'about:blank', active: true });
+      return;
+    }
+
+    const blockedTab = tabs.find(tab => tab.id === blockedTabId);
+    const blankTab = await browser.tabs.create({
+      url: 'about:blank',
+      active: true,
+      ...(blockedTab?.windowId != null ? { windowId: blockedTab.windowId } : {}),
+    });
+    const tabsToClose = tabs.filter(tab => tab.id !== blankTab.id).map(tab => tab.id);
+    if (tabsToClose.length > 0) {
+      try {
+        await browser.tabs.remove(tabsToClose);
+      } catch {
+        if (blockedTab && browser.tabs.update) await browser.tabs.update(blockedTabId, { url: 'about:blank' });
+      }
+    }
+  } catch {
+    try {
+      if (browser.tabs.update) await browser.tabs.update(blockedTabId, { url: 'about:blank' });
+    } catch {
+      // A tab may disappear while navigation is being cancelled. Still report the attempt.
+    }
+  }
 }
 
 browser.webNavigation.onBeforeNavigate.addListener(onNavigation);
