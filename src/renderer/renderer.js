@@ -4,8 +4,18 @@ const ruleValue = document.querySelector('#rule-value');
 const formError = document.querySelector('#form-error');
 const pendingList = document.querySelector('#pending-list');
 const browserHealth = document.querySelector('#browser-health');
+const dnsStatus = document.querySelector('#dns-status');
+const dnsBadge = document.querySelector('#dns-badge');
+const pendingToggle = document.querySelector('#toggle-pending-rules');
+const pendingSummary = document.querySelector('#pending-summary');
 const BROWSER_NAMES = { chrome: 'Chrome', edge: 'Edge', brave: 'Brave' };
+const RECENT_RULE_LIMIT = 3;
+const SCRAMBLE_CHARACTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 let pendingRulesCache = [];
+let newPendingRuleIds = new Set();
+let seenPendingRuleIds = new Set();
+let pendingRulesLoaded = false;
+let showAllPendingRules = false;
 let stateClockNow = null;
 let stateClockAtMono = 0;
 
@@ -13,7 +23,26 @@ function formatRule(rule) {
   return rule.type === 'domain' ? rule.host : `${rule.host}${rule.path}`;
 }
 
-function renderRows(target, rules, pending = false, clockNow = null) {
+function scrambleText(target, text) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !text) {
+    target.textContent = text;
+    return;
+  }
+  const startedAt = performance.now();
+  const duration = 650;
+  function frame(now) {
+    const elapsed = Math.min(duration, now - startedAt);
+    target.textContent = [...text].map((character, index) => {
+      if (/\s/.test(character) || elapsed >= (index / text.length) * duration) return character;
+      return SCRAMBLE_CHARACTERS[Math.floor(Math.random() * SCRAMBLE_CHARACTERS.length)];
+    }).join('');
+    if (elapsed < duration) requestAnimationFrame(frame);
+    else target.textContent = text;
+  }
+  requestAnimationFrame(frame);
+}
+
+function renderRows(target, rules, pending = false, clockNow = null, animatedRuleIds = new Set()) {
   target.replaceChildren();
   if (!rules.length) {
     const empty = document.createElement('p');
@@ -27,8 +56,16 @@ function renderRows(target, rules, pending = false, clockNow = null) {
     row.className = 'rule-row';
     const info = document.createElement('div');
     const title = document.createElement('strong');
-    title.textContent = formatRule(rule);
+    const label = formatRule(rule);
+    title.setAttribute('aria-label', label);
+    const visibleLabel = document.createElement('span');
+    visibleLabel.className = 'rule-name';
+    visibleLabel.setAttribute('aria-hidden', 'true');
+    visibleLabel.textContent = label;
+    title.append(visibleLabel);
+    if (animatedRuleIds.has(rule.id)) scrambleText(visibleLabel, label);
     const type = document.createElement('span');
+    type.className = 'rule-kind';
     type.textContent = rule.type === 'domain' ? 'Dominio completo' : 'URL específica';
     info.append(title, type);
     row.append(info);
@@ -104,6 +141,26 @@ function renderBrowserHealth(health, enforcementEnabled, hasRules) {
 
 async function refresh() {
   renderState(await window.locky.getState());
+  await refreshDnsProtection();
+}
+
+async function refreshDnsProtection() {
+  try {
+    const status = await window.locky.getDnsProtectionStatus();
+    dnsBadge.classList.toggle('dns-active', status.running);
+    dnsBadge.classList.toggle('dns-missing', !status.running);
+    dnsBadge.textContent = status.running ? 'Servicio activo' : 'No está activo';
+    dnsStatus.textContent = !status.supported
+      ? 'La protección DNS del sistema solo está disponible en Windows.'
+      : status.running
+        ? 'El servicio de sistema está en ejecución. Locky vuelve a comprobar DNS, firewall y políticas periódicamente.'
+        : 'El servicio de sistema no está en ejecución. Pide a la persona administradora que repare la instalación.';
+  } catch {
+    dnsBadge.classList.remove('dns-active');
+    dnsBadge.classList.add('dns-missing');
+    dnsBadge.textContent = 'Estado desconocido';
+    dnsStatus.textContent = 'No se pudo consultar el estado del servicio.';
+  }
 }
 
 function renderState(state) {
@@ -118,9 +175,40 @@ function renderState(state) {
   stateClockNow = state.clockNow;
   stateClockAtMono = performance.now();
   pendingRulesCache = state.pendingRules;
-  renderRows(pendingList, state.pendingRules, true, state.clockNow);
+  newPendingRuleIds = new Set();
+  for (const rule of state.pendingRules) {
+    if (pendingRulesLoaded && !seenPendingRuleIds.has(rule.id)) newPendingRuleIds.add(rule.id);
+    seenPendingRuleIds.add(rule.id);
+  }
+  pendingRulesLoaded = true;
+  renderPendingRules(state.clockNow);
   renderBrowserHealth(state.browserHealth, state.enforcementEnabled, ruleCount > 0);
 }
+
+function renderPendingRules(clockNow = null) {
+  const newestFirst = [...pendingRulesCache].sort((left, right) => right.createdAt - left.createdAt);
+  const hasHiddenRules = newestFirst.length > RECENT_RULE_LIMIT;
+  const visibleRules = showAllPendingRules || !hasHiddenRules
+    ? newestFirst
+    : newestFirst.slice(0, RECENT_RULE_LIMIT);
+  pendingToggle.hidden = !hasHiddenRules;
+  pendingToggle.setAttribute('aria-expanded', String(showAllPendingRules));
+  pendingToggle.textContent = showAllPendingRules
+    ? `Mostrar solo las ${RECENT_RULE_LIMIT} más recientes`
+    : `Mostrar todas (${newestFirst.length})`;
+  pendingSummary.hidden = !hasHiddenRules;
+  pendingSummary.textContent = showAllPendingRules
+    ? `Mostrando todas las ${newestFirst.length} reglas pendientes.`
+    : `Mostrando las ${RECENT_RULE_LIMIT} más recientes de ${newestFirst.length} reglas pendientes.`;
+  renderRows(pendingList, visibleRules, true, clockNow, newPendingRuleIds);
+  newPendingRuleIds.clear();
+}
+
+pendingToggle.addEventListener('click', () => {
+  showAllPendingRules = !showAllPendingRules;
+  const now = stateClockNow === null ? null : stateClockNow + performance.now() - stateClockAtMono;
+  renderPendingRules(now);
+});
 
 ruleForm.addEventListener('submit', async event => {
   event.preventDefault();
@@ -154,5 +242,6 @@ void refresh();
 setInterval(() => {
   if (stateClockNow === null) return;
   const now = stateClockNow + performance.now() - stateClockAtMono;
-  renderRows(pendingList, pendingRulesCache, true, now);
+  renderPendingRules(now);
 }, 1000);
+setInterval(() => void refreshDnsProtection(), 15000);

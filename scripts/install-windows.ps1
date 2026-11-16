@@ -25,7 +25,15 @@ $requiredPackageFiles = @(
   'resources/locky/icon.ico',
   'resources/locky/locky-brand.ico',
   'resources/locky/native-host-launcher.cs',
-  'resources/locky/register-browser-hosts.ps1'
+  'resources/locky/register-browser-hosts.ps1',
+  'resources/locky/dns-protection/Install-DnsProtection.ps1',
+  'resources/locky/dns-protection/ProtectionService.cs',
+  'resources/locky/dns-protection/Repair-Protection.ps1',
+  'resources/locky/dns-protection/Repair-Service.ps1',
+  'resources/locky/dns-protection/Save-ProtectionBaseline.ps1',
+  'resources/locky/dns-protection/Restore-ProtectionBaseline.ps1',
+  'resources/locky/dns-protection/Uninstall-DnsProtection.ps1',
+  'resources/locky/dns-protection/protection.json'
 )
 
 foreach ($relativePath in $requiredPackageFiles) {
@@ -48,6 +56,21 @@ $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = [Security.Principal.WindowsPrincipal]::new($identity)
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
   throw 'Ejecuta Install-Locky.ps1 desde PowerShell como administrador y con la misma cuenta de Windows que usa Locky.'
+}
+
+$existingDnsRoot = Join-Path $installRoot 'resources/locky/dns-protection'
+$dnsServiceWasInstalled = $null -ne (Get-Service -Name 'LockyDnsProtection' -ErrorAction SilentlyContinue)
+if ($dnsServiceWasInstalled) {
+  Unregister-ScheduledTask -TaskName 'Locky DNS Protection Watchdog' -Confirm:$false -ErrorAction SilentlyContinue
+  Stop-Service -Name 'LockyDnsProtection' -Force
+}
+if (Test-Path -LiteralPath $existingDnsRoot) {
+  & "$env:WINDIR\System32\takeown.exe" '/F' $existingDnsRoot '/A' '/R' '/D' 'Y' | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw 'No se pudo recuperar la propiedad de los archivos protegidos.' }
+  & "$env:WINDIR\System32\icacls.exe" $existingDnsRoot '/reset' '/T' '/C' | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw 'No se pudieron restablecer los permisos de los archivos protegidos.' }
+  & "$env:WINDIR\System32\icacls.exe" $existingDnsRoot '/grant' '*S-1-5-32-544:(OI)(CI)(F)' '/T' '/C' | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw 'No se pudieron preparar los archivos protegidos para la actualización.' }
 }
 
 $appExecutable = Join-Path $installRoot 'Locky Desktop.exe'
@@ -118,6 +141,10 @@ try {
 
   & $registrationScript -AppExecutable $appExecutable -AppRoot $appRoot
 
+  $dnsInstaller = Join-Path $installRoot 'resources/locky/dns-protection/Install-DnsProtection.ps1'
+  & $dnsInstaller -InstallDirectory (Join-Path $installRoot 'resources/locky/dns-protection')
+  if ($LASTEXITCODE -ne 0) { throw 'No se pudo instalar el servicio de protección DNS.' }
+
   $desktopShortcut = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Locky Desktop.lnk'
   if (Test-Path -LiteralPath $desktopShortcut) {
     $shortcutShell = New-Object -ComObject WScript.Shell
@@ -141,6 +168,13 @@ try {
       Remove-Item -LiteralPath $manifest.Original -Force -ErrorAction SilentlyContinue
     }
     Move-Item -LiteralPath $manifest.Disabled -Destination $manifest.Original -ErrorAction SilentlyContinue
+  }
+  if (-not $registrationCompleted -and $dnsServiceWasInstalled) {
+    try {
+      & (Join-Path $existingDnsRoot 'Install-DnsProtection.ps1') -InstallDirectory $existingDnsRoot
+    } catch {
+      Write-Warning "No se pudo reactivar automáticamente el servicio DNS después de la actualización: $($_.Exception.Message)"
+    }
   }
 }
 

@@ -9,12 +9,13 @@ export function assertRuleCapacity(existingRules, newRule) {
 }
 
 export function assertRuleSetCapacity(rules) {
-  const domainCount = new Set(rules.filter(rule => rule.type === 'domain').map(rule => rule.host)).size;
+  const domainHosts = new Set(rules.filter(rule => rule.type === 'domain' && !rule.host?.includes('*')).map(rule => rule.host));
+  const patternCount = new Set(rules.filter(rule => rule.type === 'domain' && rule.host?.includes('*')).map(rule => rule.host)).size;
   const pathCount = rules.filter(rule => rule.type === 'path').length;
   if (pathCount > MAX_PATH_BLOCK_RULES) {
     throw new RangeError(`El navegador admite como máximo ${MAX_PATH_BLOCK_RULES.toLocaleString('es-PE')} reglas de ruta.`);
   }
-  const dynamicRuleCount = Math.ceil(domainCount / DOMAIN_HOSTS_PER_DNR_RULE)
+  const dynamicRuleCount = Math.ceil(domainHosts.size / DOMAIN_HOSTS_PER_DNR_RULE) + patternCount
     + pathCount * PATH_URL_FILTERS_PER_RULE;
   if (dynamicRuleCount > MAX_DYNAMIC_BLOCK_RULES) {
     throw new RangeError(`El navegador admite como máximo ${MAX_DYNAMIC_BLOCK_RULES.toLocaleString('es-PE')} reglas dinámicas; reduce la cantidad de dominios o rutas.`);
@@ -77,7 +78,9 @@ export function matchesRule(input, rule) {
   const url = parseWebUrl(input);
   const host = url.hostname.toLowerCase();
   const ruleHost = rule.host.toLowerCase();
-  const hostMatches = host === ruleHost || (rule.type === 'domain' && host.endsWith(`.${ruleHost}`));
+  const hostMatches = rule.type === 'domain' && /^\*[a-z0-9-]+\*$/.test(ruleHost)
+    ? host.includes(ruleHost.slice(1, -1))
+    : host === ruleHost || (rule.type === 'domain' && host.endsWith(`.${ruleHost}`));
   if (!hostMatches) return false;
   if (rule.type === 'domain') return true;
 

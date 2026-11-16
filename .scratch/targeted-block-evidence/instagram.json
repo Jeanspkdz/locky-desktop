@@ -1,0 +1,8 @@
+{
+  "browser": "brave",
+  "profile": "isolated",
+  "url": "https://instagram.com/",
+  "navigationError": "net::ERR_BLOCKED_BY_CLIENT",
+  "lockEndsAt": 1794508498417,
+  "screenshot": "instagram.png"
+}

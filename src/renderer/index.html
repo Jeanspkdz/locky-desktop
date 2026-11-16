@@ -9,6 +9,7 @@
   <main id="proteccion">
     <section class="hero"><h1>Protección</h1><p>Bloquea sitios que te distraen y mantén el control de tu navegación.</p></section>
     <section class="browsers-section" aria-labelledby="browsers-title"><h2 class="section-label" id="browsers-title">Navegadores protegidos</h2><div id="browser-health" class="health-list" aria-live="polite"></div></section>
+    <section class="system-protection" aria-labelledby="dns-title"><div><h2 id="dns-title">Protección DNS del sistema</h2><p id="dns-status" role="status">Comprobando servicio de protección…</p></div><span id="dns-badge" class="dns-badge">Comprobando</span></section>
     <div class="dashboard-grid">
       <section class="panel add-panel" id="reglas"><h2>Agregar una página</h2><form id="rule-form">
         <label for="rule-type">Tipo de bloqueo</label><select id="rule-type"><option value="domain">Dominio completo</option><option value="path">URL o perfil específico</option></select>
@@ -22,7 +23,7 @@
         <p><span class="step-icon" aria-hidden="true">⬡</span><span>Las reglas consolidadas no se pueden retirar desde Locky.</span></p>
       </div></section>
     </div>
-    <section class="panel pending-panel" aria-labelledby="pending-title"><h2 id="pending-title">Reglas pendientes</h2><div class="rule-list" id="pending-list"><p class="empty">No hay reglas pendientes.</p></div></section>
+    <section class="panel pending-panel" aria-labelledby="pending-title"><div class="pending-heading"><h2 id="pending-title">Reglas pendientes</h2><button id="toggle-pending-rules" class="secondary-button" type="button" aria-expanded="false" aria-controls="pending-list" hidden></button></div><p id="pending-summary" class="pending-summary" hidden></p><div class="rule-list" id="pending-list"><p class="empty">No hay reglas pendientes.</p></div></section>
     <details class="dev-tools"><summary>Herramientas de desarrollo</summary><p>Activa la pantalla de bloqueo para revisar el diseño.</p><button id="simulate">Simular intento bloqueado</button></details>
   </main><script type="module" src="./renderer.js"></script>
 </body></html>

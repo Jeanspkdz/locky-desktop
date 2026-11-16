@@ -744,7 +744,10 @@ async function inspectRepairUi(appDevTools, family) {
 
 async function run() {
   assert(process.platform === 'win32', 'The installed browser lifecycle smoke requires Windows.');
-  const selectedSpecs = process.argv.includes('--brave-chrome')
+  const targetedSites = process.argv.includes('--targeted-sites');
+  const selectedSpecs = targetedSites
+    ? BROWSER_SPECS.filter(spec => spec.family === 'brave')
+    : process.argv.includes('--brave-chrome')
     ? BROWSER_SPECS.filter(spec => spec.family === 'chrome' || spec.family === 'brave')
     : BROWSER_SPECS;
   const useRunningInstalledApp = process.env.LOCKY_E2E_USE_RUNNING_INSTALLED === '1';
@@ -772,6 +775,7 @@ async function run() {
   const userDataPath = path.join(runDirectory, 'locky-data');
   const scopePath = path.join(runDirectory, 'browser-scope.json');
   const installedRulesPath = process.env.LOCKY_E2E_RULES_STATE_PATH;
+  if (targetedSites) assert(installedRulesPath, 'Set LOCKY_E2E_RULES_STATE_PATH to the installed Locky state.');
   const statePath = useRunningInstalledApp
     ? process.env.LOCKY_E2E_INSTALLED_STATE_PATH ?? path.join(process.env.APPDATA ?? '', 'locky-desktop', 'locky-state.json')
     : path.join(userDataPath, 'locky-state.json');
@@ -917,6 +921,56 @@ async function run() {
         log(`PASS: Chrome stayed open with a healthy extension for ${Math.ceil(healthHoldMs / 1000)} seconds`);
         return;
       }
+    }
+
+    if (targetedSites) {
+      const browser = browsers[0];
+      const evidenceDirectory = path.join(projectRoot, '.scratch', 'targeted-block-evidence');
+      await fs.promises.mkdir(evidenceDirectory, { recursive: true });
+      const selectedSite = process.argv.find(argument => argument.startsWith('--targeted-site='))?.slice('--targeted-site='.length);
+      const sites = [
+        ['manhwa', 'https://manhwaread.com/'],
+        ['instagram', 'https://instagram.com/'],
+        ['tiktok', 'https://tiktok.com/'],
+      ].filter(([name]) => !selectedSite || name === selectedSite);
+      assert(sites.length, `Unknown targeted site: ${selectedSite}`);
+      for (const [name, url] of sites) {
+        const { page } = await connectPage(browser);
+        try {
+          const navigation = await page.send('Page.navigate', { url });
+          log(`${url} navigation result: ${JSON.stringify(navigation)}`);
+          assert(navigation.errorText === 'net::ERR_BLOCKED_BY_CLIENT', `${url} was not blocked: ${JSON.stringify(navigation)}`);
+          const lockEndsAt = await waitFor('a browser lock after targeted navigation', async () => (await readState(statePath))?.desktopLock?.endsAt, 10_000);
+          const { targetInfos } = await appDevTools.connection.send('Target.getTargets');
+          const overlay = targetInfos.find(target => target.type === 'page' && target.url?.endsWith('/lock.html'));
+          assert(overlay, 'Locky did not open its lock screen.');
+          const { sessionId } = await appDevTools.connection.send('Target.attachToTarget', { targetId: overlay.targetId, flatten: true });
+          try {
+            await appDevTools.connection.send('Page.enable', {}, sessionId);
+            await waitFor('rendered Locky lock screen', async () => {
+              const result = await appDevTools.connection.send('Runtime.evaluate', {
+                expression: "document.body?.innerText.includes('Se activó el bloqueo')",
+                returnByValue: true,
+              }, sessionId);
+              return result.result?.value === true;
+            }, 5000);
+            await delay(1200);
+            const screenshot = await appDevTools.connection.send('Page.captureScreenshot', { format: 'png' }, sessionId);
+            await fs.promises.writeFile(path.join(evidenceDirectory, `${name}.png`), Buffer.from(screenshot.data, 'base64'));
+            await fs.promises.writeFile(path.join(evidenceDirectory, `${name}.json`), JSON.stringify({
+              browser: browser.spec.family,
+              profile: 'isolated',
+              url,
+              navigationError: navigation.errorText,
+              lockEndsAt,
+              screenshot: `${name}.png`,
+            }, null, 2));
+          } finally { await appDevTools.connection.send('Target.detachFromTarget', { sessionId }).catch(() => {}); }
+          log(`${url} blocked by browser DNR; lock screenshot: ${path.join(evidenceDirectory, `${name}.png`)}`);
+        } finally { await page.close(); }
+      }
+      log('PASS: targeted sites blocked in isolated Brave with installed rules');
+      return;
     }
 
     let lockEndAt = null;

@@ -33,3 +33,9 @@ Rules in the initial set are consolidated automatically when Locky starts; the i
 ## Product Limitations
 
 A normal full-screen window can interrupt ordinary desktop use, but it does not replace Windows session locking. An administrator can stop processes, change policies, or uninstall software. “Permanent” describes the actions Locky provides, not a guarantee against the computer administrator. Do not claim a browser family is covered until it passes blocking and private browsing checks.
+
+## System DNS Protection
+
+The Windows DNS protection is a separate `LocalSystem` service installed under Program Files and activated by default. It reconciles Cloudflare Families DNS, Windows Firewall rules, and Chrome/Brave/Edge DNS policies using network and registry notifications plus a 45-second backup pass. The Service Control Manager restarts failures; a SYSTEM scheduled task repairs a missing or stopped service. The desktop app shows service state. The installer saves the pre-install DNS, firewall profile, and browser policy values for restoration; removal is available through the administrative uninstall script.
+
+Its install and test instructions live in [`install/windows/dns-protection/README.md`](../install/windows/dns-protection/README.md). Administrators can configure adapter exceptions in the protected `protection.json`; those interfaces are excluded from DNS enforcement. DNS-over-HTTPS from arbitrary applications over HTTPS is outside the coverage. An administrator can bypass or remove the service, task, rules, or policies.

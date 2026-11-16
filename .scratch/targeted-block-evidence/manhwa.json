@@ -1,0 +1,8 @@
+{
+  "browser": "brave",
+  "profile": "isolated",
+  "url": "https://manhwaread.com/",
+  "navigationError": "net::ERR_BLOCKED_BY_CLIENT",
+  "lockEndsAt": 1794508490820,
+  "screenshot": "manhwa.png"
+}

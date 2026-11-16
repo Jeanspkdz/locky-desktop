@@ -380,6 +380,19 @@ async function handleNativeMessage(message) {
 
 function registerIpc() {
   ipcMain.handle('state:get', () => publicState());
+  ipcMain.handle('dns-protection:status', async () => {
+    if (process.platform !== 'win32') return { installed: false, running: false, supported: false };
+    try {
+      const { stdout } = await execFileAsync('sc.exe', ['query', 'LockyDnsProtection'], { windowsHide: true });
+      const stateMatch = stdout.match(/STATE\s*:\s*(\d+)/i);
+      return { installed: true, running: stateMatch?.[1] === '4', supported: true };
+    } catch (error) {
+      if (error.code === 'ENOENT' || error.code === 1060 || /does not exist|no existe/i.test(`${error.message} ${error.stderr ?? ''}`)) {
+        return { installed: false, running: false, supported: true };
+      }
+      return { installed: true, running: false, supported: true };
+    }
+  });
   ipcMain.handle('rules:add', async (_event, input) => {
     if (!sessionClock?.ready) throw new Error('Conecta el equipo a internet para iniciar un período de verificación con hora confirmada.');
     const rule = domainRules.normalizeRule(input);

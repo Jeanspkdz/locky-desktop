@@ -39,7 +39,16 @@ $requiredPaths = @(
   'install/windows/native-host-launcher.cs',
   'install/windows/browser-window-monitor.cs',
   'install/windows/register-browser-hosts.ps1',
+  'install/windows/dns-protection/ProtectionService.cs',
+  'install/windows/dns-protection/Repair-Protection.ps1',
+  'install/windows/dns-protection/Repair-Service.ps1',
+  'install/windows/dns-protection/Save-ProtectionBaseline.ps1',
+  'install/windows/dns-protection/Restore-ProtectionBaseline.ps1',
+  'install/windows/dns-protection/Install-DnsProtection.ps1',
+  'install/windows/dns-protection/Uninstall-DnsProtection.ps1',
+  'install/windows/dns-protection/protection.json',
   'scripts/install-windows.ps1',
+  'scripts/install-standard-user-windows.ps1',
   'scripts/create-icon.ps1',
   'package.json',
   'assets/locky.svg',
@@ -82,7 +91,9 @@ Copy-Item -LiteralPath (Join-Path $projectRoot 'extensions/firefox') -Destinatio
 Copy-Item -LiteralPath (Join-Path $projectRoot 'install/windows/register-browser-hosts.ps1') -Destination $lockyPath
 Copy-Item -LiteralPath (Join-Path $projectRoot 'install/windows/native-host-launcher.cs') -Destination $lockyPath
 Copy-Item -LiteralPath (Join-Path $projectRoot 'install/windows/browser-window-monitor.cs') -Destination $lockyPath
+Copy-Item -LiteralPath (Join-Path $projectRoot 'install/windows/dns-protection') -Destination $lockyPath -Recurse
 Copy-Item -LiteralPath (Join-Path $projectRoot 'scripts/install-windows.ps1') -Destination (Join-Path $outputPath 'Install-Locky.ps1')
+Copy-Item -LiteralPath (Join-Path $projectRoot 'scripts/install-standard-user-windows.ps1') -Destination (Join-Path $outputPath 'Install-Locky-For-Standard-User.ps1')
 New-Item -ItemType File -Path (Join-Path $lockyPath 'installed.flag') | Out-Null
 
 Write-Host "Paquete portable creado en: $outputPath"

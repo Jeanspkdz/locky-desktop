@@ -133,14 +133,20 @@ const GAMBLING_CANDIDATES = Object.freeze([
   'betsson.pe',
 ]);
 
+const COMIC_DOMAIN_PATTERNS = Object.freeze(['*manhwa*', '*manga*']);
+
+const SOCIAL_CANDIDATES = Object.freeze(['instagram.com', 'tiktok.com']);
+
 async function getCandidates() {
   return {
     checkedAt: Date.now(),
     candidates: [
       ...ADULT_CANDIDATES.map(domain => ({ domain, categories: ['adult'] })),
       ...GAMBLING_CANDIDATES.map(domain => ({ domain, categories: ['gambling'] })),
+      ...COMIC_DOMAIN_PATTERNS.map(domain => ({ domain, categories: ['comics'] })),
+      ...SOCIAL_CANDIDATES.map(domain => ({ domain, categories: ['social'] })),
     ],
   };
 }
 
-module.exports = { getCandidates, ADULT_CANDIDATES, GAMBLING_CANDIDATES };
+module.exports = { getCandidates, ADULT_CANDIDATES, GAMBLING_CANDIDATES, COMIC_DOMAIN_PATTERNS, SOCIAL_CANDIDATES };

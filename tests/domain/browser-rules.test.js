@@ -10,6 +10,19 @@ test('reglas del navegador bloquean un dominio entero y subdominios', () => {
   assert.equal(findBrowserRule('https://notexample.com/a', rules), null);
 });
 
+test('los patrones de manga y manhwa cubren cualquier posición en el dominio', () => {
+  const rules = [
+    { id: 'manhwa', type: 'domain', host: '*manhwa*' },
+    { id: 'manga', type: 'domain', host: '*manga*' },
+  ];
+  assert.equal(findBrowserRule('https://read-manhwa.example/chapter', rules).id, 'manhwa');
+  assert.equal(findBrowserRule('https://manga-reader.example/', rules).id, 'manga');
+  assert.equal(findBrowserRule('https://example.com/manga', rules), null);
+  const browserRules = toBrowserRules(rules);
+  assert.equal(browserRules.length, 2);
+  assert.ok(browserRules.every(rule => rule.condition.regexFilter && rule.condition.resourceTypes[0] === 'main_frame'));
+});
+
 test('reglas del navegador bloquean una ruta anidada sin alcanzar prefijos parecidos', () => {
   const rules = [{ id: 'r2', type: 'path', host: 'x.com', path: '/profileA' }];
   assert.equal(findBrowserRule('https://x.com/profileA/status/12', rules).id, 'r2');

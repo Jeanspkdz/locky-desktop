@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://manhwaread.com/",
+    "result": {
+      "matchedRules": [
+        {
+          "ruleId": 3,
+          "rulesetId": "_dynamic"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://instagram.com/",
+    "result": {
+      "matchedRules": [
+        {
+          "ruleId": 2,
+          "rulesetId": "_dynamic"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://tiktok.com/",
+    "result": {
+      "matchedRules": [
+        {
+          "ruleId": 2,
+          "rulesetId": "_dynamic"
+        }
+      ]
+    }
+  }
+]

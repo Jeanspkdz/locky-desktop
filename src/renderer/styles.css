@@ -21,6 +21,11 @@ button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,s
 .browsers-section{margin-top:32px}
 .section-label{margin:0 0 15px;color:#1bd8ec;text-transform:uppercase;letter-spacing:.18em;font:700 15px Bahnschrift,"Segoe UI",sans-serif}
 .health-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.system-protection{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:20px;padding:20px 22px;border:1px solid #173b48;border-radius:16px;background:#081720}
+.system-protection h2{margin:0 0 6px;color:#e1f1f5;font:700 19px Bahnschrift,"Segoe UI",sans-serif}
+.system-protection p{margin:0;color:#91b7c6;font-size:14px;line-height:1.45}
+.dns-badge{flex:none;padding:7px 12px;border:1px solid #85563d;border-radius:999px;color:#ffc476;background:#2b1d17;font-size:12px;font-weight:700}
+.dns-badge.dns-active{border-color:#0c6574;color:#18d9e9;background:#052a33}
 .health-row{min-height:99px;padding:20px;border:1px solid #173b48;border-radius:16px;background:#081720;display:flex;align-items:center;gap:15px;min-width:0}
 .browser-icon{width:48px;height:48px;flex:0 0 48px;border-radius:14px;border:1px solid #0d7081;background:#0a3642;color:#1bd8ec;display:grid;place-items:center;font:700 23px Bahnschrift,"Segoe UI",sans-serif}
 .health-row>div{min-width:0}
@@ -48,11 +53,16 @@ input:focus,select:focus{border-color:#1cd6e8}
 .explainer-steps p+p{border-top:1px solid #15323d}
 .step-icon{flex:0 0 24px;color:#1bd8ec;font-size:22px;line-height:1}
 .pending-panel{margin-top:24px}
+.pending-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.pending-heading h2{margin-bottom:15px}
+.secondary-button{margin:0 0 15px;padding:8px 11px;border:1px solid #28505d;border-radius:8px;background:#0b222c;color:#9fdce5;font-size:12px;font-weight:600}
+.secondary-button:hover{border-color:#20d7e9;color:#d9f7fa;background:#0c2a35}
+.pending-summary{margin:-5px 0 12px;color:#91b7c6;font-size:12px}
 .rule-list{display:grid;gap:8px}
 .rule-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #173b48;border-radius:10px;background:#05131b}
 .rule-row>div{flex:1;min-width:0}
 .rule-row strong{display:block;overflow-wrap:anywhere;font-size:14px}
-.rule-row div span{display:block;margin-top:3px;color:#91b7c6;font-size:12px}
+.rule-row .rule-kind{display:block;margin-top:3px;color:#91b7c6;font-size:12px}
 .pending-time{color:#ffc476;font-size:13px;white-space:nowrap}
 .text-button{border:0;background:transparent;color:#ffb19e;padding:8px}
 .empty{margin:0;color:#9bbdca;font-size:14px}
@@ -61,6 +71,7 @@ input:focus,select:focus{border-color:#1cd6e8}
 .dev-tools button{padding:8px 12px;border:1px solid #345965;border-radius:8px;background:#102b35;color:#c8ebf3}
 @media(max-width:800px){.app-screen main{padding:32px 24px 65px}.health-list{gap:10px}.health-row{padding:13px}.dashboard-grid{gap:14px}.panel{padding:20px}}
 @media(max-width:650px){.app-screen .topbar{height:72px;padding:0 18px}.brand-logo{width:60px;height:60px}.app-screen main{padding:28px 16px 60px}.hero h1{font-size:37px}.hero p{font-size:16px}.health-list,.dashboard-grid{grid-template-columns:1fr}.health-row{min-height:76px}.dashboard-grid .panel{min-height:0}}
+@media(max-width:650px){.system-protection{align-items:flex-start;flex-direction:column;gap:12px}}
 
 .lock-screen{display:grid;place-items:center;text-align:center;min-height:100vh;background:radial-gradient(circle at 50% 52%,#082d39 0,#061923 28%,#030b10 68%)}
 .lock-content{width:min(100%,1050px);padding:30px 24px 42px;display:flex;flex-direction:column;align-items:center;transform:translate(var(--lock-center-x,0px),var(--lock-center-y,0px))}
