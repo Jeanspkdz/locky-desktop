@@ -1,0 +1,698 @@
+DIRECTORIO DE SERVICIOS DIGITALES DE MANGA, WEBTOON Y PUBLICACIÓN
+Fecha de consulta: 13-11-2026
+
+Alcance y cómo leer esta lista:
+- Contiene 500 servicios registrados en la lista oficial ABJ de Japón (1037 servicios y 271 operadores, actualización 24-09-2026).
+- ABJ identifica servicios autorizados de distribución de contenido digital. El registro incluye tiendas, apps y propiedades editoriales.
+- COMIC/BOOK = el nombre del servicio menciona manga, cómic, comic, manga o tienda/libros digitales.
+- PUBLISHER PROPERTY = otro servicio digital de una editorial que publica manga; puede cubrir contenido mixto y no ser una plataforma de lectura de manga.
+- Las 500 filas son servicios, no 500 dominios únicos. El registro no publica la URL individual de cada servicio.
+- Para ubicar la URL directa, busca el nombre del servicio y su operador. La página/archivo ABJ sirve para comprobar autorización, no garantiza disponibilidad fuera de Japón.
+
+FUENTE PRINCIPAL OFICIAL
+ABJ whitelist (registro de servicios autorizados; PDF, actualizado 24-09-2026): https://aebs.or.jp/archives/001/202609/ABJmark_Whitelist.pdf
+Qué significa ABJ: https://aebs.or.jp/ABJ_mark.html
+
+LISTA DE SERVICIOS
+001. [COMIC/BOOK] dブック — 株式会社NTTドコモ — ABJ 10001002 (PDF p. 1)
+002. [COMIC/BOOK] ｄアニメストア — 株式会社NTTドコモ — ABJ 10001004 (PDF p. 1)
+003. [COMIC/BOOK] MANGA — MIRAI 株式会社NTTドコモ — ABJ 10001005 (PDF p. 1)
+004. [COMIC/BOOK] ブックライブ — 株式会社BookLive — ABJ 10011000 (PDF p. 1)
+005. [COMIC/BOOK] ブックライブ — fun 株式会社BookLive — ABJ 10011005 (PDF p. 1)
+006. [COMIC/BOOK] auブックパス — KDDI株式会社 — ABJ 10021000 (PDF p. 1)
+007. [COMIC/BOOK] auブックパス — for au PAY マーケット KDDI株式会社 — ABJ 10021005 (PDF p. 1)
+008. [COMIC/BOOK] マンガボックス — 株式会社ディー・エヌ・エー — ABJ 10031000 (PDF p. 1)
+009. [COMIC/BOOK] ハイブリッド型総合書店honto — 大日本印刷株式会社 — ABJ 10051000 (PDF p. 1)
+010. [COMIC/BOOK] マンガッChu — 株式会社ウィナス — ABJ 10081000 (PDF p. 1)
+011. [COMIC/BOOK] コミックバンチweb — 株式会社新潮社 — ABJ 10101001 (PDF p. 1)
+012. [COMIC/BOOK] Book — Bang 株式会社新潮社 — ABJ 10101012 (PDF p. 1)
+013. [COMIC/BOOK] 新潮社の電子書籍 — 株式会社新潮社 — ABJ 10101015 (PDF p. 1)
+014. [COMIC/BOOK] コミックバンチKai — 株式会社新潮社 — ABJ 10101017 (PDF p. 1)
+015. [COMIC/BOOK] コミックリュエル＆ジャルダン — 株式会社実業之日本社 — ABJ 10111001 (PDF p. 1)
+016. [COMIC/BOOK] コミックシーモア — エヌ・ティ・ティ・ソルマーレ株式会社 — ABJ 10121000 (PDF p. 1)
+017. [COMIC/BOOK] MangaPlaza — エヌ・ティ・ティ・ソルマーレ株式会社 — ABJ 10121006 (PDF p. 1)
+018. [COMIC/BOOK] 幻冬舎コミックス．ｎｅｔ — 株式会社幻冬舎コミックス — ABJ 10131000 (PDF p. 1)
+019. [COMIC/BOOK] comicブースト — 株式会社幻冬舎コミックス — ABJ 10131004 (PDF p. 1)
+020. [COMIC/BOOK] DokkiriComic — 株式会社シーガル — ABJ 10141000 (PDF p. 1)
+021. [COMIC/BOOK] DokkiriComicNEO — 株式会社シーガル — ABJ 10141001 (PDF p. 1)
+022. [COMIC/BOOK] comico — NHN comico株式会社 — ABJ 10151000 (PDF p. 1)
+023. [COMIC/BOOK] Comic — Festa 株式会社ウェイブ — ABJ 10161000 (PDF p. 1)
+024. [COMIC/BOOK] Mangapon — 株式会社ウェイブ — ABJ 10161003 (PDF p. 1)
+025. [COMIC/BOOK] Mangadon — 株式会社ウェイブ — ABJ 10161004 (PDF p. 1)
+026. [COMIC/BOOK] Neowing電子書籍ストア — 株式会社ネオ・ウィング — ABJ 10171000 (PDF p. 1)
+027. [COMIC/BOOK] まんがタイムWEB — 株式会社　芳文社 — ABJ 10181002 (PDF p. 1)
+028. [COMIC/BOOK] 週刊漫画ＴＩＭＥＳ公式 — 株式会社　芳文社 — ABJ 10181003 (PDF p. 1)
+029. [COMIC/BOOK] コミック — トレイル 株式会社　芳文社 — ABJ 10181004 (PDF p. 1)
+030. [COMIC/BOOK] COMIC — FUZ 株式会社　芳文社 — ABJ 10181005 (PDF p. 2)
+031. [COMIC/BOOK] まんがタイムSquare — 株式会社　芳文社 — ABJ 10181006 (PDF p. 2)
+032. [COMIC/BOOK] マンガがうがう — 株式会社双葉社 — ABJ 10191006 (PDF p. 2)
+033. [COMIC/BOOK] まんがクレヨンしんちゃん.com — 株式会社双葉社 — ABJ 10191010 (PDF p. 2)
+034. [COMIC/BOOK] マンガBANG！ — 株式会社Amazia — ABJ 10201000 (PDF p. 2)
+035. [COMIC/BOOK] マンガBANGコミックス — 株式会社Amazia — ABJ 10201002 (PDF p. 2)
+036. [COMIC/BOOK] マンガBANGブックス — 株式会社Amazia — ABJ 10201003 (PDF p. 2)
+037. [COMIC/BOOK] ギャラクシーコミック — IBGメディア株式会社 — ABJ 10211000 (PDF p. 2)
+038. [COMIC/BOOK] コミコミコミック — IBGメディア株式会社 — ABJ 10211001 (PDF p. 2)
+039. [COMIC/BOOK] コミックマニア — IBGメディア株式会社 — ABJ 10211002 (PDF p. 2)
+040. [COMIC/BOOK] MangaWith — 株式会社GameWith — ABJ 10241000 (PDF p. 2)
+041. [COMIC/BOOK] アクセスBOOKS — 株式会社エキスプレス・コンテンツバンク — ABJ 10251000 (PDF p. 2)
+042. [COMIC/BOOK] 楽天Kobo電子書籍ストア — 楽天株式会社 — ABJ 10281000 (PDF p. 2)
+043. [COMIC/BOOK] コミック.jp — 株式会社エムティーアイ — ABJ 10301001 (PDF p. 2)
+044. [COMIC/BOOK] マンガPark — 株式会社白泉社 — ABJ 10311011 (PDF p. 2)
+045. [COMIC/BOOK] マンガPark公式ツイッター — 株式会社白泉社 — ABJ 10311012 (PDF p. 2)
+046. [COMIC/BOOK] 白泉社eコミックス — 株式会社白泉社 — ABJ 10311014 (PDF p. 2)
+047. [COMIC/BOOK] Amebaマンガ — 株式会社ブックテーブル — ABJ 10321001 (PDF p. 2)
+048. [COMIC/BOOK] まんが王国 — 株式会社ビーグリー — ABJ 10331000 (PDF p. 2)
+049. [COMIC/BOOK] コミックevery — - Byまんが王国 株式会社ビーグリー — ABJ 10331001 (PDF p. 2)
+050. [COMIC/BOOK] 角川書店ブランドサイト — 株式会社KADOKAWA — ABJ 10351003 (PDF p. 2)
+051. [COMIC/BOOK] カドカワBOOKS — 株式会社KADOKAWA — ABJ 10351006 (PDF p. 2)
+052. [COMIC/BOOK] コミックアライブ — 株式会社KADOKAWA — ABJ 10351009 (PDF p. 2)
+053. [COMIC/BOOK] コミックジーン — 株式会社KADOKAWA — ABJ 10351010 (PDF p. 2)
+054. [COMIC/BOOK] コミックフラッパー — 株式会社KADOKAWA — ABJ 10351011 (PDF p. 2)
+055. [COMIC/BOOK] 角川まんが学習シリーズ — 株式会社KADOKAWA — ABJ 10351018 (PDF p. 3)
+056. [COMIC/BOOK] コミックNewtype — 株式会社KADOKAWA — ABJ 10351019 (PDF p. 3)
+057. [COMIC/BOOK] ComicWalker — 株式会社KADOKAWA — ABJ 10351022 (PDF p. 3)
+058. [COMIC/BOOK] コミックフルール — 株式会社KADOKAWA — ABJ 10351031 (PDF p. 3)
+059. [COMIC/BOOK] コミックビーム — 株式会社KADOKAWA — ABJ 10351032 (PDF p. 3)
+060. [COMIC/BOOK] コミックキューン — 株式会社KADOKAWA — ABJ 10351033 (PDF p. 3)
+061. [COMIC/BOOK] コミッククリア — 株式会社KADOKAWA — ABJ 10351039 (PDF p. 3)
+062. [COMIC/BOOK] シルフコミックス — 株式会社KADOKAWA — ABJ 10351040 (PDF p. 3)
+063. [COMIC/BOOK] MFブックス — 株式会社KADOKAWA — ABJ 10351044 (PDF p. 3)
+064. [COMIC/BOOK] WEBデンプレコミック — 株式会社KADOKAWA — ABJ 10351046 (PDF p. 3)
+065. [COMIC/BOOK] コミックエッセイ劇場 — 株式会社KADOKAWA — ABJ 10351050 (PDF p. 3)
+066. [COMIC/BOOK] タテスクコミック — 株式会社KADOKAWA — ABJ 10351057 (PDF p. 3)
+067. [COMIC/BOOK] コミックエッセイ劇場 — 株式会社KADOKAWA — ABJ 10351058 (PDF p. 3)
+068. [COMIC/BOOK] BL☆美少年ブック — 株式会社KADOKAWA — ABJ 10351060 (PDF p. 3)
+069. [COMIC/BOOK] TL☆恋乙女ブック — 株式会社KADOKAWA — ABJ 10351061 (PDF p. 3)
+070. [COMIC/BOOK] BL☆美少年ブック読み放題コース — 株式会社KADOKAWA — ABJ 10351063 (PDF p. 3)
+071. [COMIC/BOOK] コミックアルナ公式サイト — 株式会社KADOKAWA — ABJ 10351064 (PDF p. 3)
+072. [COMIC/BOOK] 電撃コミックだいおうじ公式サイト — 株式会社KADOKAWA — ABJ 10351069 (PDF p. 3)
+073. [COMIC/BOOK] 海外発！フルカラーコミック — 株式会社KADOKAWA — ABJ 10351073 (PDF p. 3)
+074. [COMIC/BOOK] COMIC — OGYAAA!! 株式会社ホーム社 — ABJ 10361014 (PDF p. 4)
+075. [COMIC/BOOK] コミックDAYS — 株式会社講談社 — ABJ 10371001 (PDF p. 4)
+076. [COMIC/BOOK] じぶん書店 — 株式会社講談社 — ABJ 10371004 (PDF p. 4)
+077. [COMIC/BOOK] comic — tint 株式会社講談社 — ABJ 10371047 (PDF p. 4)
+078. [COMIC/BOOK] まんが学術文庫 — 株式会社講談社 — ABJ 10371049 (PDF p. 4)
+079. [COMIC/BOOK] 水木しげる漫画大全集 — 株式会社講談社 — ABJ 10371051 (PDF p. 5)
+080. [COMIC/BOOK] マンガJam — 株式会社祥伝社 — ABJ 10381000 (PDF p. 5)
+081. [COMIC/BOOK] 少女コミック — 株式会社小学館 — ABJ 10401002 (PDF p. 5)
+082. [COMIC/BOOK] プチコミック — 株式会社小学館 — ABJ 10401005 (PDF p. 5)
+083. [COMIC/BOOK] コロコロコミック — 株式会社小学館 — ABJ 10401013 (PDF p. 5)
+084. [COMIC/BOOK] ビッグコミックBROS. — 株式会社小学館 — ABJ 10401019 (PDF p. 5)
+085. [COMIC/BOOK] ビッグコミック創刊50周年情報サイト — 株式会社小学館 — ABJ 10401020 (PDF p. 5)
+086. [COMIC/BOOK] 小学館コミック — 株式会社小学館 — ABJ 10401021 (PDF p. 5)
+087. [COMIC/BOOK] 新人コミック大賞 — 株式会社小学館 — ABJ 10401023 (PDF p. 6)
+088. [COMIC/BOOK] ブックピープル — 株式会社小学館 — ABJ 10401052 (PDF p. 6)
+089. [COMIC/BOOK] 小学館eBooks — 株式会社小学館 — ABJ 10401063 (PDF p. 6)
+090. [COMIC/BOOK] コミックえもんオンライン — 株式会社小学館 — ABJ 10401075 (PDF p. 6)
+091. [COMIC/BOOK] マンガワン — 株式会社小学館 — ABJ 10401088 (PDF p. 6)
+092. [COMIC/BOOK] BOOKSHOP小学館 — 株式会社小学館 — ABJ 10401111 (PDF p. 7)
+093. [COMIC/BOOK] 小学館eコミックストア — 株式会社小学館 — ABJ 10401123 (PDF p. 7)
+094. [COMIC/BOOK] DMM電子書籍 — 合同会社DMM.com — ABJ 10411000 (PDF p. 7)
+095. [COMIC/BOOK] DMMブックス — 合同会社DMM.com — ABJ 10411001 (PDF p. 7)
+096. [COMIC/BOOK] FANZA電子書籍 — 株式会社デジタルコマース — ABJ 10421000 (PDF p. 7)
+097. [COMIC/BOOK] FANZAブックス — 株式会社デジタルコマース — ABJ 10421001 (PDF p. 7)
+098. [COMIC/BOOK] オリミュウストア — 株式会社オリミュウ — ABJ 10461003 (PDF p. 7)
+099. [COMIC/BOOK] めちゃコミック — 株式会社アムタス — ABJ 10481000 (PDF p. 7)
+100. [COMIC/BOOK] コミックROLLY — 株式会社ソニー・ミュージックエンタテインメント — ABJ 10491001 (PDF p. 7)
+101. [COMIC/BOOK] 電子書店パピレス — 株式会社パピレス — ABJ 10501001 (PDF p. 7)
+102. [COMIC/BOOK] 犬耳書店 — 株式会社パピレス — ABJ 10501002 (PDF p. 7)
+103. [COMIC/BOOK] 立ち読みコミック — 株式会社ポッケ — ABJ 10521000 (PDF p. 7)
+104. [COMIC/BOOK] カンナコミックスWEBサイト — 株式会社フランス書院 — ABJ 10531003 (PDF p. 7)
+105. [COMIC/BOOK] マンガよもんが — 株式会社ぶんか社 — ABJ 10561002 (PDF p. 7)
+106. [COMIC/BOOK] COMIC — Doop'z&COMIC異世界ハーレム 株式会社ぶんか社 — ABJ 10561004 (PDF p. 8)
+107. [COMIC/BOOK] まんがライフＷＩＮ — 株式会社竹書房 — ABJ 10591000 (PDF p. 8)
+108. [COMIC/BOOK] WEBコミックガンマ — 株式会社竹書房 — ABJ 10591001 (PDF p. 8)
+109. [COMIC/BOOK] WEBコミックガンマぷらす — 株式会社竹書房 — ABJ 10591002 (PDF p. 8)
+110. [COMIC/BOOK] 竹書房コミックエッセイcafé — 株式会社竹書房 — ABJ 10591005 (PDF p. 8)
+111. [COMIC/BOOK] 竹書房コミックエッセイweb — 株式会社竹書房 — ABJ 10591014 (PDF p. 8)
+112. [COMIC/BOOK] 紀伊國屋書店 — Kinoppy 株式会社　紀伊國屋書店 — ABJ 10601000 (PDF p. 8)
+113. [COMIC/BOOK] 紀伊國屋書店 — 株式会社　紀伊國屋書店 — ABJ 10601001 (PDF p. 8)
+114. [COMIC/BOOK] 雑誌オンライン+Books — 株式会社ZITTO — ABJ 10611000 (PDF p. 8)
+115. [COMIC/BOOK] いつでも書店 — 株式会社ZITTO — ABJ 10611002 (PDF p. 8)
+116. [COMIC/BOOK] pixivコミック — ピクシブ株式会社 — ABJ 10631000 (PDF p. 8)
+117. [COMIC/BOOK] book-in-the-box — シャープマーケティングジャパン株式会社 — ABJ 10671002 (PDF p. 8)
+118. [COMIC/BOOK] コミックmini — アサップネットワーク株式会社 — ABJ 10681000 (PDF p. 8)
+119. [COMIC/BOOK] でら★コミック — アサップネットワーク株式会社 — ABJ 10681002 (PDF p. 8)
+120. [COMIC/BOOK] クランクイン！コミック — ハリウッドチャンネル株式会社 — ABJ 10691000 (PDF p. 8)
+121. [COMIC/BOOK] クランクイン！コミック（ローチケHMVプレミアム — ハリウッドチャンネル株式会社 — ABJ 10691001 (PDF p. 8)
+122. [COMIC/BOOK] ホットコミックSP — 株式会社VERVE — ABJ 10711000 (PDF p. 8)
+123. [COMIC/BOOK] ホットコミックFP — 株式会社VERVE — ABJ 10711001 (PDF p. 8)
+124. [COMIC/BOOK] 漫画全巻ドットコム — 株式会社TORICO — ABJ 10721000 (PDF p. 8)
+125. [COMIC/BOOK] MANGA.CLUB — 株式会社TORICO — ABJ 10721002 (PDF p. 8)
+126. [COMIC/BOOK] まんがのススメ — 株式会社TORICO — ABJ 10721003 (PDF p. 8)
+127. [COMIC/BOOK] コミックアイランド — 株式会社WECSyMarketing — ABJ 10731000 (PDF p. 8)
+128. [COMIC/BOOK] コミックダンク — 株式会社WECSyMarketing — ABJ 10731001 (PDF p. 8)
+129. [COMIC/BOOK] TheBook — 株式会社WECSyMarketing — ABJ 10731005 (PDF p. 8)
+130. [COMIC/BOOK] デジタルコミック — 株式会社WECSyMarketing — ABJ 10731007 (PDF p. 8)
+131. [COMIC/BOOK] アニメイトブックストア — 株式会社アニメイトブックストア — ABJ 10741000 (PDF p. 8)
+132. [COMIC/BOOK] コミックMORE — 有限会社アクアリーフ — ABJ 10751000 (PDF p. 8)
+133. [COMIC/BOOK] iコミックらんど — 有限会社アクアリーフ — ABJ 10751001 (PDF p. 8)
+134. [COMIC/BOOK] iコミックらんど — 有限会社アクアリーフ — ABJ 10751002 (PDF p. 8)
+135. [COMIC/BOOK] コミックボーダー — 株式会社リイド社 — ABJ 10761002 (PDF p. 9)
+136. [COMIC/BOOK] マンガルト — 株式会社リイド社 — ABJ 10761004 (PDF p. 9)
+137. [COMIC/BOOK] 学研まんがひみつ文庫 — 株式会社Gakken — ABJ 10781010 (PDF p. 9)
+138. [COMIC/BOOK] コミックノーラ — 株式会社Gakken — ABJ 10781018 (PDF p. 9)
+139. [COMIC/BOOK] Yahoo!ブックストア — ヤフー株式会社 — ABJ 10821000 (PDF p. 9)
+140. [COMIC/BOOK] ebookjapan — ヤフー株式会社 — ABJ 10821001 (PDF p. 9)
+141. [COMIC/BOOK] 電子書籍版 — 東アジアの古代文化 株式会社大和書房 — ABJ 10841000 (PDF p. 9)
+142. [COMIC/BOOK] マンガPRO — 株式会社プレージュ — ABJ 10851000 (PDF p. 9)
+143. [COMIC/BOOK] LINEマンガ — LINE Digital Frontier株式会社 — ABJ 10871000 (PDF p. 9)
+144. [COMIC/BOOK] Komifloストア — 株式会社Komiflo — ABJ 10881001 (PDF p. 9)
+145. [COMIC/BOOK] マンガ図書館Z — 株式会社Jコミックテラス — ABJ 10911000 (PDF p. 9)
+146. [COMIC/BOOK] 集英社S-MANGA — 集英社 — ABJ 10921001 (PDF p. 9)
+147. [COMIC/BOOK] マーガレットBOOKストア！ — 集英社 — ABJ 10921002 (PDF p. 9)
+148. [COMIC/BOOK] マンガMee — 集英社 — ABJ 10921003 (PDF p. 9)
+149. [COMIC/BOOK] ジャンプBOOKストア！ — 集英社 — ABJ 10921007 (PDF p. 9)
+150. [COMIC/BOOK] MANGAPlus — by Shueisha 集英社 — ABJ 10921042 (PDF p. 10)
+151. [COMIC/BOOK] スポバトマンガ研究所 — 集英社 — ABJ 10921056 (PDF p. 10)
+152. [COMIC/BOOK] 集英社マンガアート — ヘリテージ 集英社 — ABJ 10921058 (PDF p. 10)
+153. [COMIC/BOOK] 集英社コミック文庫 — 集英社 — ABJ 10921072 (PDF p. 10)
+154. [COMIC/BOOK] MANGA — MILLION 集英社 — ABJ 10921077 (PDF p. 10)
+155. [COMIC/BOOK] マンガリスト — 株式会社リンクトデータ — ABJ 10941000 (PDF p. 10)
+156. [COMIC/BOOK] ラクラクコミック — 株式会社メディアーノ — ABJ 10951000 (PDF p. 10)
+157. [COMIC/BOOK] コミックPASH! — 株式会社主婦と生活社 — ABJ 10971000 (PDF p. 10)
+158. [COMIC/BOOK] コミックPASH! — neo 株式会社主婦と生活社 — ABJ 10971008 (PDF p. 10)
+159. [COMIC/BOOK] 秋田書店ホームページ — 株式会社秋田書店 — ABJ 10991000 (PDF p. 10)
+160. [COMIC/BOOK] 新書館コミック＆ノヴェル — 株式会社　新書館 — ABJ 11001001 (PDF p. 11)
+161. [COMIC/BOOK] スマートブックストア — 株式会社メディアドゥ — ABJ 11031003 (PDF p. 11)
+162. [COMIC/BOOK] まんがセゾン — 株式会社メディアドゥ — ABJ 11031006 (PDF p. 11)
+163. [COMIC/BOOK] 恋きゅんまんが — 株式会社Vスクロールコミックス — ABJ 11081001 (PDF p. 11)
+164. [COMIC/BOOK] マンガ読破！ — 株式会社六式 — ABJ 11121000 (PDF p. 11)
+165. [COMIC/BOOK] 恋するマンガ — 株式会社六式 — ABJ 11121001 (PDF p. 11)
+166. [COMIC/BOOK] マンガLOVE — 株式会社prima — ABJ 11141000 (PDF p. 11)
+167. [COMIC/BOOK] マンガFREEDOM — 株式会社prima — ABJ 11141001 (PDF p. 11)
+168. [COMIC/BOOK] マンガ放題 — 株式会社prima — ABJ 11141003 (PDF p. 11)
+169. [COMIC/BOOK] マンガPINK — 株式会社prima — ABJ 11141004 (PDF p. 11)
+170. [COMIC/BOOK] マンガHEAVEN — 株式会社prima — ABJ 11141005 (PDF p. 11)
+171. [COMIC/BOOK] キラキラコミック — 株式会社サイトシーイング — ABJ 11211000 (PDF p. 11)
+172. [COMIC/BOOK] まんがちゃんねる — 株式会社サイトシーイング — ABJ 11211001 (PDF p. 11)
+173. [COMIC/BOOK] コミックパラダイス — 株式会社サイトシーイング — ABJ 11211002 (PDF p. 11)
+174. [COMIC/BOOK] 漫画教室 — 株式会社サイトシーイング — ABJ 11211003 (PDF p. 11)
+175. [COMIC/BOOK] 東京コミック — 株式会社サイトシーイング — ABJ 11211004 (PDF p. 11)
+176. [COMIC/BOOK] 漫画これくしょん — 株式会社サイトシーイング — ABJ 11211005 (PDF p. 11)
+177. [COMIC/BOOK] パワーコミック — 株式会社サイトシーイング — ABJ 11211007 (PDF p. 11)
+178. [COMIC/BOOK] ＧＯＯＤコミック — 株式会社サイトシーイング — ABJ 11211008 (PDF p. 11)
+179. [COMIC/BOOK] コミックフレンド — 株式会社サイトシーイング — ABJ 11211009 (PDF p. 11)
+180. [COMIC/BOOK] まんが通 — 株式会社サイトシーイング — ABJ 11211010 (PDF p. 11)
+181. [COMIC/BOOK] コミック生活 — 株式会社re-direct. — ABJ 11221001 (PDF p. 11)
+182. [COMIC/BOOK] コミックストア — 株式会社re-direct. — ABJ 11221002 (PDF p. 11)
+183. [COMIC/BOOK] マンガドア — 株式会社リンガ・フランカ — ABJ 11241000 (PDF p. 12)
+184. [COMIC/BOOK] BOOK☆WALKER — 株式会社ドワンゴ — ABJ 11311001 (PDF p. 12)
+185. [COMIC/BOOK] ニコニコ漫画 — 株式会社ドワンゴ — ABJ 11311002 (PDF p. 12)
+186. [COMIC/BOOK] BitBooks — 株式会社BlueBit — ABJ 11351000 (PDF p. 12)
+187. [COMIC/BOOK] マンガ — コミソル 株式会社光文社 — ABJ 11381015 (PDF p. 12)
+188. [COMIC/BOOK] comic — Pureri 株式会社光文社 — ABJ 11381016 (PDF p. 12)
+189. [COMIC/BOOK] コミック熱帯 — 株式会社光文社 — ABJ 11381017 (PDF p. 12)
+190. [COMIC/BOOK] マンガDX — 少年画報社 — ABJ 11411000 (PDF p. 12)
+191. [COMIC/BOOK] 少年画報社電子書籍HP — 少年画報社 — ABJ 11411002 (PDF p. 12)
+192. [COMIC/BOOK] マガジン＆ブックス — | SQUARE ENIX 株式会社 スクウェア・エニックス — ABJ 11421000 (PDF p. 12)
+193. [COMIC/BOOK] マンガUP！ — | SQUARE ENIX 株式会社 スクウェア・エニックス — ABJ 11421007 (PDF p. 12)
+194. [COMIC/BOOK] Manga — UP! 株式会社 スクウェア・エニックス — ABJ 11421009 (PDF p. 12)
+195. [COMIC/BOOK] コミックホーダイ — 凸版印刷株式会社 — ABJ 11441001 (PDF p. 12)
+196. [COMIC/BOOK] まんがライフGIGA — エキサイト株式会社 — ABJ 11461000 (PDF p. 12)
+197. [COMIC/BOOK] コミックGENESIS — 株式会社イクシス — ABJ 11481000 (PDF p. 12)
+198. [COMIC/BOOK] 激らぶコミック — 株式会社イクシス — ABJ 11481001 (PDF p. 12)
+199. [COMIC/BOOK] コミックミント — 株式会社イクシス — ABJ 11481002 (PDF p. 12)
+200. [COMIC/BOOK] マンガスパーク — 株式会社イクシス — ABJ 11481004 (PDF p. 13)
+201. [COMIC/BOOK] トレンドコミック — 株式会社イクシス — ABJ 11481005 (PDF p. 13)
+202. [COMIC/BOOK] comicマニアックス — 株式会社イクシス — ABJ 11481007 (PDF p. 13)
+203. [COMIC/BOOK] マンガコレクション — 株式会社イクシス — ABJ 11481008 (PDF p. 13)
+204. [COMIC/BOOK] コミックビュッフェ — 株式会社イクシス — ABJ 11481010 (PDF p. 13)
+205. [COMIC/BOOK] 漫タンcomic — 株式会社イクシス — ABJ 11481011 (PDF p. 13)
+206. [COMIC/BOOK] comic — station 株式会社イクシス — ABJ 11481012 (PDF p. 13)
+207. [COMIC/BOOK] 漫画ＢＡＮＫ — 株式会社フラックス — ABJ 11501000 (PDF p. 13)
+208. [COMIC/BOOK] マンガＤＡＹＳ — 株式会社フラックス — ABJ 11501001 (PDF p. 13)
+209. [COMIC/BOOK] スマコミック — 株式会社ＨＡＰＰＩＮＥＳＳ — ABJ 11511001 (PDF p. 13)
+210. [COMIC/BOOK] マンガピース — 株式会社セレス — ABJ 11531000 (PDF p. 13)
+211. [COMIC/BOOK] 電子書店コミスト — 株式会社グッドプレイス — ABJ 11561000 (PDF p. 13)
+212. [COMIC/BOOK] ＆COMIC — 株式会社tnk — ABJ 11581000 (PDF p. 13)
+213. [COMIC/BOOK] エクレアコミック — 株式会社MUGENUP — ABJ 11611000 (PDF p. 13)
+214. [COMIC/BOOK] ドキLOVE☆コミック — 株式会社ミューズ — ABJ 11631001 (PDF p. 13)
+215. [COMIC/BOOK] Bookers! — 株式会社ミューズ — ABJ 11631002 (PDF p. 13)
+216. [COMIC/BOOK] コミックKING — 株式会社ミューズ — ABJ 11631003 (PDF p. 13)
+217. [COMIC/BOOK] コミックQUEEN — 株式会社ミューズ — ABJ 11631004 (PDF p. 13)
+218. [COMIC/BOOK] 漫画全巻イッキ読み！ — 株式会社ミューズ — ABJ 11631005 (PDF p. 13)
+219. [COMIC/BOOK] 電子まんが全巻ゲット！ — 株式会社ミューズ — ABJ 11631006 (PDF p. 13)
+220. [COMIC/BOOK] LOVE☆コミックス — 株式会社ミューズ — ABJ 11631008 (PDF p. 13)
+221. [COMIC/BOOK] Peace&Books — 株式会社ミューズ — ABJ 11631009 (PDF p. 13)
+222. [COMIC/BOOK] プレブックス — 株式会社ミューズ — ABJ 11631010 (PDF p. 13)
+223. [COMIC/BOOK] ブックガーデン — 株式会社ミューズ — ABJ 11631011 (PDF p. 13)
+224. [COMIC/BOOK] 電撃☆コミックストア — 株式会社ミューズ — ABJ 11631012 (PDF p. 13)
+225. [COMIC/BOOK] D-コミックス — 株式会社ミューズ — ABJ 11631014 (PDF p. 13)
+226. [COMIC/BOOK] オンラインブックストア「mini — books」 株式会社ミューズ — ABJ 11631016 (PDF p. 13)
+227. [COMIC/BOOK] コミックマスター — 株式会社ミューズ — ABJ 11631018 (PDF p. 13)
+228. [COMIC/BOOK] 電子COMIC — グリード 株式会社ミューズ — ABJ 11631019 (PDF p. 13)
+229. [COMIC/BOOK] コミックStep — 株式会社ミューズ — ABJ 11631023 (PDF p. 13)
+230. [COMIC/BOOK] Digi-book — store 株式会社ミューズ — ABJ 11631024 (PDF p. 13)
+231. [COMIC/BOOK] 電子書籍コミックブレイン — 株式会社ミューズ — ABJ 11631025 (PDF p. 13)
+232. [COMIC/BOOK] コミックトリッパー — 株式会社ミューズ — ABJ 11631026 (PDF p. 13)
+233. [COMIC/BOOK] mobaブックス — 株式会社ミューズ — ABJ 11631029 (PDF p. 13)
+234. [COMIC/BOOK] コミックステージ — 株式会社ミューズ — ABJ 11631031 (PDF p. 13)
+235. [COMIC/BOOK] WEBコミックBeast — 株式会社ミューズ — ABJ 11631032 (PDF p. 13)
+236. [COMIC/BOOK] COMIC王 — 株式会社ミューズ — ABJ 11631033 (PDF p. 13)
+237. [COMIC/BOOK] コミックパーティー — 株式会社ミューズ — ABJ 11631035 (PDF p. 13)
+238. [COMIC/BOOK] 好きです漫画 — 株式会社ミューズ — ABJ 11631036 (PDF p. 14)
+239. [COMIC/BOOK] コミック番地 — 株式会社ミューズ — ABJ 11631038 (PDF p. 14)
+240. [COMIC/BOOK] 漫画日和 — 株式会社ミューズ — ABJ 11631040 (PDF p. 14)
+241. [COMIC/BOOK] コミックエンジェル — 株式会社ミューズ — ABJ 11631042 (PDF p. 14)
+242. [COMIC/BOOK] COMICAGE — 株式会社ミューズ — ABJ 11631043 (PDF p. 14)
+243. [COMIC/BOOK] コミックSPACE — 株式会社ミューズ — ABJ 11631044 (PDF p. 14)
+244. [COMIC/BOOK] 本命BOOKS — 株式会社ミューズ — ABJ 11631045 (PDF p. 14)
+245. [COMIC/BOOK] いつもCOMIC — 株式会社ミューズ — ABJ 11631046 (PDF p. 14)
+246. [COMIC/BOOK] comic — et cetera 株式会社テイクアンドシェア — ABJ 11651000 (PDF p. 14)
+247. [COMIC/BOOK] コミックライフ — 株式会社プラム — ABJ 11661000 (PDF p. 14)
+248. [COMIC/BOOK] 萌らぶコミック — 株式会社プラム — ABJ 11661001 (PDF p. 14)
+249. [COMIC/BOOK] コミックPuzzle — 株式会社プラム — ABJ 11661002 (PDF p. 14)
+250. [COMIC/BOOK] comicラビリンス — 株式会社プラム — ABJ 11661003 (PDF p. 14)
+251. [COMIC/BOOK] 大人の漫画セレクション — 株式会社プラム — ABJ 11661005 (PDF p. 14)
+252. [COMIC/BOOK] 漫画パラダイス — 株式会社プラム — ABJ 11661006 (PDF p. 14)
+253. [COMIC/BOOK] comic — green 株式会社プラム — ABJ 11661007 (PDF p. 14)
+254. [COMIC/BOOK] コミックタウン — 株式会社プラム — ABJ 11661008 (PDF p. 14)
+255. [COMIC/BOOK] フォレストコミック — 株式会社大樹 — ABJ 11771000 (PDF p. 14)
+256. [COMIC/BOOK] コミックサーチ — 株式会社ｆｏｒｅｓｉｇｈｔ — ABJ 11801000 (PDF p. 14)
+257. [COMIC/BOOK] ひかりＴＶブック — 株式会社ぷらら — ABJ 11811000 (PDF p. 14)
+258. [COMIC/BOOK] HAPPY!コミック — 株式会社デジマース — ABJ 11831000 (PDF p. 14)
+259. [COMIC/BOOK] コミッククリエ — 株式会社オーバーラップ — ABJ 11851001 (PDF p. 14)
+260. [COMIC/BOOK] はちみつコミックエッセイ — 株式会社オーバーラップ — ABJ 11851002 (PDF p. 14)
+261. [COMIC/BOOK] 文藝春秋BOOKS — 文藝春秋 — ABJ 11901003 (PDF p. 14)
+262. [COMIC/BOOK] デジタル書店 — ライズ株式会社 — ABJ 11921000 (PDF p. 14)
+263. [COMIC/BOOK] マンガTOP — 株式会社日本文芸社 — ABJ 11931000 (PDF p. 14)
+264. [COMIC/BOOK] 漫画屋 — 株式会社alphaBit — ABJ 11941000 (PDF p. 14)
+265. [COMIC/BOOK] Manga — Planet Library 株式会社ファンタジスタ — ABJ 11981000 (PDF p. 14)
+266. [COMIC/BOOK] Amebaマンガ — 株式会社サイバーエージェント — ABJ 12021000 (PDF p. 14)
+267. [COMIC/BOOK] G123マンガ — CTW株式会社 — ABJ 12031000 (PDF p. 14)
+268. [COMIC/BOOK] マンガKING — ロケットスタッフ株式会社 — ABJ 12071000 (PDF p. 15)
+269. [COMIC/BOOK] 普及啓発漫画特設ページ — 一般社団法人コンテンツ海外流通促進機構 — ABJ 12081000 (PDF p. 15)
+270. [COMIC/BOOK] コミックフリー — 株式会社オット — ABJ 12091000 (PDF p. 15)
+271. [COMIC/BOOK] マンガボックス — 株式会社マンガボックス — ABJ 12101000 (PDF p. 15)
+272. [COMIC/BOOK] マンガDX+ — 株式会社Skyfall — ABJ 12151000 (PDF p. 15)
+273. [COMIC/BOOK] マンガ5 — 株式会社レベルファイブ — ABJ 12181000 (PDF p. 15)
+274. [COMIC/BOOK] BOOK — TECH BOOK TECH株式会社 — ABJ 12211000 (PDF p. 15)
+275. [COMIC/BOOK] ナナイロコミックス — 株式会社 三交社 — ABJ 12221000 (PDF p. 15)
+276. [COMIC/BOOK] ブック放題 — 株式会社ビューン — ABJ 12261000 (PDF p. 15)
+277. [COMIC/BOOK] 読み放題プレミアムbyブック放題 — 株式会社ビューン — ABJ 12261005 (PDF p. 15)
+278. [COMIC/BOOK] 激推しコミック — 株式会社プログレッシブ — ABJ 12271000 (PDF p. 15)
+279. [COMIC/BOOK] Oh！マンガプッシュ — 株式会社メビウス — ABJ 12281000 (PDF p. 15)
+280. [COMIC/BOOK] MGSブックス — 株式会社メディアグローバルステージ — ABJ 12341000 (PDF p. 15)
+281. [COMIC/BOOK] Books — smart 株式会社アイ・ポイント — ABJ 12351001 (PDF p. 15)
+282. [COMIC/BOOK] 電子書籍配信サイト — 株式会社エル・エー・ビー — ABJ 12371000 (PDF p. 15)
+283. [COMIC/BOOK] コミックアウル — 株式会社ファンギルド — ABJ 12381002 (PDF p. 15)
+284. [COMIC/BOOK] ラブきゅんコミック — 株式会社ファンギルド — ABJ 12381009 (PDF p. 15)
+285. [COMIC/BOOK] コミックトピア — 株式会社ファンギルド — ABJ 12381010 (PDF p. 15)
+286. [COMIC/BOOK] メロンブックス — コミック＋ 株式会社メロンブックス — ABJ 12391000 (PDF p. 15)
+287. [COMIC/BOOK] コミックエス — 株式会社フーモア — ABJ 12441000 (PDF p. 15)
+288. [COMIC/BOOK] コミックアース・スター — アース・スターエンターテイメント — ABJ 12451000 (PDF p. 15)
+289. [COMIC/BOOK] コロナEX（漫画配信サイト） — 株式会社TOブックス — ABJ 12541000 (PDF p. 16)
+290. [COMIC/BOOK] コミックポルカ — 株式会社一二三書房 — ABJ 12551000 (PDF p. 16)
+291. [COMIC/BOOK] コミックノヴァ — 株式会社一二三書房 — ABJ 12551001 (PDF p. 16)
+292. [COMIC/BOOK] グッドコミック — 株式会社グッドコミック — ABJ 12561000 (PDF p. 16)
+293. [COMIC/BOOK] HykeComic — 株式会社HykeComic — ABJ 12571000 (PDF p. 16)
+294. [COMIC/BOOK] コミックカルラ — 株式会社世界文化ブックス — ABJ 12621000 (PDF p. 16)
+295. [COMIC/BOOK] コミックブシロードWEB — 株式会社ブシロードクリエイティブ — ABJ 12691000 (PDF p. 16)
+296. [COMIC/BOOK] パイコミックス — 株式会社パイ インターナショナル — ABJ 12701000 (PDF p. 16)
+297. [COMIC/BOOK] ステキブックスストア — ステキコンテンツ合同会社 — ABJ 12711000 (PDF p. 16)
+298. [COMIC/BOOK] ステキコミック — ステキコンテンツ合同会社 — ABJ 12711001 (PDF p. 16)
+299. [COMIC/BOOK] モブコミック — 株式会社Nextrek — ABJ 12801000 (PDF p. 16)
+300. [COMIC/BOOK] Pontaマンガ — and factory株式会社 — ABJ 12911000 (PDF p. 16)
+301. [COMIC/BOOK] マンガカタログ — 株式会社コアミックス — ABJ 12931002 (PDF p. 16)
+302. [COMIC/BOOK] コミックグロウル — 株式会社ブシロードワークス — ABJ 12941001 (PDF p. 16)
+303. [COMIC/BOOK] コミックガルド — 株式会社オーバーラップ・プラス — ABJ 12961000 (PDF p. 16)
+304. [COMIC/BOOK] フェアベルマンガ — 株式会社フェアベル — ABJ 12991000 (PDF p. 16)
+305. [COMIC/BOOK] コミックヴァルキリー公式サイト — 株式会社キルタイムコミュニケーション — ABJ 13011002 (PDF p. 16)
+306. [COMIC/BOOK] コミックブリーゼ公式サイト — 株式会社キルタイムコミュニケーション — ABJ 13011003 (PDF p. 16)
+307. [COMIC/BOOK] コミックシャイニー公式サイト — 株式会社キルタイムコミュニケーション — ABJ 13011010 (PDF p. 16)
+308. [COMIC/BOOK] ハレルコミックス — 株式会社テライド出版 — ABJ 13091001 (PDF p. 16)
+309. [COMIC/BOOK] レジンコミックス — 株式会社レジンエンターテインメント — ABJ 13101000 (PDF p. 16)
+310. [COMIC/BOOK] comico — NHN comico株式会社 — ABJ 13141000 (PDF p. 17)
+311. [COMIC/BOOK] BOOKSMART — 日本エンタープライズ株式会社 — ABJ 13161001 (PDF p. 17)
+312. [COMIC/BOOK] スゴコミック — 日本エンタープライズ株式会社 — ABJ 13161002 (PDF p. 17)
+313. [COMIC/BOOK] 早川書房オンラインストア（ハヤカワ・オンライン） — 株式会社早川書房 — ABJ 13221001 (PDF p. 17)
+314. [COMIC/BOOK] Sharelot書店 — 株式会社MOCHI — ABJ 13261001 (PDF p. 17)
+315. [COMIC/BOOK] EbookRenta! — PAPYLESS GLOBAL, INC. — ABJ 13391000 (PDF p. 17)
+316. [COMIC/BOOK] COMIC — MeDu 株式会社ジーオーティー — ABJ 13461000 (PDF p. 17)
+317. [COMIC/BOOK] マンガSPA! — 株式会社扶桑社 — ABJ 13471000 (PDF p. 17)
+318. [COMIC/BOOK] COMIC — ROOM BASE 株式会社コミックルーム — ABJ 13511000 (PDF p. 17)
+319. [COMIC/BOOK] ぴあコミック — ぴあ株式会社 — ABJ 13561000 (PDF p. 17)
+320. [COMIC/BOOK] MANGABU! — 株式会社ファムエンタテイメント — ABJ 13611000 (PDF p. 17)
+321. [PUBLISHER PROPERTY] 新潮社公式ＨＰ — 株式会社新潮社 — ABJ 10101000 (PDF p. 1)
+322. [PUBLISHER PROPERTY] Bバンチ — 株式会社新潮社 — ABJ 10101002 (PDF p. 1)
+323. [PUBLISHER PROPERTY] くらげバンチ — 株式会社新潮社 — ABJ 10101003 (PDF p. 1)
+324. [PUBLISHER PROPERTY] yom — yom 株式会社新潮社 — ABJ 10101004 (PDF p. 1)
+325. [PUBLISHER PROPERTY] フォーサイト — 株式会社新潮社 — ABJ 10101005 (PDF p. 1)
+326. [PUBLISHER PROPERTY] 新潮ライブ！ — 株式会社新潮社 — ABJ 10101006 (PDF p. 1)
+327. [PUBLISHER PROPERTY] ニコラネット — 株式会社新潮社 — ABJ 10101007 (PDF p. 1)
+328. [PUBLISHER PROPERTY] ニコ☆プチ — 株式会社新潮社 — ABJ 10101008 (PDF p. 1)
+329. [PUBLISHER PROPERTY] ENGINE — ONLINE 株式会社新潮社 — ABJ 10101009 (PDF p. 1)
+330. [PUBLISHER PROPERTY] Webでも考える人 — 株式会社新潮社 — ABJ 10101010 (PDF p. 1)
+331. [PUBLISHER PROPERTY] デイリー新潮 — 株式会社新潮社 — ABJ 10101011 (PDF p. 1)
+332. [PUBLISHER PROPERTY] 波―Emagazine — Nami― 株式会社新潮社 — ABJ 10101013 (PDF p. 1)
+333. [PUBLISHER PROPERTY] 工芸青花 — 株式会社新潮社 — ABJ 10101014 (PDF p. 1)
+334. [PUBLISHER PROPERTY] BS — STUDIO 株式会社新潮社 — ABJ 10101016 (PDF p. 1)
+335. [PUBLISHER PROPERTY] くじらバンチ — 株式会社新潮社 — ABJ 10101018 (PDF p. 1)
+336. [PUBLISHER PROPERTY] 実業之日本社エンタメweb — J-enta 株式会社実業之日本社 — ABJ 10111000 (PDF p. 1)
+337. [PUBLISHER PROPERTY] きららweb — 株式会社　芳文社 — ABJ 10181000 (PDF p. 1)
+338. [PUBLISHER PROPERTY] web花音 — 株式会社　芳文社 — ABJ 10181001 (PDF p. 1)
+339. [PUBLISHER PROPERTY] 双葉社公式サイト — 株式会社双葉社 — ABJ 10191000 (PDF p. 2)
+340. [PUBLISHER PROPERTY] クレヨンしんちゃん公式ポータルアプリ — 株式会社双葉社 — ABJ 10191003 (PDF p. 2)
+341. [PUBLISHER PROPERTY] webアクション — 株式会社双葉社 — ABJ 10191005 (PDF p. 2)
+342. [PUBLISHER PROPERTY] がうがうモンスター＋ — 株式会社双葉社 — ABJ 10191008 (PDF p. 2)
+343. [PUBLISHER PROPERTY] グラビアチャンネル＋ — 株式会社双葉社 — ABJ 10191009 (PDF p. 2)
+344. [PUBLISHER PROPERTY] 集英社クリエイティブ — コーポレートサイト 株式会社　集英社クリエイティブ — ABJ 10271000 (PDF p. 2)
+345. [PUBLISHER PROPERTY] オフィスユー — ＷＥＢサイト 株式会社　集英社クリエイティブ — ABJ 10271001 (PDF p. 2)
+346. [PUBLISHER PROPERTY] 白泉社公式サイト — 株式会社白泉社 — ABJ 10311000 (PDF p. 2)
+347. [PUBLISHER PROPERTY] 花とゆめ公式サイト — 株式会社白泉社 — ABJ 10311001 (PDF p. 2)
+348. [PUBLISHER PROPERTY] 別冊花とゆめ公式サイト — 株式会社白泉社 — ABJ 10311002 (PDF p. 2)
+349. [PUBLISHER PROPERTY] LaLa公式サイト — 株式会社白泉社 — ABJ 10311003 (PDF p. 2)
+350. [PUBLISHER PROPERTY] メロディ公式サイト — 株式会社白泉社 — ABJ 10311004 (PDF p. 2)
+351. [PUBLISHER PROPERTY] ヤングアニマル公式サイト — 株式会社白泉社 — ABJ 10311005 (PDF p. 2)
+352. [PUBLISHER PROPERTY] ヤングアニマル嵐公式サイト — 株式会社白泉社 — ABJ 10311006 (PDF p. 2)
+353. [PUBLISHER PROPERTY] MOE公式サイト — 株式会社白泉社 — ABJ 10311007 (PDF p. 2)
+354. [PUBLISHER PROPERTY] kodomoe公式サイト — 株式会社白泉社 — ABJ 10311008 (PDF p. 2)
+355. [PUBLISHER PROPERTY] kodomoe — shop 株式会社白泉社 — ABJ 10311009 (PDF p. 2)
+356. [PUBLISHER PROPERTY] ノラネコぐんだん公式サイト — 株式会社白泉社 — ABJ 10311010 (PDF p. 2)
+357. [PUBLISHER PROPERTY] 白泉社e-net！ — 株式会社白泉社 — ABJ 10311013 (PDF p. 2)
+358. [PUBLISHER PROPERTY] 花丸文庫 — 株式会社白泉社 — ABJ 10311015 (PDF p. 2)
+359. [PUBLISHER PROPERTY] 花とゆめ★LaLa — 株式会社白泉社 — ABJ 10311016 (PDF p. 2)
+360. [PUBLISHER PROPERTY] ヤングアニマルWeb — 株式会社白泉社 — ABJ 10311017 (PDF p. 2)
+361. [PUBLISHER PROPERTY] 花とゆめ＋ — 株式会社白泉社 — ABJ 10311018 (PDF p. 2)
+362. [PUBLISHER PROPERTY] KADOKAWAオフィシャルサイト — 株式会社KADOKAWA — ABJ 10351000 (PDF p. 2)
+363. [PUBLISHER PROPERTY] AMWブランドサイト — 株式会社KADOKAWA — ABJ 10351001 (PDF p. 2)
+364. [PUBLISHER PROPERTY] 角川学芸出版ブランドサイト — 株式会社KADOKAWA — ABJ 10351002 (PDF p. 2)
+365. [PUBLISHER PROPERTY] 角川マガジンズブランドサイト — 株式会社KADOKAWA — ABJ 10351004 (PDF p. 2)
+366. [PUBLISHER PROPERTY] 中経出版ブランドサイト — 株式会社KADOKAWA — ABJ 10351005 (PDF p. 2)
+367. [PUBLISHER PROPERTY] TRPG — ONLINE 株式会社KADOKAWA — ABJ 10351007 (PDF p. 2)
+368. [PUBLISHER PROPERTY] 角川ビーンズ文庫 — 株式会社KADOKAWA — ABJ 10351008 (PDF p. 2)
+369. [PUBLISHER PROPERTY] 発見ひろば — 株式会社KADOKAWA — ABJ 10351012 (PDF p. 2)
+370. [PUBLISHER PROPERTY] 角川つばさ文庫 — 株式会社KADOKAWA — ABJ 10351013 (PDF p. 3)
+371. [PUBLISHER PROPERTY] 角川スニーカー文庫 — 株式会社KADOKAWA — ABJ 10351014 (PDF p. 3)
+372. [PUBLISHER PROPERTY] 文芸カドカワ — 株式会社KADOKAWA — ABJ 10351015 (PDF p. 3)
+373. [PUBLISHER PROPERTY] 月刊ASUKA — 株式会社KADOKAWA — ABJ 10351016 (PDF p. 3)
+374. [PUBLISHER PROPERTY] 電撃文庫オフィシャルサイト — 株式会社KADOKAWA — ABJ 10351017 (PDF p. 3)
+375. [PUBLISHER PROPERTY] カドブン — 株式会社KADOKAWA — ABJ 10351021 (PDF p. 3)
+376. [PUBLISHER PROPERTY] 富士見L文庫 — 株式会社KADOKAWA — ABJ 10351023 (PDF p. 3)
+377. [PUBLISHER PROPERTY] ファンタジア文庫 — 株式会社KADOKAWA — ABJ 10351024 (PDF p. 3)
+378. [PUBLISHER PROPERTY] ビーズログ文庫 — 株式会社KADOKAWA — ABJ 10351025 (PDF p. 3)
+379. [PUBLISHER PROPERTY] メディアワークス文庫 — 株式会社KADOKAWA — ABJ 10351026 (PDF p. 3)
+380. [PUBLISHER PROPERTY] MF文庫J — 株式会社KADOKAWA — ABJ 10351027 (PDF p. 3)
+381. [PUBLISHER PROPERTY] webエース — 株式会社KADOKAWA — ABJ 10351028 (PDF p. 3)
+382. [PUBLISHER PROPERTY] ルビー文庫 — 株式会社KADOKAWA — ABJ 10351029 (PDF p. 3)
+383. [PUBLISHER PROPERTY] CIEL — 株式会社KADOKAWA — ABJ 10351030 (PDF p. 3)
+384. [PUBLISHER PROPERTY] ハルタ — 株式会社KADOKAWA — ABJ 10351034 (PDF p. 3)
+385. [PUBLISHER PROPERTY] 電撃大王 — 株式会社KADOKAWA — ABJ 10351035 (PDF p. 3)
+386. [PUBLISHER PROPERTY] ドラゴンエイジ — 株式会社KADOKAWA — ABJ 10351036 (PDF p. 3)
+387. [PUBLISHER PROPERTY] B's-LOVEY — COMICS 株式会社KADOKAWA — ABJ 10351037 (PDF p. 3)
+388. [PUBLISHER PROPERTY] B's-LOG — COMICS 株式会社KADOKAWA — ABJ 10351038 (PDF p. 3)
+389. [PUBLISHER PROPERTY] eロマンスロイヤル — 株式会社KADOKAWA — ABJ 10351041 (PDF p. 3)
+390. [PUBLISHER PROPERTY] ドラゴンノベルス — 株式会社KADOKAWA — ABJ 10351042 (PDF p. 3)
+391. [PUBLISHER PROPERTY] ファミ通文庫 — 株式会社KADOKAWA — ABJ 10351043 (PDF p. 3)
+392. [PUBLISHER PROPERTY] ヨメルバ — 株式会社KADOKAWA — ABJ 10351045 (PDF p. 3)
+393. [PUBLISHER PROPERTY] 魔法のiらんど — 株式会社KADOKAWA — ABJ 10351047 (PDF p. 3)
+394. [PUBLISHER PROPERTY] 電撃マオウ公式サイト — 株式会社KADOKAWA — ABJ 10351051 (PDF p. 3)
+395. [PUBLISHER PROPERTY] 図鑑GET公式サイト — 株式会社KADOKAWA — ABJ 10351052 (PDF p. 3)
+396. [PUBLISHER PROPERTY] GET＋デジタルカードコレクション — 株式会社KADOKAWA — ABJ 10351053 (PDF p. 3)
+397. [PUBLISHER PROPERTY] シルフ公式サイト — 株式会社KADOKAWA — ABJ 10351054 (PDF p. 3)
+398. [PUBLISHER PROPERTY] 電撃マオウ — 株式会社KADOKAWA — ABJ 10351055 (PDF p. 3)
+399. [PUBLISHER PROPERTY] 電撃萌王 — 株式会社KADOKAWA — ABJ 10351056 (PDF p. 3)
+400. [PUBLISHER PROPERTY] Pomme — Comics 株式会社KADOKAWA — ABJ 10351059 (PDF p. 3)
+401. [PUBLISHER PROPERTY] オシリス文庫 — 株式会社KADOKAWA — ABJ 10351062 (PDF p. 3)
+402. [PUBLISHER PROPERTY] シルフ公式サイト — 株式会社KADOKAWA — ABJ 10351065 (PDF p. 3)
+403. [PUBLISHER PROPERTY] Web — Newtype 株式会社KADOKAWA — ABJ 10351066 (PDF p. 3)
+404. [PUBLISHER PROPERTY] B's-LOVEY — COMICS 株式会社KADOKAWA — ABJ 10351067 (PDF p. 3)
+405. [PUBLISHER PROPERTY] すごすぎるシリーズ公式サイト — 株式会社KADOKAWA — ABJ 10351068 (PDF p. 3)
+406. [PUBLISHER PROPERTY] カドアナ公式サイト — 株式会社KADOKAWA — ABJ 10351070 (PDF p. 3)
+407. [PUBLISHER PROPERTY] 月刊ニュータイプ公式サイト — 株式会社KADOKAWA — ABJ 10351071 (PDF p. 3)
+408. [PUBLISHER PROPERTY] ビーズログ.com — 株式会社KADOKAWA — ABJ 10351072 (PDF p. 3)
+409. [PUBLISHER PROPERTY] ファミ通と電撃の攻略本 — 株式会社KADOKAWA — ABJ 10351074 (PDF p. 3)
+410. [PUBLISHER PROPERTY] メクリメクル — 株式会社KADOKAWA — ABJ 10351075 (PDF p. 3)
+411. [PUBLISHER PROPERTY] マガポケ — 株式会社講談社 — ABJ 10371000 (PDF p. 4)
+412. [PUBLISHER PROPERTY] パルシィ — 株式会社講談社 — ABJ 10371002 (PDF p. 4)
+413. [PUBLISHER PROPERTY] 少年マガジン — コミックス 〜少年マガジン公式アプリ〜 株式会社講談社 — ABJ 10371003 (PDF p. 4)
+414. [PUBLISHER PROPERTY] モアイ — 株式会社講談社 — ABJ 10371007 (PDF p. 4)
+415. [PUBLISHER PROPERTY] マガジンデビュー — 株式会社講談社 — ABJ 10371008 (PDF p. 4)
+416. [PUBLISHER PROPERTY] DAYSNEO — 株式会社講談社 — ABJ 10371009 (PDF p. 4)
+417. [PUBLISHER PROPERTY] ILLUST — DAYS 株式会社講談社 — ABJ 10371010 (PDF p. 4)
+418. [PUBLISHER PROPERTY] NOVEL — DAYS 株式会社講談社 — ABJ 10371011 (PDF p. 4)
+419. [PUBLISHER PROPERTY] ベビモフ — 株式会社講談社 — ABJ 10371012 (PDF p. 4)
+420. [PUBLISHER PROPERTY] マガメガ — 株式会社講談社 — ABJ 10371013 (PDF p. 4)
+421. [PUBLISHER PROPERTY] 石ノ森章太郎デジタル大全 — 株式会社講談社 — ABJ 10371014 (PDF p. 4)
+422. [PUBLISHER PROPERTY] eヤングマガジン — 株式会社講談社 — ABJ 10371015 (PDF p. 4)
+423. [PUBLISHER PROPERTY] 週刊Dモーニング — 株式会社講談社 — ABJ 10371016 (PDF p. 4)
+424. [PUBLISHER PROPERTY] 宇宙兄弟 — 公式アプリ 株式会社講談社 — ABJ 10371017 (PDF p. 4)
+425. [PUBLISHER PROPERTY] 金田一少年の事件簿 — 公式アプリ 株式会社講談社 — ABJ 10371018 (PDF p. 4)
+426. [PUBLISHER PROPERTY] エリアの騎士-公式アプリ — 株式会社講談社 — ABJ 10371019 (PDF p. 4)
+427. [PUBLISHER PROPERTY] VoCE — 株式会社講談社 — ABJ 10371020 (PDF p. 4)
+428. [PUBLISHER PROPERTY] みん撃「進撃の巨人」公式ファンサイト — 株式会社講談社 — ABJ 10371021 (PDF p. 4)
+429. [PUBLISHER PROPERTY] 進撃の巨人 — デジタルフォトステッカー 株式会社講談社 — ABJ 10371022 (PDF p. 4)
+430. [PUBLISHER PROPERTY] どこでもATOM — 株式会社講談社 — ABJ 10371023 (PDF p. 4)
+431. [PUBLISHER PROPERTY] ボンボンTV — 株式会社講談社 — ABJ 10371024 (PDF p. 4)
+432. [PUBLISHER PROPERTY] with — online 株式会社講談社 — ABJ 10371025 (PDF p. 4)
+433. [PUBLISHER PROPERTY] ViVi — 株式会社講談社 — ABJ 10371026 (PDF p. 4)
+434. [PUBLISHER PROPERTY] 現代ビジネス — 株式会社講談社 — ABJ 10371027 (PDF p. 4)
+435. [PUBLISHER PROPERTY] ゲキサカ — 株式会社講談社 — ABJ 10371028 (PDF p. 4)
+436. [PUBLISHER PROPERTY] クーリエ・ジャポン — 株式会社講談社 — ABJ 10371029 (PDF p. 4)
+437. [PUBLISHER PROPERTY] FRIDAYデジタル — 株式会社講談社 — ABJ 10371030 (PDF p. 4)
+438. [PUBLISHER PROPERTY] FORZA — STYLE 株式会社講談社 — ABJ 10371031 (PDF p. 4)
+439. [PUBLISHER PROPERTY] 月刊少年マガジン — 株式会社講談社 — ABJ 10371032 (PDF p. 4)
+440. [PUBLISHER PROPERTY] 少年マガジンR — 株式会社講談社 — ABJ 10371033 (PDF p. 4)
+441. [PUBLISHER PROPERTY] 月刊少年シリウス — 株式会社講談社 — ABJ 10371034 (PDF p. 4)
+442. [PUBLISHER PROPERTY] 少年マガジンエッジ — 株式会社講談社 — ABJ 10371035 (PDF p. 4)
+443. [PUBLISHER PROPERTY] ヤングマガジン — 株式会社講談社 — ABJ 10371036 (PDF p. 4)
+444. [PUBLISHER PROPERTY] モーニング — 株式会社講談社 — ABJ 10371037 (PDF p. 4)
+445. [PUBLISHER PROPERTY] アフタヌーン — 株式会社講談社 — ABJ 10371038 (PDF p. 4)
+446. [PUBLISHER PROPERTY] イブニング — 株式会社講談社 — ABJ 10371039 (PDF p. 4)
+447. [PUBLISHER PROPERTY] なかよし — 株式会社講談社 — ABJ 10371040 (PDF p. 4)
+448. [PUBLISHER PROPERTY] 別冊フレンド — 株式会社講談社 — ABJ 10371041 (PDF p. 4)
+449. [PUBLISHER PROPERTY] デザート — 株式会社講談社 — ABJ 10371042 (PDF p. 4)
+450. [PUBLISHER PROPERTY] Kiss — 株式会社講談社 — ABJ 10371043 (PDF p. 4)
+451. [PUBLISHER PROPERTY] BELOVE — 株式会社講談社 — ABJ 10371044 (PDF p. 4)
+452. [PUBLISHER PROPERTY] ハニーミルク — 株式会社講談社 — ABJ 10371045 (PDF p. 4)
+453. [PUBLISHER PROPERTY] 姉フレンド — 株式会社講談社 — ABJ 10371046 (PDF p. 4)
+454. [PUBLISHER PROPERTY] 講談社ラノベ文庫 — 株式会社講談社 — ABJ 10371048 (PDF p. 4)
+455. [PUBLISHER PROPERTY] 手塚治虫文庫全集 — 株式会社講談社 — ABJ 10371050 (PDF p. 4)
+456. [PUBLISHER PROPERTY] mi-mollet — 株式会社講談社 — ABJ 10371052 (PDF p. 5)
+457. [PUBLISHER PROPERTY] ちはやふる特設サイト — 株式会社講談社 — ABJ 10371053 (PDF p. 5)
+458. [PUBLISHER PROPERTY] コクリコ — 株式会社講談社 — ABJ 10371054 (PDF p. 5)
+459. [PUBLISHER PROPERTY] &Sofa — 株式会社講談社 — ABJ 10371055 (PDF p. 5)
+460. [PUBLISHER PROPERTY] Move — 株式会社講談社 — ABJ 10371056 (PDF p. 5)
+461. [PUBLISHER PROPERTY] FRaU — 株式会社講談社 — ABJ 10371057 (PDF p. 5)
+462. [PUBLISHER PROPERTY] WEB — GENKI 株式会社講談社 — ABJ 10371058 (PDF p. 5)
+463. [PUBLISHER PROPERTY] TELEMAGA.net — 株式会社講談社 — ABJ 10371059 (PDF p. 5)
+464. [PUBLISHER PROPERTY] Aneひめ.net — 株式会社講談社 — ABJ 10371060 (PDF p. 5)
+465. [PUBLISHER PROPERTY] ハニーミルク — 株式会社講談社 — ABJ 10371061 (PDF p. 5)
+466. [PUBLISHER PROPERTY] 雑誌『栗原はるみ』 — 株式会社講談社 — ABJ 10371062 (PDF p. 5)
+467. [PUBLISHER PROPERTY] モーニング・ツー — 株式会社講談社 — ABJ 10371063 (PDF p. 5)
+468. [PUBLISHER PROPERTY] 月マガ基地 — 株式会社講談社 — ABJ 10371064 (PDF p. 5)
+469. [PUBLISHER PROPERTY] Palcy — 株式会社講談社 — ABJ 10371065 (PDF p. 5)
+470. [PUBLISHER PROPERTY] K — MANGA 株式会社講談社 — ABJ 10371066 (PDF p. 5)
+471. [PUBLISHER PROPERTY] 講談社えほん通信 — 株式会社講談社 — ABJ 10371067 (PDF p. 5)
+472. [PUBLISHER PROPERTY] 青い鳥文庫 — 株式会社講談社 — ABJ 10371068 (PDF p. 5)
+473. [PUBLISHER PROPERTY] 赤い夢学園 — 株式会社講談社 — ABJ 10371069 (PDF p. 5)
+474. [PUBLISHER PROPERTY] ビブリオシリウス — 株式会社講談社 — ABJ 10371070 (PDF p. 5)
+475. [PUBLISHER PROPERTY] 講談社コーポレートサイト — 株式会社講談社 — ABJ 10371071 (PDF p. 5)
+476. [PUBLISHER PROPERTY] K2C — 株式会社講談社 — ABJ 10371072 (PDF p. 5)
+477. [PUBLISHER PROPERTY] KODANSHA — MANGA ACADEMY 株式会社講談社 — ABJ 10371073 (PDF p. 5)
+478. [PUBLISHER PROPERTY] 講談社 — 春のマンガまつり（コミックス訴求用LP） 株式会社講談社 — ABJ 10371074 (PDF p. 5)
+479. [PUBLISHER PROPERTY] ちゃおランド — 株式会社小学館 — ABJ 10401000 (PDF p. 5)
+480. [PUBLISHER PROPERTY] フラワーズ — 株式会社小学館 — ABJ 10401001 (PDF p. 5)
+481. [PUBLISHER PROPERTY] ベツコミ — 株式会社小学館 — ABJ 10401003 (PDF p. 5)
+482. [PUBLISHER PROPERTY] チーズ！ — 株式会社小学館 — ABJ 10401004 (PDF p. 5)
+483. [PUBLISHER PROPERTY] ブルームアベニュー — 株式会社小学館 — ABJ 10401006 (PDF p. 5)
+484. [PUBLISHER PROPERTY] ぷっちぐみ — 株式会社小学館 — ABJ 10401007 (PDF p. 5)
+485. [PUBLISHER PROPERTY] ＆フラワー — 株式会社小学館 — ABJ 10401008 (PDF p. 5)
+486. [PUBLISHER PROPERTY] Webサンデー — 株式会社小学館 — ABJ 10401009 (PDF p. 5)
+487. [PUBLISHER PROPERTY] YSビジュアルウェブＳ（無料部分） — 株式会社小学館 — ABJ 10401010 (PDF p. 5)
+488. [PUBLISHER PROPERTY] ゲッサン — 株式会社小学館 — ABJ 10401011 (PDF p. 5)
+489. [PUBLISHER PROPERTY] サンデーＧＸ — 株式会社小学館 — ABJ 10401012 (PDF p. 5)
+490. [PUBLISHER PROPERTY] てれびくん — 株式会社小学館 — ABJ 10401014 (PDF p. 5)
+491. [PUBLISHER PROPERTY] サンデーうぇぶり — 株式会社小学館 — ABJ 10401015 (PDF p. 5)
+492. [PUBLISHER PROPERTY] 任天堂攻略本サイト — 株式会社小学館 — ABJ 10401016 (PDF p. 5)
+493. [PUBLISHER PROPERTY] やわらかスピリッツ — 株式会社小学館 — ABJ 10401017 (PDF p. 5)
+494. [PUBLISHER PROPERTY] BLUE — GIANT 株式会社小学館 — ABJ 10401018 (PDF p. 5)
+495. [PUBLISHER PROPERTY] ＠ＤＩＭＥ — 株式会社小学館 — ABJ 10401024 (PDF p. 6)
+496. [PUBLISHER PROPERTY] appDIME — 株式会社小学館 — ABJ 10401025 (PDF p. 6)
+497. [PUBLISHER PROPERTY] サライ.JP — 株式会社小学館 — ABJ 10401026 (PDF p. 6)
+498. [PUBLISHER PROPERTY] BE-PAL.net — 株式会社小学館 — ABJ 10401027 (PDF p. 6)
+499. [PUBLISHER PROPERTY] Suits-woman.jp — 株式会社小学館 — ABJ 10401028 (PDF p. 6)
+500. [PUBLISHER PROPERTY] PETomorrow — 株式会社小学館 — ABJ 10401029 (PDF p. 6)
+
+FUENTES COMPLEMENTARIAS PARA EXPLORAR FUERA DE JAPÓN
+MANGA Plus by SHUEISHA (oficial, incluye publicación de creadores): https://mangaplus.shueisha.co.jp/faq/eng/
+WEBTOON (plataformas e idiomas regionales): https://webtoon.zendesk.com/hc/en-us/articles/25771121101332-Why-can-t-I-access-WEBTOON-in-my-country
+Manga Insight, base francesa de 617 editoriales identificadas en publicaciones históricas; no significa que las 617 sigan activas: https://mangainsight.fr/dataset/
+BookWalker, directorio de editoriales asociadas: https://bookwalker.com/publishers
+Korea Creative Content Agency (tendencias/plataformas webtoon coreanas): https://welcon.kocca.kr/
+
+SITIOS OFICIALES INTERNACIONALES (ENLACES DIRECTOS)
+Plataformas y lectura:
+- WEBTOON — https://www.webtoons.com/
+- MANGA Plus by SHUEISHA — https://mangaplus.shueisha.co.jp/
+- MANGA Plus Creators — https://medibang.com/mpc/
+- VIZ / Shonen Jump — https://www.viz.com/
+- K MANGA — https://kmanga.kodansha.com/
+- BookWalker — https://global.bookwalker.jp/
+- Crunchyroll Manga — https://www.crunchyroll.com/manga
+- Mangamo — https://www.mangamo.com/
+- Omoi — https://www.omoi.com/
+- MangaPlaza — https://mangaplaza.com/
+- INKR — https://inkr.com/
+- Comikey — https://comikey.com/
+- Tappytoon — https://www.tappytoon.com/
+- Lezhin Comics — https://www.lezhinus.com/
+- Manta — https://manta.net/
+- Pocket Comics — https://www.pocketcomics.com/
+- Toomics — https://toomics.com/
+- MangaToon — https://mangatoon.mobi/
+- WebComics — https://www.webcomicsapp.com/
+- GlobalComix — https://globalcomix.com/
+- Graphite Comics — https://graphitecomics.com/
+- NamiComi — https://namicomi.com/
+- Pixiv Comics — https://comic.pixiv.net/
+- Renta! — https://www.ebookrenta.com/
+- DLsite — https://www.dlsite.com/
+- Tencent Animation & Comics — https://ac.qq.com/
+- Kuaikan Manhua — https://www.kuaikanmanhua.com/
+- Bilibili Manga — https://manga.bilibili.com/
+- BOOK☆WALKER Taiwan — https://www.bookwalker.com.tw/
+- CCC 追漫台 — https://www.creative-comic.tw/
+- Readmoo — https://readmoo.com/
+- HyRead — https://www.hyread.com.tw/
+- Pubu — https://www.pubu.com.tw/
+- Eslite — https://www.eslite.com/
+- Books.com.tw — https://www.books.com.tw/
+- TAAZE — https://www.taaze.tw/
+- CXC — https://www.cxc.today/
+- WeComics Thailand — https://www.wecomics.in.th/
+- Comicola Vietnam — https://vn.comicola.com/
+- Toonsutra — https://www.toonsutra.com/
+- Pratilipi — https://www.pratilipi.com/
+- Tapas — https://tapas.io/
+- Delitoon — https://www.delitoon.com/
+- Allskreen — https://www.allskreen.com/
+- ONO — https://www.ono.fr/
+- Akaya — https://www.akaya.io/
+
+Editoriales y editoriales/licenciantes:
+- VIZ Media — https://www.viz.com/
+- Kodansha USA — https://kodansha.us/
+- Seven Seas Entertainment — https://sevenseasentertainment.com/
+- Yen Press — https://yenpress.com/
+- Square Enix Manga & Books — https://squareenixmangaandbooks.square-enix-games.com/
+- Dark Horse Comics — https://www.darkhorse.com/
+- TOKYOPOP — https://www.tokyopop.com/
+- J-Novel Club — https://j-novel.club/
+- Denpa — https://denpa-books.com/
+- Udon Entertainment — https://www.udonentertainment.com/
+- Kaiten Books — https://kaitenbooks.com/
+- Titan Comics — https://titan-comics.com/
+- Ablaze — https://ablaze.net/
+- Editorial Ivrea — https://www.editorialivrea.com/
+- Norma Editorial — https://www.normaeditorial.com/
+- Planeta Cómic — https://www.planetadelibros.com/coleccion/planeta-comic/PC
+- Milky Way Ediciones — https://www.milkywayediciones.com/
+- Panini España — https://www.panini.es/
+- Kamite México — https://kamite.com.mx/
+- Arechi Manga — https://arechi.es/
+- Tomodomo — https://www.tomodomo.es/
+- Fandogamia — https://fandogamia.com/
+- Odaiba Ediciones — https://odaibaediciones.com/
+- Ediciones Babylon — https://edicionesbabylon.es/
+- Nowevolution — https://nowevolution.net/
+- Letrablanka — https://letrablanka.com/
+- Yermo Ediciones — https://yermoediciones.com/
+- JBC Brasil — https://editorajbc.com.br/
+- NewPOP Brasil — https://newpop.com.br/
+- Glénat Manga — https://www.glenat.com/manga/
+- Pika Édition — https://www.pika.fr/
+- Kana — https://www.kana.fr/
+- Ki-oon — https://www.ki-oon.com/
+- Kurokawa — https://www.kurokawa.fr/
+- Akata — https://www.akata.fr/
+- Taifu Comics — https://www.taifu-comics.com/
+- Mana Books — https://www.mana-books.com/
+- Meian — https://www.meian-editions.fr/
+- Komikku — https://www.komikku.fr/
+- nobi nobi! — https://www.nobi-nobi.fr/
+- Mangetsu — https://www.mangetsu.fr/
+- Le Lézard Noir — https://lezardnoir.com/
+- Cornélius — https://www.cornelius-editions.com/
+- Carlsen Manga — https://www.carlsen.de/manga
+- TOKYOPOP Deutschland — https://www.tokyopop.de/
+- Egmont Manga — https://www.egmont-manga.de/
+- altraverse — https://altraverse.de/
+- Manga Cult — https://manga-cult.de/
+- J-POP Italia — https://www.j-pop.it/
+- Star Comics — https://www.starcomics.com/
+- Panini Italia — https://www.panini.it/
+- Waneko — https://waneko.pl/
+- Studio JG — https://studiojg.pl/
+- Kotori — https://kotori.pl/
+
+SITIOS QUE MENCIONASTE (CANDIDATOS PARA “SECRET YOUR MOM / DON'T TELL MOM!”)
+Estos nombres se agregan por tu mensaje. No forman parte de los 500 registros ABJ ni se verificó que tengan licencia para publicar esta obra. Trátalos como resultados/candidatos aportados por el usuario, no como fuentes oficiales:
+- ManhwaWeb — https://manhwaweb.com/
+- VerManhwa — https://vermanhwa.com/
+- ManhwaRead — https://manhwaread.com/
+- Toonily — https://toonily.com/
+- MangaFire — https://mangafire.to/
+- ToonGod — https://toongod.org/
+- Lector XD — https://lectorxd.com/
+- MangaDex — https://mangadex.org/ (comunidad con contenido subido por usuarios; la licencia debe verificarse título por título)
+
+POSIBLE PLATAFORMA DE ORIGEN
+- DAYCOMICS — https://app.daycomics.com/ (tu resultado indica que la obra se serializó allí; no confirmé que el título siga disponible en el catálogo actual).
+
+NO CONTADO COMO SITIO DE LECTURA/PUBLICACIÓN
+- Pinterest — https://www.pinterest.com/ (buscador/red social de imágenes, no plataforma de publicación de capítulos).
+
+Referencia de DAYCOMICS: https://app.daycomics.com/
+
+INVESTIGACIÓN ADICIONAL: SITIOS QUE APARECEN AL BUSCAR MANHWA EN ESPAÑOL
+Fecha: 13-11-2026
+Consulta visible en Google: “leer manhwa español online gratis”. Se inspeccionaron los resultados principales y páginas accesibles; esto es una muestra de búsqueda, no un censo ni un rastreo exhaustivo del buscador.
+
+Por qué no salían en el primer directorio:
+El bloque de 500 se construyó desde el registro japonés ABJ y una lista curada de plataformas/editoriales oficiales. Esa metodología estaba sesgada hacia servicios licenciados y no medía qué aparece en búsquedas en español. Los sitios que compartiste sí coinciden con resultados visibles para consultas de lectura gratuita de manhwa en español. La lista anterior no respondía bien a esa intención de búsqueda.
+
+A. Plataformas editoriales/serialización oficial identificada
+- WEBTOON — https://www.webtoons.com/ — resultado visible; el sitio se presenta como plataforma global de cómics y manhwa. La disponibilidad de cada serie depende de región/licencias.
+- DAYCOMICS — https://app.daycomics.com/ — plataforma de webtoon activa. No confirmé en el catálogo actual que aparezca “Don't Tell Mom!”; su relación con el título proviene del resultado que compartiste.
+
+B. Indexadores, comunidades o sitios que describen aportes de usuarios/traducciones
+- ManhwaWeb — https://manhwaweb.com/ — tiene centro de copyright/takedown; su sitio dice que el contenido puede reportarse con URL de la publicación oficial y autorización/licencia. No implica que todas las obras tengan licencia.
+- LectorTmo — https://lectortmoo.com/ — su página dice que los capítulos son aportes de la comunidad y remite a comprar ediciones oficiales cuando existan.
+- Lector Manga — https://lector-mangas.lat/ — se describe como catálogo de traducciones por grupos de scanlation comunitarios; no verifiqué licencias título por título.
+- MexicoManga — https://mexicomanga.com/ — se describe como catálogo de traducciones realizadas por scans de la comunidad; no verifiqué licencias título por título.
+- MangaDex — https://mangadex.org/ — plataforma comunitaria con cargas/traducciones de usuarios; no equivale a una licencia editorial general. Revisar derechos por título y capítulo.
+
+C. Lectores/agregadores que muestran o anuncian capítulos; licencia no verificada en esta revisión
+- VerManhwa — https://vermanhwa.com/ — el navegador de consulta recibió 403; eso no demuestra que el sitio esté caído ni que bloquee a todos.
+- ManhwaRead — https://manhwaread.com/ — consulta directa recibió 403; licencia y disponibilidad no verificadas.
+- Toonily — https://toonily.com/ — página accesible con catálogo y capítulos recientes; no encontré prueba pública de licencia de cada título.
+- MangaFire — https://mangafire.to/ — aparece como lector de manga/manhwa; no encontré prueba pública de licencia de cada título.
+- ToonGod — https://toongod.org/ — la consulta directa no se pudo abrir; estado y licencia no verificados.
+- LectorXD — https://lectorxd.com/ — página con catálogo gratuito; no encontré prueba pública de licencia de cada título.
+- Yupmanga — https://www.yupmanga.com/ — resultado visible en búsqueda en español; licencia no verificada.
+- ZonaTMO — https://zonatmo.net/ — resultado visible como lector en español; licencia no verificada.
+- SwordMangas — https://swordmangas.com/esp — se presenta como lector gratuito en español; licencia no verificada.
+- ToonMundo — https://toonmundo.com/ — se presenta como lector gratuito en español; licencia no verificada.
+- Komiwa — https://www.komiwa.net/ — se presenta como lector gratuito en español; licencia no verificada.
+- WebtoonClub — https://webtoonclub.com/ — apareció asociado al título; licencia no verificada.
+- ManhwaWeb.cc — https://manhwaweb.cc/ — dominio distinto que apareció en resultados; no asumir que comparte operador/licencias con manhwaweb.com.
+- ManhwaWeb.top — https://manhwaweb.top/ — dominio distinto que apareció en resultados; no asumir que comparte operador/licencias con manhwaweb.com.
+
+D. No es un lector de capítulos
+- Pinterest — https://www.pinterest.com/ — resultado de imágenes/ideas, no plataforma identificada de serialización o lectura.
+
+Criterio de clasificación:
+Que un sitio muestre capítulos, acepte avisos DMCA o tenga mucho tráfico no prueba que posea licencia. Solo lo marco “oficial” cuando hay evidencia del editor/plataforma o declaración verificable de autorización. Para los demás uso “comunidad/indexador” o “licencia no verificada”; no afirmo infracción legal sin revisar cada título y territorio. Los dominios con nombres parecidos se cuentan como sitios distintos hasta comprobar que comparten operador.
+
+FUENTES CONSULTADAS PARA ESTA SECCIÓN
+- Búsqueda visible de Google: “leer manhwa español online gratis” (13-11-2026).
+- ManhwaWeb, centro de derechos de autor: https://manhwaweb.com/copyright
+- ManhwaWeb, página principal/indexador: https://manhwaweb.com/
+- LectorTmo, descripción del catálogo y aportes de la comunidad: https://lectortmoo.com/
+- LectorXD, página principal: https://lectorxd.com/
+- Toonily, página principal/catálogo: https://toonily.com/
+- MangaDex, wiki de documentación comunitaria: https://wikidex.tr25.es/view/Main_Page
+- Kakao Entertainment, informe sobre piratería de webtoon y sitios de carga de usuarios: https://newsroom.kakaoent.com/wp-content/themes/kakao-ent/assets/files/2022%20Kakao%20Entertainment%20White%20Paper_Combatting%20Webtoon%20Piracy.pdf
+- WEBTOON, disponibilidad regional y plataformas de la compañía: https://webtoon.zendesk.com/hc/en-us/articles/25771121101332-Why-can-t-I-access-WEBTOON-in-my-country
