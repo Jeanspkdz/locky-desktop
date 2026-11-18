@@ -133,7 +133,7 @@ const GAMBLING_CANDIDATES = Object.freeze([
   'betsson.pe',
 ]);
 
-const COMIC_DOMAIN_PATTERNS = Object.freeze(['*manhwa*', '*manga*']);
+const COMIC_DOMAIN_PATTERNS = Object.freeze(['*manhwa*', '*manga*', '*comic*']);
 
 const SOCIAL_CANDIDATES = Object.freeze(['instagram.com', 'tiktok.com']);
 
